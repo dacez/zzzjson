@@ -1,6 +1,6 @@
 #/bin/bash
 CC=g++
-CC=clang++
+#CC=clang++
 
 rm -rf build
 mkdir build
