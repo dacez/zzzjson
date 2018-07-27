@@ -1,0 +1,59 @@
+==========================performance_test==========================
+PureStringTest:
+| Name            | Parse           | Stringify       | All              |
+| strlen          | 0               | 0               | 0                |
+| cJSON           | 75              | 45              | 128              |
+| gason           | 22              | 138             | 172              |
+| picoJSON        | 417             | 131             | 609              |
+| JSONCPP         | 448             | 270             | 768              |
+| nlohmannJSON    | 494             | 155             | 671              |
+| taocppJSON      | 493             | 162             | 643              |
+| rapidJSON       | 129             | 31              | 182              |
+| rapidJSONFP     | 62              | 31              | 94               |
+| rapidJSONSTR    | 56              | 22              | 85               |
+| zzzJSON         | 37              | 16              | 56               |
+NativeJSONBenchMarkTest:
+| Name            | Parse           | Stringify       | All              |
+| strlen          | 0               | 0               | 0                |
+| ArduinoJSON     | 1040            | 32              | 1101             |
+| cJSON           | 57              | 269             | 325              |
+| gason           | 7               | 106             | 126              |
+| picoJSON        | 108             | 161             | 279              |
+| parsonJSON      | 81              | 419             | 515              |
+| JSONCPP         | 115             | 170             | 309              |
+| nlohmannJSON    | 92              | 26              | 129              |
+| taocppJSON      | 39              | 33              | 90               |
+| rapidJSON       | 10              | 18              | 30               |
+| rapidJSONFP     | 32              | 17              | 49               |
+| rapidJSONSTR    | 28              | 8               | 47               |
+| zzzJSON         | 7               | 3               | 9                |
+taobaoTest:
+| Name            | Parse           | Stringify       | All              |
+| strlen          | 0               | 0               | 0                |
+| ArduinoJSON     | 31              | 65              | 115              |
+| cJSON           | 32              | 18              | 50               |
+| gason           | 5               | 54              | 69               |
+| picoJSON        | 114             | 54              | 172              |
+| parsonJSON      | 70              | 108             | 192              |
+| JSONCPP         | 55              | 52              | 123              |
+| nlohmannJSON    | 63              | 28              | 122              |
+| taocppJSON      | 30              | 30              | 70               |
+| rapidJSON       | 18              | 11              | 28               |
+| rapidJSONFP     | 14              | 8               | 26               |
+| rapidJSONSTR    | 17              | 10              | 23               |
+| zzzJSON         | 9               | 3               | 10               |
+NormalJSONTest:
+| Name            | Parse           | Stringify       | All              |
+| strlen          | 0               | 0               | 0                |
+| ArduinoJSON     | 2355            | 737             | 3240             |
+| cJSON           | 345             | 473             | 804              |
+| gason           | 92              | 611             | 722              |
+| picoJSON        | 936             | 570             | 1648             |
+| parsonJSON      | 511             | 1170            | 1827             |
+| JSONCPP         | 654             | 614             | 1446             |
+| nlohmannJSON    | 783             | 315             | 1262             |
+| taocppJSON      | 390             | 252             | 768              |
+| rapidJSON       | 137             | 117             | 248              |
+| rapidJSONFP     | 156             | 105             | 276              |
+| rapidJSONSTR    | 139             | 104             | 261              |
+| zzzJSON         | 96              | 60              | 167              |
