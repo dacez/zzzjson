@@ -7,7 +7,7 @@
 class gasonTest : public Test
 {
   public:
-    gasonTest(const std::vector<std::string> &paths) : Test("gason", paths){};
+    gasonTest(const std::string &path) : Test("gason", path){};
     
     void dumpString(std::ostringstream &os, const char *s)
     {

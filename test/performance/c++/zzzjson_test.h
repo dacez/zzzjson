@@ -1,15 +1,13 @@
 #include "../../test.h"
 
-#define ZZZ_ALLOCATORINITMEMSIZE 4096 * 16
-#define ZZZ_STRINGINITMEMSIZE 4096 * 4
-#define ZZZ_DELTA 4
+#define ZZZ_DELTA 4                     
 #define ZZZ_SHORT_API 0
 #include "../../../zzzjson.h"
 
-class zzzJSONTest : public Test
+class zzzjsonTest : public Test
 {
   public:
-    zzzJSONTest(const std::vector<std::string> &paths) : Test("zzzJSON", paths){};
+    zzzjsonTest(const std::string &path) : Test("zzzjson", path){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         zzz_Allocator *A = zzz_AllocatorNew();

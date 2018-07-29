@@ -3,7 +3,7 @@
 class strlenTest : public Test
 {
   public:
-    strlenTest(const std::vector<std::string> &paths) : Test("strlen", paths){};
+    strlenTest(const std::string &path) : Test("strlen", path){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         uint64_t now = Now();

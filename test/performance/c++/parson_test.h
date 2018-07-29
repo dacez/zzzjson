@@ -4,7 +4,7 @@
 class parsonTest : public Test
 {
   public:
-    parsonTest(const std::vector<std::string> &paths) : Test("parsonJSON", paths){};
+    parsonTest(const std::string &path) : Test("parson", path){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         uint64_t now = Now();

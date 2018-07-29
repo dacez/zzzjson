@@ -2,10 +2,10 @@
 
 #include "jsoncpp/include/json/json.h"
 
-class JSONCPPTest : public Test
+class jsoncppTest : public Test
 {
   public:
-    JSONCPPTest(const std::vector<std::string> &paths) : Test("JSONCPP", paths){};
+    jsoncppTest(const std::string path) : Test("jsoncpp", path){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         std::stringstream ss;

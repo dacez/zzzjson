@@ -1,10 +1,10 @@
 #include "../../test.h"
 #include "ArduinoJson/src/ArduinoJson.h"
 
-class ArduinoJSONTest : public Test
+class arduinojsonTest : public Test
 {
   public:
-    ArduinoJSONTest(const std::vector<std::string> &paths) : Test("ArduinoJSON", paths){};
+    arduinojsonTest(const std::string &path) : Test("arduinojson", path){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         DynamicJsonBuffer jsonBuffer(4096);

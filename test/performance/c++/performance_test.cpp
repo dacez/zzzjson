@@ -12,88 +12,184 @@
 #include "taocppjson_test.h"
 #include "strlen_test.h"
 
+#include <map>
+
 using namespace std;
 
-void RunTest(const string &test_name, int count, const vector<string> &paths)
-{
-    printf("%s:\n", test_name.c_str());
-    vector<Test *> tests;
-    tests.push_back(new strlenTest(paths));
-    if (test_name != "PureStringTest") tests.push_back(new ArduinoJSONTest(paths));
-    tests.push_back(new cJSONTest(paths));
-    tests.push_back(new gasonTest(paths));
-    tests.push_back(new picoJSONTest(paths));
-    if (test_name != "PureStringTest") tests.push_back(new parsonTest(paths));
-    tests.push_back(new JSONCPPTest(paths));
-    tests.push_back(new nlohmannJSONTest(paths));
-    tests.push_back(new taocppJSONTest(paths));
-    tests.push_back(new rapidJSONTest(paths));
-    tests.push_back(new rapidJSONFPTest(paths));
-    tests.push_back(new rapidJSONSTRTest(paths));
-    tests.push_back(new zzzJSONTest(paths));
-
-    for (int c = 0; c < count; ++c)
-    {
-        for (int i = 0; i < tests.size(); ++i)
-            tests[i]->AllTest();
-        for (int i = 0; i < tests.size(); ++i)
-            tests[i]->ParseTest();
-        for (int i = 0; i < tests.size(); ++i)
-            tests[i]->StringifyTest();
-    }
-
-    printf("%s\n", "| Name            | Parse           | Stringify       | All              |");
-    for (int i = 0; i < tests.size(); ++i)
-        tests[i]->PrintReslut();
+void Init(const string &path, vector<Test *> *tests) {
+    tests->push_back(new strlenTest(path));
+    tests->push_back(new zzzjsonTest(path));
+    tests->push_back(new rapidjsonTest(path));
+    tests->push_back(new rapidjsonfpTest(path));
+    tests->push_back(new rapidjsonstrTest(path));
+    tests->push_back(new arduinojsonTest(path));
+    tests->push_back(new cjsonTest(path));
+    tests->push_back(new gasonTest(path));
+    tests->push_back(new picojsonTest(path));
+    tests->push_back(new parsonTest(path));
+    tests->push_back(new jsoncppTest(path));
+    tests->push_back(new nlohmannjsonTest(path));
+    tests->push_back(new taocppjsonTest(path));    
 }
 
-int main()
+void Free(vector<Test *> *tests) {
+    for (int i = 0; i < tests->size(); ++i) {
+        delete (*tests)[i];
+    }
+}
+
+vector<string> InitPath()
 {
-    printf("==========================%s==========================\n", "performance_test");
+    vector<string> paths;
+    paths.push_back("test/performance/data/nonum.json");
+    paths.push_back("test/performance/data/nonum1.json");
+    paths.push_back("test/performance/data/nonum2.json");
+    paths.push_back("test/performance/data/nativejson-benchmark/canada.json");
+    paths.push_back("test/performance/data/nativejson-benchmark/citm_catalog.json");
+    paths.push_back("test/performance/data/nativejson-benchmark/twitter.json");
+    paths.push_back("test/performance/data/fastjson/taobao/cart.json");
+    paths.push_back("test/performance/data/fastjson/trade.json");
+    paths.push_back("test/performance/data/json-iterator/large-file.json");
+    return paths;
+}
 
+vector<string> GetLines(const string &path) {
+    string c = Read(path);
+    vector<string> ls;
+    string l;
+    for (int i = 0; i < c.size(); ++i) {
+        if (c[i] == '\n') {
+            if (l != "") {
+                ls.push_back(l);
+                l = "";
+            }
+        } else {
+            l += c[i];
+        }
+    }
+    return ls;
+}
+
+vector<string> GetWords(const string &line) {
+    vector<string> ws;
+    string w;
+    for (int i = 0; i < line.size(); ++i) {
+        if (line[i] == '\t' || line[i] == ' ') {
+            if (w != "") {
+                ws.push_back(w);
+                w = "";
+            }
+        } else {
+            w += line[i];
+        }
+    }
+    return ws;
+}
+void printStr(const std::string &s)
     {
-        int purestring_count = 1;
-        vector<string> purestring_paths;
+        printf("%s", s.c_str());
+        for (int i = s.size(); i < 16; ++i)
+        {
+            printf(" ");
+        }
+        printf("\t");
+    }
+void printStr(unsigned long long n)
+    {
+        std::stringstream ss;
+        ss << n;
+        std::string s;
+        ss >> s;
+        printStr(s);
+    }
+void PrintResult(const string &name, const string &path) {
+    map<string, map<string, int> > m;
+    auto ls = GetLines(path);
+    for (const auto &l : ls) {
+        auto ws = GetWords(l);
+        if (ws.size() != 4) {
+            printf("Fail\n");
+            return;
+        }
+        stringstream ss;
+        ss << ws[3];
+        unsigned long long ms;
+        ss >> ms;
+        m[ws[0]][ws[1]] += ms;
+    }
+    printf("=============================%s=============================\n", name.c_str());
+    for (const auto &t : m) {
+        printf("|");
+        printStr(t.first);
+        auto mm = t.second;
+        printf("|");
+        printStr(mm["Parse"]);
+        printf("|");
+        printStr(mm["Stringify"]);
+        printf("|");
+        printStr(mm["All"]);
+        printf("|\n");
+    }
+}
 
-        purestring_paths.push_back("test/performance/data/nonum.json");
-        RunTest("PureStringTest", purestring_count, purestring_paths);
+int main(int argc, char **argv)
+{
+    if (argc == 2 && string(argv[1]) == "statistic") {
+        printf("==================performance_test==================\n");
+        PrintResult("NoNumTest", "nonum.txt");
+        PrintResult("NativeJSONBenchMark", "nativejsonbenchmark.txt");
+        PrintResult("TaoBao", "taobao.txt");
+        PrintResult("Normal", "normal.txt");
+        return 0;
+    } else if (argc != 4) {
+        printf("performance_test name type file\n");
+        return 1;
     }
 
-    {
-        int nativejsonbenchmark_count = 1;
-        vector<string> nativejsonbenchmark_paths;
 
-        nativejsonbenchmark_paths.push_back("test/performance/data/nativejson-benchmark/canada.json");
-        nativejsonbenchmark_paths.push_back("test/performance/data/nativejson-benchmark/citm_catalog.json");
-        nativejsonbenchmark_paths.push_back("test/performance/data/nativejson-benchmark/twitter.json");
+    string name = argv[1];
+    string type = argv[2];
+    string file = argv[3];
 
-        RunTest("NativeJSONBenchMarkTest", nativejsonbenchmark_count, nativejsonbenchmark_paths);
+    vector<string> paths = InitPath();
+
+    string path;
+    for (int i = 0; i < paths.size(); ++i) {
+        if (paths[i].find(file) != string::npos) {path = paths[i];break;}
     }
 
-    {
-        int taobao_count = 1;
-        vector<string> taobao_paths;
-
-        taobao_paths.push_back("test/performance/data/fastjson/taobao/cart.json");
-        taobao_paths.push_back("test/performance/data/fastjson/trade.json");
-
-        RunTest("taobaoTest", taobao_count, taobao_paths);
+    if (path == "") {
+        printf("No File %s\n", file.c_str());
+        return 1;
     }
 
-    {
-        int normaljson_count = 1;
-        vector<string> normaljson_paths;
+    vector<Test *> tests;
+    Init(path, &tests);
 
-        normaljson_paths.push_back("test/performance/data/nativejson-benchmark/canada.json");
-        normaljson_paths.push_back("test/performance/data/nativejson-benchmark/citm_catalog.json");
-        normaljson_paths.push_back("test/performance/data/nativejson-benchmark/twitter.json");
-
-        normaljson_paths.push_back("test/performance/data/json-iterator/large-file.json");
-
-        normaljson_paths.push_back("test/performance/data/fastjson/taobao/cart.json");
-        normaljson_paths.push_back("test/performance/data/fastjson/trade.json");
-
-        RunTest("NormalJSONTest", normaljson_count, normaljson_paths);
+    Test *t = 0;
+    for (int i = 0; i < tests.size(); ++i) {
+        if (tests[i]->Name() == name) {
+            t = tests[i];
+            break;
+        }
     }
+
+    if (t == 0) {
+        printf("No Test %s\n", name.c_str());
+        return 1;        
+    }
+
+    if (type == "parse") {
+        t->ParseTest();
+        t->PrintParse();
+    } else if (type == "stringify") {
+        t->StringifyTest();
+        t->PrintStringify();
+    } else if (type == "all") {
+        t->AllTest();
+        t->PrintAll();
+    }
+
+    Free(&tests);
     return 0;
 }

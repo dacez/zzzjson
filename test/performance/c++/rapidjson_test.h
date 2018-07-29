@@ -6,10 +6,10 @@
 #include "rapidjson/include/rapidjson/stringbuffer.h"
 #include "rapidjson/include/rapidjson/writer.h"
 
-class rapidJSONTest : public Test
+class rapidjsonTest : public Test
 {
   public:
-    rapidJSONTest(const std::vector<std::string> &paths) : Test("rapidJSON", paths){};
+    rapidjsonTest(const std::string &path) : Test("rapidjson", path){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         rapidjson::Document doc;

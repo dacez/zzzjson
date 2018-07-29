@@ -2,10 +2,10 @@
 
 #include "cJSON/cJSON.h"
 
-class cJSONTest : public Test
+class cjsonTest : public Test
 {
   public:
-    cJSONTest(const std::vector<std::string> &paths) : Test("cJSON", paths){};
+    cjsonTest(const std::string &path) : Test("cjson", path){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         uint64_t now = Now();

@@ -1,10 +1,10 @@
 #include "../../test.h"
 #include "nlohmannjson/single_include/nlohmann/json.hpp"
 
-class nlohmannJSONTest : public Test
+class nlohmannjsonTest : public Test
 {
   public:
-    nlohmannJSONTest(const std::vector<std::string> &paths) : Test("nlohmannJSON", paths){};
+    nlohmannjsonTest(const std::string &path) : Test("nlohmannjson", path){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         try

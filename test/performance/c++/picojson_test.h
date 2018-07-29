@@ -1,10 +1,10 @@
 #include "../../test.h"
 #include "picojson/picojson.h"
 
-class picoJSONTest : public Test
+class picojsonTest : public Test
 {
   public:
-    picoJSONTest(const std::vector<std::string> &paths) : Test("picoJSON", paths){};
+    picojsonTest(const std::string &path) : Test("picojson", path){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         uint32_t len = strlen(json);

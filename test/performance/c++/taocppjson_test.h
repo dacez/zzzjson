@@ -1,10 +1,10 @@
 #include "../../test.h"
 #include "taocppjson/include/tao/json.hpp"
 
-class taocppJSONTest : public Test
+class taocppjsonTest : public Test
 {
   public:
-    taocppJSONTest(const std::vector<std::string> &paths) : Test("taocppJSON", paths){};
+    taocppjsonTest(const std::string &path) : Test("taocppjson", path){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
             uint64_t now = Now();
