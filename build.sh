@@ -27,6 +27,7 @@ function PerformanceTestOne()
         ./performance_test $1 parse $f >> $2
         ./performance_test $1 stringify $f >> $2
         ./performance_test $1 all $f >> $2
+        echo -n .
     done
 }
 
