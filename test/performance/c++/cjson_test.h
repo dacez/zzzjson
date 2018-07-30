@@ -6,6 +6,7 @@ class cjsonTest : public Test
 {
   public:
     cjsonTest(const std::string &path) : Test("cjson", path){};
+    cjsonTest(const std::vector<std::string> &jsons) : Test("cjson", jsons){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         uint64_t now = Now();

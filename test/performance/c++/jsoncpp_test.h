@@ -6,6 +6,7 @@ class jsoncppTest : public Test
 {
   public:
     jsoncppTest(const std::string path) : Test("jsoncpp", path){};
+    jsoncppTest(const std::vector<std::string> &jsons) : Test("jsoncpp", jsons){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         std::stringstream ss;

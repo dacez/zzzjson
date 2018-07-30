@@ -8,6 +8,7 @@ class zzzjsonTest : public Test
 {
   public:
     zzzjsonTest(const std::string &path) : Test("zzzjson", path){};
+    zzzjsonTest(const std::vector<std::string> &jsons) : Test("zzzjson", jsons){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         zzz_Allocator *A = zzz_AllocatorNew();

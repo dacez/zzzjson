@@ -5,6 +5,7 @@ class arduinojsonTest : public Test
 {
   public:
     arduinojsonTest(const std::string &path) : Test("arduinojson", path){};
+    arduinojsonTest(const std::vector<std::string> &jsons) : Test("arduinojson", jsons){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         DynamicJsonBuffer jsonBuffer(4096);

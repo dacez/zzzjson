@@ -12,3 +12,5 @@ build/json_value.o
 build/json_writer.o
 build/jsoncpp_reader.o
 build/parson.o
+randomlongjsontest.txt
+randomshortjsontest.txt

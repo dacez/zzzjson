@@ -107,12 +107,30 @@ function PerformanceNormal()
     PerformanceTestOne taocppjson $output ${files[*]}
 }
 
+function PerformanceRandom()
+{
+    ./performance_test randomshortjsontest > randomshortjsontest.txt
+    echo -n .
+    ./performance_test randomlongjsontest > randomlongjsontest.txt
+}
+
 function PerformanceTest
 {
+    echo ' '
+    echo PerformanceNoNum
     PerformanceNoNum
+    echo ' '
+    echo PerformanceNativeJSONBenchmark
     PerformanceNativeJSONBenchmark
+    echo ' '
+    echo PerformanceTaoBao
     PerformanceTaoBao
+    echo ' '
+    echo PerformanceNormal
     PerformanceNormal
+    echo ' '
+    echo PerformanceRandom
+    PerformanceRandom
 }
 
 if [ "$1" == "function_test" ];then

@@ -5,6 +5,7 @@ class nlohmannjsonTest : public Test
 {
   public:
     nlohmannjsonTest(const std::string &path) : Test("nlohmannjson", path){};
+    nlohmannjsonTest(const std::vector<std::string> &jsons) : Test("nlohmannjson", jsons){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         try

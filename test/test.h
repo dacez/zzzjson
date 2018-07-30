@@ -60,6 +60,24 @@ static std::string Read(const std::string &path)
     return ret_str;
 }
 
+void PrintStr(const std::string &s, int len)
+{
+    printf("%s", s.c_str());
+    for (int i = s.size(); i < len; ++i)
+    {
+        printf(" ");
+    }
+    printf("\t");
+}
+void PrintStr(unsigned long long n, int len)
+{
+    std::stringstream ss;
+    ss << n;
+    std::string s;
+    ss >> s;
+    PrintStr(s, len);
+}
+
 class Test
 {
   public:
@@ -69,7 +87,22 @@ class Test
         m_path = path;
 
         std::string json = Read(path);
-        m_json = json;
+        m_jsons.push_back(json);
+
+        m_parse_time = 0;
+        m_stringify_time = 0;
+        m_all_time = 0;
+
+        m_parse_status = true;
+        m_stringify_status = true;
+        m_all_status = true;
+    }
+    Test(const std::string &name, const std::vector<std::string> &jsons)
+    {
+        m_name = name;
+        m_path = "nofile";
+
+        m_jsons = jsons;
 
         m_parse_time = 0;
         m_stringify_time = 0;
@@ -97,104 +130,102 @@ class Test
     bool ParseTest()
     {
         unsigned long long ms = 0;
-        if (Parse(m_json.c_str(), &ms) == false)
+        for (int i = 0; i < m_jsons.size(); ++i)
         {
-            m_parse_status = false;
+            if (Parse(m_jsons[i].c_str(), &ms) == false)
+            {
+                m_parse_status = false;
+            }
+            m_parse_time += ms;
         }
-        m_parse_time += ms;
 
         return true;
     }
     bool StringifyTest()
     {
         unsigned long long ms = 0;
-        if (Stringify(m_json.c_str(), &ms) == false)
+        for (int i = 0; i < m_jsons.size(); ++i)
         {
-            m_stringify_status = false;
+            if (Stringify(m_jsons[i].c_str(), &ms) == false)
+            {
+                m_stringify_status = false;
+            }
+            m_stringify_time += ms;
         }
-        m_stringify_time += ms;
 
         return true;
     }
     bool AllTest()
     {
         unsigned long long ms = 0;
-        if (All(m_json.c_str(), &ms) == false)
+        for (int i = 0; i < m_jsons.size(); ++i)
         {
-            m_all_status = false;
+            if (All(m_jsons[i].c_str(), &ms) == false)
+            {
+                m_all_status = false;
+            }
+            m_all_time += ms;
         }
-        m_all_time += ms;
 
         return true;
     }
-    void printStr(const std::string &s)
+    void printName(const std::string &path)
     {
-        printf("%s", s.c_str());
-        for (int i = s.size(); i < 32; ++i)
-        {
-            printf(" ");
-        }
-        printf("\t");
-    }
-    void printStr(unsigned long long n)
-    {
-        std::stringstream ss;
-        ss << n;
-        std::string s;
-        ss >> s;
-        printStr(s);
-    }
-    void printName(const std::string &path) {
         std::string name;
-        for (int i = 0; i < path.size(); ++i) {
-            if (path[i] == '/') {
+        for (int i = 0; i < path.size(); ++i)
+        {
+            if (path[i] == '/')
+            {
                 name = "";
-            } else {
+            }
+            else
+            {
                 name += path[i];
             }
         }
-        printStr(name);
+        PrintStr(name, 32);
     }
     void PrintParse()
     {
-        printStr(m_name);
-        printStr("Parse");
+        PrintStr(m_name, 32);
+        PrintStr("Parse", 32);
         printName(m_path);
         if (m_parse_status)
-            printStr(m_parse_time);
+            PrintStr(m_parse_time, 32);
         else
-            printStr("Fail");
+            PrintStr("Fail", 32);
         printf("\n");
     }
     void PrintStringify()
     {
-        printStr(m_name);
-        printStr("Stringify");
+        PrintStr(m_name, 32);
+        PrintStr("Stringify", 32);
         printName(m_path);
         if (m_stringify_status)
-            printStr(m_stringify_time);
+            PrintStr(m_stringify_time, 32);
         else
-            printStr("Fail");
+            PrintStr("Fail", 32);
         printf("\n");
     }
     void PrintAll()
     {
-        printStr(m_name);
-        printStr("All");
+        PrintStr(m_name, 32);
+        PrintStr("All", 32);
         printName(m_path);
         if (m_all_status)
-            printStr(m_all_time);
+            PrintStr(m_all_time, 32);
         else
-            printStr("Fail");
+            PrintStr("Fail", 32);
         printf("\n");
     }
-    std::string Name() {
+    std::string Name()
+    {
         return m_name;
     }
 
   private:
     std::string m_name;
-    std::string m_json;
+    std::vector<std::string> m_jsons;
     std::string m_path;
     unsigned long long m_parse_time;
     unsigned long long m_stringify_time;

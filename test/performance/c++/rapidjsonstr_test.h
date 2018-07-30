@@ -10,6 +10,7 @@ class rapidjsonstrTest : public Test
 {
   public:
     rapidjsonstrTest(const std::string &path) : Test("rapidjsonstr", path){};
+    rapidjsonstrTest(const std::vector<std::string> &jsons) : Test("rapidjsonstr", jsons){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         rapidjson::Document doc;

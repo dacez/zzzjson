@@ -5,6 +5,7 @@ class picojsonTest : public Test
 {
   public:
     picojsonTest(const std::string &path) : Test("picojson", path){};
+    picojsonTest(const std::vector<std::string> &jsons) : Test("picojson", jsons){};
     virtual bool Parse(const char *json, unsigned long long *ms)
     {
         uint32_t len = strlen(json);
