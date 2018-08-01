@@ -1,7 +1,9 @@
 #include "../../test.h"
 
-#define ZZZ_DELTA 4                     
-#define ZZZ_SHORT_API 0
+#define zzz_ALLOCATORINITMEMSIZE 4096 * 16
+#define zzz_STRINGINITMEMSIZE 4096 * 2
+#define zzz_DELTA 2                    
+#define zzz_SHORT_API 0
 #include "../../../zzzjson.h"
 
 class zzzjsonTest : public Test

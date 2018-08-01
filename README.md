@@ -46,6 +46,7 @@
       - [GetKey](#getkey)
       - [GetKeyFast](#getkeyfast)
       - [GetUnEscapeKey](#getunescapekey)
+      - [ObjGet](#objget)
       - [ArrayGet](#arrayget)
       - [Type](#type)
       - [Size](#size)
@@ -62,10 +63,10 @@
       - [ArrayAddFast](#arrayaddfast)
       - [Move](#move)
   * [五、内存配置](#五内存配置)
-    + [ZZZ_ALLOCATORINITMEMSIZE](#zzz-allocatorinitmemsize)
-    + [ZZZ_STRINGINITMEMSIZE](#zzz-stringinitmemsize)
-    + [ZZZ_MEMORY_MODE](#zzz-memory-mode)
-    + [ZZZ_EXPECT_MODE](#zzz-expect-mode)
+    + [zzz_ALLOCATORINITMEMSIZE](#zzz-allocatorinitmemsize)
+    + [zzz_STRINGINITMEMSIZE](#zzz-stringinitmemsize)
+    + [zzz_MEMORY_MODE](#zzz-memory-mode)
+    + [zzz_EXPECT_MODE](#zzz-expect-mode)
   * [七、编译运行](#七编译运行)
   * [八、计划与进度](#八计划与进度)
 
@@ -149,15 +150,15 @@ zzzJSON从多方面测试其解析和序列化速度，主要包括：无数字�
 
 #### 性能调优
 
-由于测试的数据比较大，可以对zzzJSON对内存参数进行了调优，会提高性能，这里为了公平起见，zzzJSON使用默认参数，（调大会加快速度，例如：#define ZZZ_DELTA 4），具体如下：
+由于测试的数据比较大，可以对zzzJSON对内存参数进行了调优，会提高性能，这里为了公平起见，zzzJSON使用默认参数，（调大会加快速度，例如：#define zzz_DELTA 4），具体如下：
 
 ```c
 // 内存分配器初次分配内存大小（默认值）
-#define ZZZ_ALLOCATORINITMEMSIZE 1024 * 4
+#define zzz_ALLOCATORINITMEMSIZE 1024 * 4
 // 字符串初次大小（默认值）
-#define ZZZ_STRINGINITMEMSIZE 1024
+#define zzz_STRINGINITMEMSIZE 1024
 // 内存不够时，内存翻倍数（默认值）
-#define ZZZ_DELTA 2
+#define zzz_DELTA 2
 ```
 
 内存调优的详细说明请参考《内存配置》。
@@ -306,12 +307,12 @@ nativejson-benchmark在JSON性能测试方面做了非常大的贡献，因此�
 zzzJSON所有对外的数据结构都有长命名和短命名，其中长命名一直生效，短命名默认生效，可以通过定义宏使其失效，代码如下：
 
 ```c
-#define ZZZ_SHORT_API 0
+#define zzz_SHORT_API 0
 // 务必要定义在 include 语句之前
 #include "zzzjson.h"
 ```
 
-> 宏**ZZZ_SHORT_API**的值决定了所有对外的**数据结构**和**API**的短命名是否生效。
+> 宏**zzz_SHORT_API**的值决定了所有对外的**数据结构**和**API**的短命名是否生效。
 >
 > 使用长命名的原因是C语言没有名空间，短命名容易跟其它代码冲突。
 
@@ -371,12 +372,12 @@ zzzJSON定义了2个数据结构，分别是**内存分配器**、**值**，如�
 zzzJSON所有API都有长命名和短命名，其中长命名一直生效，短命名默认生效，可以通过定义宏使其失效，代码如下：
 
 ```c
-#define ZZZ_SHORT_API 0
+#define zzz_SHORT_API 0
 // 务必要定义在 include 语句之前
 #include "zzzjson.h"
 ```
 
-> 宏**ZZZ_SHORT_API**的值决定了所有对外的**数据结构**和**API**的短命名是否生效。
+> 宏**zzz_SHORT_API**的值决定了所有对外的**数据结构**和**API**的短命名是否生效。
 >
 > 使用长命名的原因是C语言没有名空间，短命名容易跟其它代码冲突。
 
@@ -1529,6 +1530,63 @@ int main()
 输出如下：
 
 {"key123":1234}
+
+#### ObjGetLen
+
+```c
+// 短命名
+Value *ObjGetLen(const Value *v, const char *key, UIN32 len);
+// 长命名
+struct zzz_Value *zzz_ValueObjGetLen(const struct zzz_Value *v, const char *key, zzz_UINT32 len);
+```
+
+作用：
+
+获取类型为对象的值中关键字为key的值。
+
+参数：
+
+- v：值的地址
+- len：Key的长度
+
+返回：
+
+- 值的地址
+
+注意事项：
+
+- 需要判断返回值是不是0，防止导致不可预测的结果；
+- 修改返回值会影响参数v。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "{\"key123\":123}";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        Value *vv = ObjGetLen(v, "key123", 6);
+        if (vv != 0)
+        {
+            SetNumStr(vv, "1234");
+            const char *ret_json = Stringify(v);
+            printf("%s\n", ret_json);
+        }
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+{"key123":1234}
+
 
 #### ArrayGet
 
@@ -2923,30 +2981,30 @@ int main()
 
 zzzJSON实现了统一的内存分配器，因此，可以根据实际需要，调整内存分配的参数，以获得更好的性能。
 
-###ZZZ_DELTA
+###zzz_DELTA
 
-当内存不够时，向操作系统申请上次申请的ZZZ_DELTA倍的内存，必须大于1。默认值为：2，使用方法如下：
+当内存不够时，向操作系统申请上次申请的zzz_DELTA倍的内存，必须大于1。默认值为：2，使用方法如下：
 
 ```c
-#define ZZZ_DELTA 3
+#define zzz_DELTA 3
 #include "zzzjson.h"
 ```
 
-### ZZZ_ALLOCATORINITMEMSIZE
+### zzz_ALLOCATORINITMEMSIZE
 
 内存分配器首次分配内存的大小。默认值为：4096Bytes，使用方法如下：
 
 ```c
-#define ZZZ_ALLOCATORINITMEMSIZE 1024
+#define zzz_ALLOCATORINITMEMSIZE 1024
 #include "zzzjson.h"
 ```
 
-### ZZZ_STRINGINITMEMSIZE
+### zzz_STRINGINITMEMSIZE
 
 字符串首次分配的大小，用于序列化生成的JSON文本，略大于序列化生成的JSON文本为最佳。默认值为：1024，使用方法如下：
 
 ```c
-#define ZZZ_STRINGINITMEMSIZE 2048
+#define zzz_STRINGINITMEMSIZE 2048
 #include "zzzjson.h"
 ```
 
@@ -2954,7 +3012,7 @@ zzzJSON实现了统一的内存分配器，因此，可以根据实际需要，�
 
 zzzJSON默认情况下适应绝大部分环境，对于非常特殊的环境，需要进行一些适配，详细情况如下：
 
-### ZZZ_MEMORY_MODE
+### zzz_MEMORY_MODE
 
 分配内存的模型，主要涉及内存分配，内存释放和内存拷贝，默认使用glibc提供malloc、free和memcpy函数。另外还提供调试模式。
 
@@ -2964,30 +3022,30 @@ zzzJSON默认情况下适应绝大部分环境，对于非常特殊的环境，�
 
 ```c
 // 默认模式
-#define ZZZ_MEMORY_MODE 1
+#define zzz_MEMORY_MODE 1
 
 // 调试模式
-// #define ZZZ_MEMORY_MODE 2
+// #define zzz_MEMORY_MODE 2
 
 // 自定义模式，需要自己修改代码
-// #define ZZZ_MEMORY_MODE 3
+// #define zzz_MEMORY_MODE 3
 
 #include "zzzjson.h"
 ```
 
-### ZZZ_EXPECT_MODE
+### zzz_EXPECT_MODE
 
 分支预测能大幅提高性能，gcc和clang都支持显示的分支预测，但是mscv不支持。目前这三种C语言的编译器使用最广泛，因此，只对这三种编译器做适配，其它编译器需要自行修改适配，代码如下：
 
 ```c
 // 如果编译器是gcc或者clang，默认为显示分支预测
-#define ZZZ_EXPECT_MODE 1 
+#define zzz_EXPECT_MODE 1 
 
 // 如果是其它编译器，则默认不使用显示分支预测
-// #define ZZZ_EXPECT_MODE 2
+// #define zzz_EXPECT_MODE 2
 
 // 如果需要自定义分支预测，则
-// #define ZZZ_EXPECT_MODE 3
+// #define zzz_EXPECT_MODE 3
 
 #include "zzzjson.h"
 ```

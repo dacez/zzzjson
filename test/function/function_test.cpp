@@ -1,7 +1,7 @@
 #include <string>
 #include <random>
 #include "../test.h"
-#define ZZZ_MEMORY_MODE 2
+#define zzz_MEMORY_MODE 2
 #include "../../zzzjson.h"
 
 using namespace std;

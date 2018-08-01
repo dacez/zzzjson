@@ -28,20 +28,20 @@ static const char *zzz_StrFalse = "false";
 static const char *zzz_StrNull = "null";
 
 // 内存配置，详见《内存配置》
-#ifndef ZZZ_DELTA
-#define ZZZ_DELTA 2
+#ifndef zzz_DELTA
+#define zzz_DELTA 2
 #endif
-static const zzz_UINT32 zzz_Delta = ZZZ_DELTA;
+static const zzz_UINT32 zzz_Delta = zzz_DELTA;
 
-#ifndef ZZZ_ALLOCATORINITMEMSIZE
-#define ZZZ_ALLOCATORINITMEMSIZE 1024 * 4
+#ifndef zzz_ALLOCATORINITMEMSIZE
+#define zzz_ALLOCATORINITMEMSIZE 1024 * 4
 #endif
-static const zzz_UINT32 zzz_AllocatorInitMemSize = ZZZ_ALLOCATORINITMEMSIZE;
+static const zzz_UINT32 zzz_AllocatorInitMemSize = zzz_ALLOCATORINITMEMSIZE;
 
-#ifndef ZZZ_STRINGINITMEMSIZE
-#define ZZZ_STRINGINITMEMSIZE 1024
+#ifndef zzz_STRINGINITMEMSIZE
+#define zzz_STRINGINITMEMSIZE 1024
 #endif
-static const zzz_UINT32 zzz_StringInitMemSize = ZZZ_STRINGINITMEMSIZE;
+static const zzz_UINT32 zzz_StringInitMemSize = zzz_STRINGINITMEMSIZE;
 
 // 环境适配
 
@@ -50,11 +50,11 @@ static const zzz_UINT32 zzz_StringInitMemSize = ZZZ_STRINGINITMEMSIZE;
 #include <stdlib.h> // 使用其 atof 函数
 #include <stdio.h>  // 使用其 sprintf 函数
 
-#ifndef ZZZ_MEMORY_MODE
-#define ZZZ_MEMORY_MODE 1
+#ifndef zzz_MEMORY_MODE
+#define zzz_MEMORY_MODE 1
 #endif
 
-#if ZZZ_MEMORY_MODE == 1
+#if zzz_MEMORY_MODE == 1
 
 static inline void *zzz_New(zzz_UINT32 size)
 {
@@ -62,36 +62,36 @@ static inline void *zzz_New(zzz_UINT32 size)
 }
 static inline void zzz_Free(void *pointer) { free(pointer); }
 
-#elif ZZZ_MEMORY_MODE == 2
+#elif zzz_MEMORY_MODE == 2
 // 测试模式，主要是用来测试内存的分配数和释放数，防止内存泄漏，同时用于观察内存分配次数。
-// 通过观察，可以得出较好ZZZ_DELTA和ZZZ_ALLOCATORINITMEMSIZE。
+// 通过观察，可以得出较好zzz_DELTA和zzz_ALLOCATORINITMEMSIZE。
 
 static zzz_UINT32 AllocMemorySize = 0, AllocMemoryCount = 0, FreeMemoryCount = 0;
 static inline void *zzz_New(zzz_UINT32 size) { return AllocMemorySize += size, AllocMemoryCount += 1, malloc(size); }
 static inline void zzz_Free(void *ptr) { FreeMemoryCount += 1, free(ptr); }
 
-#elif ZZZ_MEMORY_MODE == 3
+#elif zzz_MEMORY_MODE == 3
 // 自定义模式，需要实现zzz_New，zzz_Free和zzz_Copy三个函数
 #endif
 
 // 分支预测
-#ifndef ZZZ_EXPECT_MODE
+#ifndef zzz_EXPECT_MODE
 #if defined(__GNUC__) || defined(__clang__)
-#define ZZZ_EXPECT_MODE 1
+#define zzz_EXPECT_MODE 1
 #else
-#define ZZZ_EXPECT_MODE 2
+#define zzz_EXPECT_MODE 2
 #endif
 #endif
 
-#if ZZZ_EXPECT_MODE == 1
+#if zzz_EXPECT_MODE == 1
 // gcc和clang，使用__builtin_expect
 #define zzz_LIKELY(x) __builtin_expect(x, 1)
 #define zzz_UNLIKELY(x) __builtin_expect(x, 0)
-#elif ZZZ_EXPECT_MODE == 2
+#elif zzz_EXPECT_MODE == 2
 // msvc 不需要分支优化
 #define zzz_LIKELY(x) x
 #define zzz_UNLIKELY(x) x
-#elif ZZZ_EXPECT_MODE == 3
+#elif zzz_EXPECT_MODE == 3
 // 自定义分支预测
 #endif
 
@@ -127,6 +127,7 @@ static inline const char *zzz_ValueGetUnEscapeKey(struct zzz_Value *v);
 static inline const char *zzz_ValueGetKeyFast(const struct zzz_Value *v, zzz_UINT32 *len);
 
 static inline struct zzz_Value *zzz_ValueObjGet(const struct zzz_Value *v, const char *key);
+static inline struct zzz_Value *zzz_ValueObjGetLen(const struct zzz_Value *v, const char *key, zzz_UINT32 len);
 
 static inline const zzz_JSONTYPE *zzz_ValueType(const struct zzz_Value *v);
 
@@ -172,10 +173,10 @@ static inline zzz_BOOL zzz_ValueArrayDel(struct zzz_Value *v, zzz_UINT32 index);
 static inline zzz_BOOL zzz_ValueObjDel(struct zzz_Value *v, const char *key);
 
 // 短命名开关，默认开
-#ifndef ZZZ_SHORT_API
-#define ZZZ_SHORT_API 1
+#ifndef zzz_SHORT_API
+#define zzz_SHORT_API 1
 #endif
-#if ZZZ_SHORT_API == 1
+#if zzz_SHORT_API == 1
 
 // 短命名数据结构，详见《数据结构》
 typedef struct zzz_Allocator Allocator;
@@ -277,6 +278,10 @@ static inline const char *GetKeyFast(const Value *v, UINT32 *len)
 static inline Value *ObjGet(const Value *v, const char *key)
 {
     return zzz_ValueObjGet(v, key);
+}
+static inline Value *ObjGetLen(const Value *v, const char *key, UINT32 len)
+{
+    return zzz_ValueObjGetLen(v, key, len);
 }
 static inline const TYPE *Type(const Value *v)
 {
@@ -421,6 +426,23 @@ static inline zzz_BOOL zzz_StrIsEqual(const char *a, const char *b, zzz_UINT32 l
     if (zzz_LIKELY(a[i] == 0))
         return zzz_True;
     return zzz_False;
+}
+
+// 字符串比较，len为b的长度。
+static inline zzz_BOOL zzz_StrIsEqualLen(const char *a, zzz_UINT32 a_len, const char *b, zzz_UINT32 b_len)
+{
+    if (zzz_LIKELY(a_len != b_len)) {
+        return zzz_False;
+    }
+    zzz_UINT32 i;
+    for (i = 0; zzz_LIKELY(i < a_len); ++i)
+    {
+        if (zzz_LIKELY(a[i] != b[i]))
+        {
+            return zzz_False;
+        }
+    }
+    return zzz_True;
 }
 
 // 内存分配器节点
@@ -582,6 +604,25 @@ static inline const char *zzz_StringStr(struct zzz_String *str)
 {
     return str->Data;
 }
+
+struct zzz_Key
+{
+    const char *Str;
+    zzz_UINT32 Len;
+};
+
+struct zzz_NTFSN
+{
+    const char *Str;
+    zzz_UINT32 Len;
+};
+
+struct zzz_OA
+{
+    struct zzz_Node *Node;
+    zzz_UINT32 Len;
+    struct zzz_Node *End;
+};
 
 // zzzJSON把文本转化成内存中的一棵树，zzz_Node为该数的节点，每个节点对应一个值
 struct zzz_Node
@@ -1893,6 +1934,26 @@ static inline struct zzz_Value *zzz_ValueObjGet(const struct zzz_Value *v, const
     while (zzz_LIKELY(next != 0))
     {
         if (zzz_UNLIKELY(zzz_StrIsEqual(key, next->Key, next->KeyLen) == zzz_True))
+        {
+            struct zzz_Value *ret_val = zzz_ValueInnerNew(v->A, next);
+            return ret_val;
+        }
+        next = next->Next;
+    }
+    return 0;
+}
+
+// 函数说明详见《API》
+static inline struct zzz_Value *zzz_ValueObjGetLen(const struct zzz_Value *v, const char *key, zzz_UINT32 len)
+{
+    if (zzz_UNLIKELY(v->N == 0))
+        return 0;
+    if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPEOBJ))
+        return 0;
+    struct zzz_Node *next = v->N->Value.Node;
+    while (zzz_LIKELY(next != 0))
+    {
+        if (zzz_UNLIKELY(zzz_StrIsEqualLen(key, len, next->Key, next->KeyLen) == zzz_True))
         {
             struct zzz_Value *ret_val = zzz_ValueInnerNew(v->A, next);
             return ret_val;
