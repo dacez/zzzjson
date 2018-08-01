@@ -47,6 +47,7 @@
       - [GetKeyFast](#getkeyfast)
       - [GetUnEscapeKey](#getunescapekey)
       - [ObjGet](#objget)
+      - [ObjGetLen](#objgetlen)
       - [ArrayGet](#arrayget)
       - [Type](#type)
       - [Size](#size)
