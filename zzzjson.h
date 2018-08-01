@@ -741,31 +741,30 @@ static inline zzz_BOOL zzz_UnLikelyPeekAndConsume(const char c, const char *s, z
 // 消费False
 static inline zzz_BOOL zzz_ConsumeFalse(const char *s, zzz_UINT32 *index)
 {
-    if (zzz_LIKELY(zzz_LikelyConsume('a', s, index) &&
-                   zzz_LikelyConsume('l', s, index) &&
-                   zzz_LikelyConsume('s', s, index) &&
-                   zzz_LikelyConsume('e', s, index)))
+    if (zzz_LIKELY(*((zzz_UINT32 *)("alse")) == *((zzz_UINT32 *)(s + *index)))) {
+        *index += 4;
         return zzz_True;
+    }
     return zzz_False;
 }
 
 // 消费True
 static inline zzz_BOOL zzz_ConsumeTrue(const char *s, zzz_UINT32 *index)
 {
-    if (zzz_LIKELY(zzz_LikelyConsume('r', s, index) &&
-                   zzz_LikelyConsume('u', s, index) &&
-                   zzz_LikelyConsume('e', s, index)))
+    if (zzz_LIKELY(*((zzz_UINT32 *)zzz_StrTrue) == *((zzz_UINT32 *)(s + *index - 1)))) {
+        *index += 3;
         return zzz_True;
+    }
     return zzz_False;
 }
 
 // 消费Null
 static inline zzz_BOOL zzz_ConsumeNull(const char *s, zzz_UINT32 *index)
 {
-    if (zzz_LIKELY(zzz_LikelyConsume('u', s, index) &&
-                   zzz_LikelyConsume('l', s, index) &&
-                   zzz_LikelyConsume('l', s, index)))
+    if (zzz_LIKELY(*((zzz_UINT32 *)zzz_StrNull) == *((zzz_UINT32 *)(s + *index - 1)))) {
+        *index += 3;
         return zzz_True;
+    }
     return zzz_False;
 }
 
