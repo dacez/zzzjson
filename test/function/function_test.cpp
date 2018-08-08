@@ -8,7 +8,7 @@ using namespace std;
 
 void MemoryTest() {
     Allocator *A = NewAllocator();
-    for (UINT32 i = 1; i <= zzz_AllocatorInitMemSize; ++i) {
+    for (SIZE i = 1; i <= zzz_AllocatorInitMemSize; ++i) {
         zzz_AllocatorAlloc(A, i);
     }
     ReleaseAllocator(A);
@@ -18,16 +18,16 @@ void MemoryTest() {
 void StringTest() {
     Allocator *A = NewAllocator();
     const char *str = "1234567890abcdefghijklmnopqrstuvwxyz`~!@#$%^&*()_+-=|\\}{:[];'?><,./\"";
-    for (UINT32 i = 0; i < sizeof(str); ++i) {
+    for (SIZE i = 0; i < sizeof(str); ++i) {
         zzz_String *zs = zzz_StringNew(A);
         zzz_StringAppendStr(zs, str, i);
         CheckRet(__func__, __LINE__, string(zzz_StringStr(zs), zs->Pos) == string(str, i));
         zzz_StringAppendEnd(zs);
         CheckRet(__func__, __LINE__, *(zzz_StringStr(zs)+i) == 0);
     }
-    for (UINT32 i = sizeof(str) - 1; ; --i) {
+    for (SIZE i = sizeof(str) - 1; ; --i) {
         zzz_String *zs = zzz_StringNew(A);
-        for (UINT32 j = 0; j < i; ++j) {
+        for (SIZE j = 0; j < i; ++j) {
             zzz_StringAppendChar(zs, *(str+j));
         }
         CheckRet(__func__, __LINE__, string(zzz_StringStr(zs), zs->Pos) == string(str, i));
@@ -40,16 +40,16 @@ void StringTest() {
 }
 void SkinTest() {
     const char s[] = "abc\t\n\r d";
-    UINT32 index = 0;
-    UINT32 skinSum = 0;
-    for (UINT32 i = 0; i < sizeof(s); ++i) {
+    SIZE index = 0;
+    SIZE skinSum = 0;
+    for (SIZE i = 0; i < sizeof(s); ++i) {
         if (zzz_Skin(s[i])) ++skinSum;
     }
     CheckRet(__func__, __LINE__, skinSum == 4);
 }
 void PeekTest() {
     const char s[] = "abc\t\n\r d";
-    UINT32 index = 0;
+    SIZE index = 0;
 
     CheckRet(__func__, __LINE__, zzz_Peek(s, &index) == 'a');
     CheckRet(__func__, __LINE__, index == 1);
@@ -66,7 +66,7 @@ void PeekTest() {
 }
 void ConsumeTest() {
     const char s[] = "abc\t\n\r d";
-    UINT32 index = 0;
+    SIZE index = 0;
 
     CheckRet(__func__, __LINE__, zzz_Consume('a', s, &index) == zzz_True);
     CheckRet(__func__, __LINE__, index == 1);
@@ -128,7 +128,7 @@ void ConsumeTest() {
 }
 void PeekAndConsumeTest() {
     const char s[] = "abc\t\n\r d";
-    UINT32 index = 0;
+    SIZE index = 0;
 
     CheckRet(__func__, __LINE__, zzz_LikelyPeekAndConsume('a', s, &index) == zzz_True);
     CheckRet(__func__, __LINE__, index == 1);
@@ -169,7 +169,7 @@ void PeekAndConsumeTest() {
     CheckRet(__func__, __LINE__, index == 8);    
 }
 void ConsumeTrueFalseNullTest() {
-    UINT32 index = 1;
+    SIZE index = 1;
     CheckRet(__func__, __LINE__, zzz_ConsumeTrue(zzz_StrTrue, &index) == zzz_True);
     CheckRet(__func__, __LINE__, index == 4);
     index = 1;
@@ -189,13 +189,13 @@ void ConsumeTrueFalseNullTest() {
 void HexCodePointTest() {
     char z = '0';
     char a = 'a';
-    for (UINT32 i = 0; i < 10; ++i) {
+    for (SIZE i = 0; i < 10; ++i) {
         CheckRet(__func__, __LINE__, zzz_HexCodePoint(z+i) == i);
     }
-    for (UINT32 i = 0; i < 6; ++i) {
+    for (SIZE i = 0; i < 6; ++i) {
         CheckRet(__func__, __LINE__, zzz_HexCodePoint(a+i) == i+10);
     }
-    for (UINT32 i = 6; i < 10; ++i) {
+    for (SIZE i = 6; i < 10; ++i) {
         CheckRet(__func__, __LINE__, zzz_HexCodePoint(a+i) == 16);
     }
 }
@@ -204,8 +204,8 @@ void ConsumeHexTest() {
     const char * vaildHex1 = "1111";
     const char * vaildHex2 = "f10b";
     const char * invailHex = "fhbb";
-    UINT32 index = 0;
-    UINT32 cp = 0;
+    SIZE index = 0;
+    SIZE cp = 0;
     CheckRet(__func__, __LINE__, zzz_ConsumeHex(vaildHex0, &index, &cp) == zzz_True);
     CheckRet(__func__, __LINE__, cp == 64187);
     CheckRet(__func__, __LINE__, index == 4);
@@ -231,7 +231,7 @@ void ConsumeStrTest() {
     const char * invailStr2 = "019827 \\udc01 3645\"";
     const char * invailStr3 = "019827";
     const char * vailStr4 = "\"";
-    UINT32 index = 0;
+    SIZE index = 0;
     CheckRet(__func__, __LINE__, zzz_ConsumeStr(vaildStr0, &index) == zzz_True);
     CheckRet(__func__, __LINE__, index == strlen(vaildStr0));
 
@@ -268,7 +268,7 @@ void CheckStrTest() {
     const char * invailStr2 = "019827 \\udc01 3645";
     const char * invailStr3 = "019827";
     const char * vailStr4 = "";
-    UINT32 len = 0;
+    SIZE len = 0;
     CheckRet(__func__, __LINE__, zzz_CheckStr(vaildStr0, &len) == zzz_True);
     CheckRet(__func__, __LINE__, len == strlen(vaildStr0));
 
@@ -309,7 +309,7 @@ void ConsumeNumTest() {
     const char * invaildNum4 = "0.1E1.23";
     const char * invaildNum5 = "+123";
 
-    UINT32 index = 1;
+    SIZE index = 1;
     CheckRet(__func__, __LINE__, zzz_ConsumeNum(vaildNum0, &index) == zzz_True);
     CheckRet(__func__, __LINE__, index == strlen(vaildNum0));
 
@@ -398,7 +398,7 @@ void CheckNumTest() {
     const char * invaildNum4 = "0.1E1.23";
     const char * invaildNum5 = "+123";
 
-    UINT32 len = 1;
+    SIZE len = 1;
     CheckRet(__func__, __LINE__, zzz_CheckNum(vaildNum0, &len) == zzz_True);
     CheckRet(__func__, __LINE__, len == strlen(vaildNum0));
 
@@ -516,7 +516,7 @@ void GetStringTest() {
     Value *v = NewValue(A);
     const char *json = "\"str\"";
     const char *str;
-    UINT32 len;
+    SIZE len;
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     str = GetStringFast(v, &len);
     CheckRet(__func__, __LINE__, str != 0);
@@ -551,7 +551,7 @@ void GetNumTest() {
     Value *v = NewValue(A);
     const char *json = "123";
     const char *num;
-    UINT32 len;
+    SIZE len;
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     num = GetNumFast(v, &len);
     CheckRet(__func__, __LINE__,  num != 0);
@@ -577,7 +577,7 @@ void GetKeyTest() {
     Value *v = NewValue(A);
     const char *json = "{\"key\":123}";
     const char *key;
-    UINT32 len;
+    SIZE len;
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     key = GetKeyFast(ObjGet(v, "key"), &len);
     CheckRet(__func__, __LINE__,  key != 0);
@@ -661,7 +661,7 @@ void ObjGetTest() {
     const char *json = "{\"null\":null}";
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     Value *gv = ObjGet(v, "null");
-    const TYPE *t;
+    const JSONType *t;
     t = Type(gv);
     CheckRet(__func__, __LINE__,  *t == zzz_JSONTypeNull);
 
@@ -731,7 +731,7 @@ void ArrayGetTest() {
     json = "[true,false,null,[null,false,[],true],[\"\",123,\"str\"],null]";
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     gv = ArrayGet(v,3);
-    const TYPE *t;
+    const JSONType *t;
     t = Type(gv);
     CheckRet(__func__, __LINE__, *t == zzz_JSONTypeArray);
     gv = ArrayGet(v,30);
@@ -746,7 +746,7 @@ void BeginAndNextTest() {
     Value *v = NewValue(A);
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     Value *next = Begin(v);
-    UINT32 count = 0;
+    SIZE count = 0;
     while (next) {
         ++count;
         next = Next(next);
@@ -990,10 +990,10 @@ void DelTest() {
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
 void GetAndSet(Value *srcv, Value *desv) {
-    const TYPE *t;
+    const JSONType *t;
     t = Type(srcv);
     switch (*t) {
-        case TYPEARRAY:
+        case JSONTYPEARRAY:
         {
             SetArray(desv);
             Value *next = Begin(srcv);
@@ -1005,7 +1005,7 @@ void GetAndSet(Value *srcv, Value *desv) {
             }
         }
         break;
-        case TYPEOBJ:
+        case JSONTYPEOBJ:
         {
             SetObj(desv);
             Value *next = Begin(srcv);
@@ -1018,7 +1018,7 @@ void GetAndSet(Value *srcv, Value *desv) {
             }
         }
         break;
-        case TYPEBOOL:
+        case JSONTYPEBOOL:
         {
             const zzz_BOOL *b = GetBool(srcv);
             if (b == 0)
@@ -1026,7 +1026,7 @@ void GetAndSet(Value *srcv, Value *desv) {
             SetBool(desv, *b);
         }
         break;
-        case TYPENULL:
+        case JSONTYPENULL:
         {
             zzz_BOOL b;
             if (IsNull(srcv) == zzz_False)
@@ -1034,14 +1034,14 @@ void GetAndSet(Value *srcv, Value *desv) {
             SetNull(desv);
         }
         break;
-        case TYPESTRING:
+        case JSONTYPESTRING:
         {
             const char *str = GetString(srcv);
             if (str == 0) return;
             SetStrFast(desv, str);
         }
         break;
-        case TYPENUM:
+        case JSONTYPENUM:
         {
             const char *str = GetNumStr(srcv);
             if (str == 0) return;

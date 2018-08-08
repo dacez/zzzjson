@@ -1,6 +1,6 @@
 #include "../../test.h"
 
-#define zzz_ALLOCATORINITMEMSIZE 4096 * 16
+#define zzz_ALLOCATORINITMEMSIZE 4096 * 128
 #define zzz_STRINGINITMEMSIZE 4096 * 2
 #define zzz_DELTA 2                    
 #define zzz_SHORT_API 0

@@ -329,9 +329,9 @@ zzzJSON一共有三种基础类型，分别是：
 
 | 类型           | 长命名       | 短命名 |
 | -------------- | ------------ | ------ |
-| 32位无符号整形 | zzz_UINT32   | UINT32 |
+| 32位无符号整形 | zzz_SIZE   | SIZE |
 | 布尔类型       | zzz_BOOL     | BOOL   |
-| JSON类型       | zzz_JSONTYPE | TYPE   |
+| JSON类型       | zzz_JSONType | JSONType   |
 
 ### 常量
 
@@ -341,23 +341,23 @@ zzzJSON一共有三种基础类型，分别是：
 | -------- | ------------------ | ---------- | ---- |
 | 布尔类型 | zzz_True           | True       | 1    |
 | 布尔类型 | zzz_False          | False      | 0    |
-| JSON类型 | zzz_JSONTypeArray  | TypeArray  | 2    |
-| JSON类型 | zzz_JSONTypeObj    | TypeObj    | 3    |
-| JSON类型 | zzz_JSONTypeString | TypeString | 4    |
-| JSON类型 | zzz_JSONTypeNum    | TypeNum    | 6    |
-| JSON类型 | zzz_JSONTypeBool   | TypeBool   | 1    |
-| JSON类型 | zzz_JSONTypeNull   | TypeNull   | 5    |
+| JSON类型 | zzz_JSONTypeArray  | JSONTypeArray  | 2    |
+| JSON类型 | zzz_JSONTypeObj    | JSONTypeObj    | 3    |
+| JSON类型 | zzz_JSONTypeString | JSONTypeString | 4    |
+| JSON类型 | zzz_JSONTypeNum    | JSONTypeNum    | 6    |
+| JSON类型 | zzz_JSONTypeBool   | JSONTypeBool   | 1    |
+| JSON类型 | zzz_JSONTypeNull   | JSONTypeNull   | 5    |
 
 为了在C语言中方便地使用switch语句，zzzJSON针对每个JSON类型定义了相关的宏，如下：
 
 | 长命名     | 短命名             | 值   |
 | ---------- | ------------------ | ---- |
-| TYPEBOOL   | zzz_JSONTYPEBOOL   | 1    |
-| TYPEARRAY  | zzz_JSONTYPEARRAY  | 2    |
-| TYPEOBJ    | zzz_JSONTYPEOBJ    | 3    |
-| TYPESTRING | zzz_JSONTYPESTRING | 4    |
-| TYPENULL   | zzz_JSONTYPENULL   | 5    |
-| TYPENUM    | zzz_JSONTYPENUM    | 6    |
+| JSONTYPEBOOL   | zzz_JSONTYPEBOOL   | 1    |
+| JSONTYPEARRAY  | zzz_JSONTYPEARRAY  | 2    |
+| JSONTYPEOBJ    | zzz_JSONTYPEOBJ    | 3    |
+| JSONTYPESTRING | zzz_JSONTYPESTRING | 4    |
+| JSONTYPENULL   | zzz_JSONTYPENULL   | 5    |
+| JSONTYPENUM    | zzz_JSONTYPENUM    | 6    |
 
 ### 结构
 
@@ -403,7 +403,7 @@ zzzJSON的API主要包括四个部分，分别是：
 void GetAndSet(Value *srcv, Value *desv)
 {
     // 获取值的类型
-    const TYPE *t;
+    const JSONType *t;
     t = Type(srcv);
     if (t == 0)
         return;
@@ -722,9 +722,9 @@ int main() {
 
 ```c
 // 短命名
-BOOL ParseLen(Value *v, const char *s, UINT32 len);
+BOOL ParseLen(Value *v, const char *s, SIZE len);
 // 长命名
-zzz_BOOL zzz_ValueParseLen(struct zzz_Value *v, const char *s, zzz_UINT32 len);
+zzz_BOOL zzz_ValueParseLen(struct zzz_Value *v, const char *s, zzz_SIZE len);
 ```
 
 作用：
@@ -927,9 +927,9 @@ str
 
 ```c
 // 短命名
-const char *GetStringFast(const Value *v, UINT32 *len);
+const char *GetStringFast(const Value *v, SIZE *len);
 // 长命名
-const char *zzz_ValueGetStringFast(const struct zzz_Value *v, zzz_UINT32 *len);
+const char *zzz_ValueGetStringFast(const struct zzz_Value *v, zzz_SIZE *len);
 ```
 
 作用：
@@ -965,7 +965,7 @@ int main()
         Value *vv = ArrayGet(v, 0);
         if (vv != 0)
         {
-            UINT32 len = 0;
+            SIZE len = 0;
             const char *str = GetStringFast(vv, &len);
             if (str != 0){
                 int i = 0;
@@ -1094,9 +1094,9 @@ int main()
 
 ```c
 // 短命名
-const char *GetNumFast(const Value *v, zzz_UINT32 *len);
+const char *GetNumFast(const Value *v, zzz_SIZE *len);
 // 长命名
-const char *zzz_ValueGetNumFast(const struct zzz_Value *v, zzz_UINT32 *len);
+const char *zzz_ValueGetNumFast(const struct zzz_Value *v, zzz_SIZE *len);
 ```
 
 作用：
@@ -1135,7 +1135,7 @@ int main()
         Value *vv = ArrayGet(v, 1);
         if (vv != 0)
         {
-            UINT32 len = 0;
+            SIZE len = 0;
             const char *num = GetNumFast(vv, &len);
             if (num != 0){
                 double d = atof(num);
@@ -1368,9 +1368,9 @@ key123
 
 ```c
 // 短命名
-const char *GetKeyFast(const Value *v, UINT32 *len);
+const char *GetKeyFast(const Value *v, SIZE *len);
 // 长命名
-const char *zzz_ValueGetKeyFast(const struct zzz_Value *v, zzz_UINT32 *len);
+const char *zzz_ValueGetKeyFast(const struct zzz_Value *v, zzz_SIZE *len);
 ```
 
 作用：
@@ -1406,8 +1406,8 @@ int main()
         Value *vv = Begin(v);
         if (vv != 0)
         {
-            UINT32 len;
-            UINT32 i;
+            SIZE len;
+            SIZE i;
             const char *key = GetKeyFast(vv, &len);
             if (key != 0) for(i = 0; i < len; ++i) printf("%c", key[i]);
             printf("\n");
@@ -1462,8 +1462,8 @@ int main()
         Value *vv = Begin(v);
         if (vv != 0)
         {
-            UINT32 len;
-            UINT32 i;
+            SIZE len;
+            SIZE i;
             const char *key = GetUnEscapeKey(vv);
             printf("%s\n", key);
         }
@@ -1538,7 +1538,7 @@ int main()
 // 短命名
 Value *ObjGetLen(const Value *v, const char *key, UIN32 len);
 // 长命名
-struct zzz_Value *zzz_ValueObjGetLen(const struct zzz_Value *v, const char *key, zzz_UINT32 len);
+struct zzz_Value *zzz_ValueObjGetLen(const struct zzz_Value *v, const char *key, zzz_SIZE len);
 ```
 
 作用：
@@ -1593,9 +1593,9 @@ int main()
 
 ```c
 // 短命名
-Value *ArrayGet(const Value *v, UINT32 index);
+Value *ArrayGet(const Value *v, SIZE index);
 // 长命名
-struct zzz_Value *zzz_ValueArrayGet(const struct zzz_Value *v, zzz_UINT32 index);
+struct zzz_Value *zzz_ValueArrayGet(const struct zzz_Value *v, zzz_SIZE index);
 ```
 
 作用：
@@ -1761,9 +1761,9 @@ int main()
 
 ```c
 // 短命名
-const TYPE * Type(const Value *v);
+const JSONType * Type(const Value *v);
 // 长命名
-const zzz_JSONTYPE *zzz_ValueType(const struct zzz_Value *v);
+const zzz_JSONType *zzz_ValueType(const struct zzz_Value *v);
 ```
 
 作用：
@@ -1798,7 +1798,7 @@ int main()
         Value *vv = ObjGet(v, "key123");
         if (vv != 0)
         {
-            const TYPE *t = Type(vv);
+            const JSONType *t = Type(vv);
             if (t != 0) printf("%d\n", *t);
         }
     }
@@ -1814,9 +1814,9 @@ int main()
 
 ```c
 // 短命名
-UINT32 Size(const Value *v) ;
+SIZE Size(const Value *v) ;
 // 长命名
-zzz_UINT32 zzz_ValueSize(const struct zzz_Value *v);
+zzz_SIZE zzz_ValueSize(const struct zzz_Value *v);
 ```
 
 作用：
@@ -2823,9 +2823,9 @@ int main()
 
 ```c
 // 短命名
-BOOL ArrayDel(Value *v, UINT32 index);
+BOOL ArrayDel(Value *v, SIZE index);
 // 长命名
-zzz_BOOL zzz_ValueArrayDel(struct zzz_Value *v, zzz_UINT32 index);
+zzz_BOOL zzz_ValueArrayDel(struct zzz_Value *v, zzz_SIZE index);
 ```
 
 作用：

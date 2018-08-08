@@ -14,3 +14,5 @@ build/jsoncpp_reader.o
 build/parson.o
 randomlongjsontest.txt
 randomshortjsontest.txt
+canada_test
+sample

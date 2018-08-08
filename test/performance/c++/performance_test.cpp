@@ -11,6 +11,7 @@
 #include "nlohmannjson_test.h"
 #include "taocppjson_test.h"
 #include "strlen_test.h"
+#include "zzzjsonbeta_test.h"
 
 #include <map>
 #include <random>
@@ -31,6 +32,7 @@ void Init(const string &path, vector<Test *> *tests)
     tests->push_back(new jsoncppTest(path));
     tests->push_back(new nlohmannjsonTest(path));
     tests->push_back(new taocppjsonTest(path));
+    tests->push_back(new zzzjsonbetaTest(path));
 }
 
 void Init(const vector<string> &jsons, vector<Test *> *tests)
@@ -47,6 +49,7 @@ void Init(const vector<string> &jsons, vector<Test *> *tests)
     tests->push_back(new jsoncppTest(jsons));
     tests->push_back(new nlohmannjsonTest(jsons));
     tests->push_back(new taocppjsonTest(jsons));
+    tests->push_back(new zzzjsonbetaTest(jsons));
 }
 
 void Free(vector<Test *> *tests)

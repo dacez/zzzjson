@@ -2,25 +2,25 @@
 #define zzz_JSON_H
 
 // 长命名的 类型 & 常量 & 用作常量的宏，详见《数据结构》
-typedef unsigned int zzz_UINT32;
+typedef unsigned int zzz_SIZE;
 
 typedef char zzz_BOOL;
 static const zzz_BOOL zzz_True = 1;
 static const zzz_BOOL zzz_False = 0;
 
-typedef char zzz_JSONTYPE;
+typedef char zzz_JSONType;
 #define zzz_JSONTYPEBOOL 1
 #define zzz_JSONTYPEARRAY 2
 #define zzz_JSONTYPEOBJ 3
 #define zzz_JSONTYPESTRING 4
 #define zzz_JSONTYPENULL 5
 #define zzz_JSONTYPENUM 6
-static const zzz_JSONTYPE zzz_JSONTypeArray = zzz_JSONTYPEARRAY;
-static const zzz_JSONTYPE zzz_JSONTypeObj = zzz_JSONTYPEOBJ;
-static const zzz_JSONTYPE zzz_JSONTypeString = zzz_JSONTYPESTRING;
-static const zzz_JSONTYPE zzz_JSONTypeNum = zzz_JSONTYPENUM;
-static const zzz_JSONTYPE zzz_JSONTypeBool = zzz_JSONTYPEBOOL;
-static const zzz_JSONTYPE zzz_JSONTypeNull = zzz_JSONTYPENULL;
+static const zzz_JSONType zzz_JSONTypeArray = zzz_JSONTYPEARRAY;
+static const zzz_JSONType zzz_JSONTypeObj = zzz_JSONTYPEOBJ;
+static const zzz_JSONType zzz_JSONTypeString = zzz_JSONTYPESTRING;
+static const zzz_JSONType zzz_JSONTypeNum = zzz_JSONTYPENUM;
+static const zzz_JSONType zzz_JSONTypeBool = zzz_JSONTYPEBOOL;
+static const zzz_JSONType zzz_JSONTypeNull = zzz_JSONTYPENULL;
 
 // 长命名的固字符串，详见《数据结构》
 static const char *zzz_StrTrue = "true";
@@ -31,17 +31,17 @@ static const char *zzz_StrNull = "null";
 #ifndef zzz_DELTA
 #define zzz_DELTA 2
 #endif
-static const zzz_UINT32 zzz_Delta = zzz_DELTA;
+static const zzz_SIZE zzz_Delta = zzz_DELTA;
 
 #ifndef zzz_ALLOCATORINITMEMSIZE
 #define zzz_ALLOCATORINITMEMSIZE 1024 * 4
 #endif
-static const zzz_UINT32 zzz_AllocatorInitMemSize = zzz_ALLOCATORINITMEMSIZE;
+static const zzz_SIZE zzz_AllocatorInitMemSize = zzz_ALLOCATORINITMEMSIZE;
 
 #ifndef zzz_STRINGINITMEMSIZE
 #define zzz_STRINGINITMEMSIZE 1024
 #endif
-static const zzz_UINT32 zzz_StringInitMemSize = zzz_STRINGINITMEMSIZE;
+static const zzz_SIZE zzz_StringInitMemSize = zzz_STRINGINITMEMSIZE;
 
 // 环境适配
 
@@ -56,7 +56,7 @@ static const zzz_UINT32 zzz_StringInitMemSize = zzz_STRINGINITMEMSIZE;
 
 #if zzz_MEMORY_MODE == 1
 
-static inline void *zzz_New(zzz_UINT32 size)
+static inline void *zzz_New(zzz_SIZE size)
 {
     return malloc(size);
 }
@@ -66,8 +66,8 @@ static inline void zzz_Free(void *pointer) { free(pointer); }
 // 测试模式，主要是用来测试内存的分配数和释放数，防止内存泄漏，同时用于观察内存分配次数。
 // 通过观察，可以得出较好zzz_DELTA和zzz_ALLOCATORINITMEMSIZE。
 
-static zzz_UINT32 AllocMemorySize = 0, AllocMemoryCount = 0, FreeMemoryCount = 0;
-static inline void *zzz_New(zzz_UINT32 size) { return AllocMemorySize += size, AllocMemoryCount += 1, malloc(size); }
+static zzz_SIZE AllocMemorySize = 0, AllocMemoryCount = 0, FreeMemoryCount = 0;
+static inline void *zzz_New(zzz_SIZE size) { return AllocMemorySize += size, AllocMemoryCount += 1, malloc(size); }
 static inline void zzz_Free(void *ptr) { FreeMemoryCount += 1, free(ptr); }
 
 #elif zzz_MEMORY_MODE == 3
@@ -105,16 +105,16 @@ static inline void zzz_AllocatorRelease(struct zzz_Allocator *root_alloc);
 static inline struct zzz_Value *zzz_ValueNew(struct zzz_Allocator *alloc);
 
 static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s);
-static inline zzz_BOOL zzz_ValueParseLen(struct zzz_Value *v, const char *s, zzz_UINT32 len);
+static inline zzz_BOOL zzz_ValueParseLen(struct zzz_Value *v, const char *s, zzz_SIZE len);
 static inline zzz_BOOL zzz_ValueParse(struct zzz_Value *v, const char *s);
 
 static inline const char *zzz_ValueStringify(const struct zzz_Value *v);
 
-static inline const char *zzz_ValueGetStringFast(const struct zzz_Value *v, zzz_UINT32 *len);
+static inline const char *zzz_ValueGetStringFast(const struct zzz_Value *v, zzz_SIZE *len);
 static inline const char *zzz_ValueGetUnEscapeString(struct zzz_Value *v);
 static inline const char *zzz_ValueGetString(struct zzz_Value *v);
 
-static inline const char *zzz_ValueGetNumFast(const struct zzz_Value *v, zzz_UINT32 *len);
+static inline const char *zzz_ValueGetNumFast(const struct zzz_Value *v, zzz_SIZE *len);
 static inline const char *zzz_ValueGetNumStr(struct zzz_Value *v);
 static inline const double *zzz_ValueGetNum(struct zzz_Value *v);
 
@@ -124,16 +124,16 @@ static inline zzz_BOOL zzz_ValueIsNull(const struct zzz_Value *v);
 
 static inline const char *zzz_ValueGetKey(struct zzz_Value *v);
 static inline const char *zzz_ValueGetUnEscapeKey(struct zzz_Value *v);
-static inline const char *zzz_ValueGetKeyFast(const struct zzz_Value *v, zzz_UINT32 *len);
+static inline const char *zzz_ValueGetKeyFast(const struct zzz_Value *v, zzz_SIZE *len);
 
 static inline struct zzz_Value *zzz_ValueObjGet(const struct zzz_Value *v, const char *key);
-static inline struct zzz_Value *zzz_ValueObjGetLen(const struct zzz_Value *v, const char *key, zzz_UINT32 len);
+static inline struct zzz_Value *zzz_ValueObjGetLen(const struct zzz_Value *v, const char *key, zzz_SIZE len);
 
-static inline const zzz_JSONTYPE *zzz_ValueType(const struct zzz_Value *v);
+static inline const zzz_JSONType *zzz_ValueType(const struct zzz_Value *v);
 
-static inline zzz_UINT32 zzz_ValueSize(const struct zzz_Value *v);
+static inline zzz_SIZE zzz_ValueSize(const struct zzz_Value *v);
 
-static inline struct zzz_Value *zzz_ValueArrayGet(const struct zzz_Value *v, zzz_UINT32 index);
+static inline struct zzz_Value *zzz_ValueArrayGet(const struct zzz_Value *v, zzz_SIZE index);
 
 static inline struct zzz_Value *zzz_ValueBegin(const struct zzz_Value *v);
 static inline struct zzz_Value *zzz_ValueNext(const struct zzz_Value *v);
@@ -168,7 +168,7 @@ static inline zzz_BOOL zzz_ValueObjAdd(struct zzz_Value *v, const struct zzz_Val
 static inline zzz_BOOL zzz_ValueArrayAddFast(struct zzz_Value *v, struct zzz_Value *vv);
 static inline zzz_BOOL zzz_ValueArrayAdd(struct zzz_Value *v, const struct zzz_Value *vv);
 
-static inline zzz_BOOL zzz_ValueArrayDel(struct zzz_Value *v, zzz_UINT32 index);
+static inline zzz_BOOL zzz_ValueArrayDel(struct zzz_Value *v, zzz_SIZE index);
 
 static inline zzz_BOOL zzz_ValueObjDel(struct zzz_Value *v, const char *key);
 
@@ -182,25 +182,25 @@ static inline zzz_BOOL zzz_ValueObjDel(struct zzz_Value *v, const char *key);
 typedef struct zzz_Allocator Allocator;
 typedef struct zzz_Value Value;
 
-typedef zzz_UINT32 UINT32;
+typedef zzz_SIZE SIZE;
 
 typedef zzz_BOOL BOOL;
 static const BOOL True = 1;
 static const BOOL False = 0;
 
-typedef zzz_JSONTYPE TYPE;
-#define TYPEBOOL zzz_JSONTYPEBOOL
-#define TYPEARRAY zzz_JSONTYPEARRAY
-#define TYPEOBJ zzz_JSONTYPEOBJ
-#define TYPESTRING zzz_JSONTYPESTRING
-#define TYPENULL zzz_JSONTYPENULL
-#define TYPENUM zzz_JSONTYPENUM
-static const TYPE TypeArray = zzz_JSONTYPEARRAY;
-static const TYPE TypeObj = zzz_JSONTYPEOBJ;
-static const TYPE TypeString = zzz_JSONTYPESTRING;
-static const TYPE TypeNum = zzz_JSONTYPENUM;
-static const TYPE TypeBool = zzz_JSONTYPEBOOL;
-static const TYPE TypeNull = zzz_JSONTYPENULL;
+typedef zzz_JSONType JSONType;
+#define JSONTYPEBOOL zzz_JSONTYPEBOOL
+#define JSONTYPEARRAY zzz_JSONTYPEARRAY
+#define JSONTYPEOBJ zzz_JSONTYPEOBJ
+#define JSONTYPESTRING zzz_JSONTYPESTRING
+#define JSONTYPENULL zzz_JSONTYPENULL
+#define JSONTYPENUM zzz_JSONTYPENUM
+static const JSONType JSONTypeArray = zzz_JSONTypeArray;
+static const JSONType JSONTypeObj = zzz_JSONTypeObj;
+static const JSONType JSONTypeString = zzz_JSONTypeString;
+static const JSONType JSONTypeNum = zzz_JSONTypeNum;
+static const JSONType JSONTypeBool = zzz_JSONTypeBool;
+static const JSONType JSONTypeNull = zzz_JSONTypeNull;
 
 // 短命名API，详见《API》
 static inline Allocator *NewAllocator()
@@ -219,7 +219,7 @@ static inline BOOL ParseFast(Value *v, const char *s)
 {
     return zzz_ValueParseFast(v, s);
 }
-static inline BOOL ParseLen(Value *v, const char *s, UINT32 len)
+static inline BOOL ParseLen(Value *v, const char *s, SIZE len)
 {
     return zzz_ValueParseLen(v, s, len);
 }
@@ -231,7 +231,7 @@ static inline const char *Stringify(const Value *v)
 {
     return zzz_ValueStringify(v);
 }
-static inline const char *GetStringFast(const Value *v, UINT32 *len)
+static inline const char *GetStringFast(const Value *v, SIZE *len)
 {
     return zzz_ValueGetStringFast(v, len);
 }
@@ -243,7 +243,7 @@ static inline const char *GetString(Value *v)
 {
     return zzz_ValueGetString(v);
 }
-static inline const char *GetNumFast(const Value *v, zzz_UINT32 *len)
+static inline const char *GetNumFast(const Value *v, zzz_SIZE *len)
 {
     return zzz_ValueGetNumFast(v, len);
 }
@@ -271,7 +271,7 @@ static inline const char *GetUnEscapeKey(Value *v)
 {
     return zzz_ValueGetUnEscapeKey(v);
 }
-static inline const char *GetKeyFast(const Value *v, UINT32 *len)
+static inline const char *GetKeyFast(const Value *v, SIZE *len)
 {
     return zzz_ValueGetKeyFast(v, len);
 }
@@ -279,19 +279,19 @@ static inline Value *ObjGet(const Value *v, const char *key)
 {
     return zzz_ValueObjGet(v, key);
 }
-static inline Value *ObjGetLen(const Value *v, const char *key, UINT32 len)
+static inline Value *ObjGetLen(const Value *v, const char *key, SIZE len)
 {
     return zzz_ValueObjGetLen(v, key, len);
 }
-static inline const TYPE *Type(const Value *v)
+static inline const JSONType *Type(const Value *v)
 {
     return zzz_ValueType(v);
 }
-static inline UINT32 Size(const Value *v)
+static inline SIZE Size(const Value *v)
 {
     return zzz_ValueSize(v);
 }
-static inline Value *ArrayGet(const Value *v, UINT32 index)
+static inline Value *ArrayGet(const Value *v, SIZE index)
 {
     return zzz_ValueArrayGet(v, index);
 }
@@ -379,7 +379,7 @@ static inline BOOL ArrayAdd(Value *v, const Value *vv)
 {
     return zzz_ValueArrayAdd(v, vv);
 }
-static inline BOOL ArrayDel(Value *v, UINT32 index)
+static inline BOOL ArrayDel(Value *v, SIZE index)
 {
     return zzz_ValueArrayDel(v, index);
 }
@@ -390,15 +390,15 @@ static inline BOOL ObjDel(Value *v, const char *key)
 #endif
 
 // 内存拷贝函数
-static inline void zzz_Copy(const char *src, zzz_UINT32 len, char *des)
+static inline void zzz_Copy(const char *src, zzz_SIZE len, char *des)
 {
     memcpy(des, src, len);
 }
 
 // 字符串长度计算函数
-static inline zzz_UINT32 zzz_StrLen(const char *str)
+static inline zzz_SIZE zzz_StrLen(const char *str)
 {
-    return (zzz_UINT32)strlen(str);
+    return (zzz_SIZE)strlen(str);
 }
 
 static inline double zzz_StrToDouble(const char *str)
@@ -412,9 +412,9 @@ static inline void zzz_DoubleToStr(double d, char *buff)
 }
 
 // 字符串比较，a必须以0结束，len为b的长度。
-static inline zzz_BOOL zzz_StrIsEqual(const char *a, const char *b, zzz_UINT32 len)
+static inline zzz_BOOL zzz_StrIsEqual(const char *a, const char *b, zzz_SIZE len)
 {
-    zzz_UINT32 i;
+    zzz_SIZE i;
     for (i = 0; zzz_LIKELY(i < len); ++i)
     {
         if (zzz_LIKELY(a[i] != b[i]))
@@ -429,12 +429,12 @@ static inline zzz_BOOL zzz_StrIsEqual(const char *a, const char *b, zzz_UINT32 l
 }
 
 // 字符串比较，len为b的长度。
-static inline zzz_BOOL zzz_StrIsEqualLen(const char *a, zzz_UINT32 a_len, const char *b, zzz_UINT32 b_len)
+static inline zzz_BOOL zzz_StrIsEqualLen(const char *a, zzz_SIZE a_len, const char *b, zzz_SIZE b_len)
 {
     if (zzz_LIKELY(a_len != b_len)) {
         return zzz_False;
     }
-    zzz_UINT32 i;
+    zzz_SIZE i;
     for (i = 0; zzz_LIKELY(i < a_len); ++i)
     {
         if (zzz_LIKELY(a[i] != b[i]))
@@ -451,9 +451,9 @@ struct zzz_ANode
     // 数据地址
     char *Data;
     // 数据大小
-    zzz_UINT32 Size;
+    zzz_SIZE Size;
     // 使用到的位置
-    zzz_UINT32 Pos;
+    zzz_SIZE Pos;
     // 下一个节点
     struct zzz_ANode *Next;
 };
@@ -500,7 +500,7 @@ static inline void zzz_AllocatorRelease(struct zzz_Allocator *alloc)
 }
 
 // 追加一个大小为 init_size 的节点。
-static inline void zzz_AllocatorAppendChild(zzz_UINT32 init_size, struct zzz_Allocator *alloc)
+static inline void zzz_AllocatorAppendChild(zzz_SIZE init_size, struct zzz_Allocator *alloc)
 {
     // 每次分配一大块内存，避免多次分配
     void *ptr = zzz_New(sizeof(struct zzz_ANode) + init_size);
@@ -515,10 +515,10 @@ static inline void zzz_AllocatorAppendChild(zzz_UINT32 init_size, struct zzz_All
 }
 
 // 函数说明详见《API》
-static inline char *zzz_AllocatorAlloc(struct zzz_Allocator *alloc, zzz_UINT32 size)
+static inline char *zzz_AllocatorAlloc(struct zzz_Allocator *alloc, zzz_SIZE size)
 {
     struct zzz_ANode *cur_node = alloc->End;
-    zzz_UINT32 s = cur_node->Size;
+    zzz_SIZE s = cur_node->Size;
     if (zzz_UNLIKELY(cur_node->Pos + size > s))
     {
         s *= zzz_Delta;
@@ -541,9 +541,9 @@ struct zzz_String
     // 数据
     char *Data;
     // 位置
-    zzz_UINT32 Pos;
+    zzz_SIZE Pos;
     // 使用内存大小
-    zzz_UINT32 Size;
+    zzz_SIZE Size;
     // 分配器
     struct zzz_Allocator *A;
 };
@@ -560,9 +560,9 @@ static inline struct zzz_String *zzz_StringNew(struct zzz_Allocator *alloc)
 }
 
 // 追加字符串
-static inline void zzz_StringAppendStr(struct zzz_String *str, const char *s, zzz_UINT32 size)
+static inline void zzz_StringAppendStr(struct zzz_String *str, const char *s, zzz_SIZE size)
 {
-    zzz_UINT32 src_s = str->Size;
+    zzz_SIZE src_s = str->Size;
     if (zzz_UNLIKELY(str->Pos + size > src_s))
     {
         src_s *= zzz_Delta;
@@ -580,7 +580,7 @@ static inline void zzz_StringAppendStr(struct zzz_String *str, const char *s, zz
 // 追加字符
 static inline void zzz_StringAppendChar(struct zzz_String *str, const char c)
 {
-    zzz_UINT32 src_s = str->Size;
+    zzz_SIZE src_s = str->Size;
     if (zzz_UNLIKELY(str->Pos + 1 > src_s))
     {
         src_s *= zzz_Delta;
@@ -605,25 +605,6 @@ static inline const char *zzz_StringStr(struct zzz_String *str)
     return str->Data;
 }
 
-struct zzz_Key
-{
-    const char *Str;
-    zzz_UINT32 Len;
-};
-
-struct zzz_NTFSN
-{
-    const char *Str;
-    zzz_UINT32 Len;
-};
-
-struct zzz_OA
-{
-    struct zzz_Node *Node;
-    zzz_UINT32 Len;
-    struct zzz_Node *End;
-};
-
 // zzzJSON把文本转化成内存中的一棵树，zzz_Node为该数的节点，每个节点对应一个值
 struct zzz_Node
 {
@@ -633,7 +614,7 @@ struct zzz_Node
     // 节点代表的值的关键字
     const char *Key;
     // 节点代表的值的关键字长度
-    zzz_UINT32 KeyLen;
+    zzz_SIZE KeyLen;
 
     union {
         // 如果节点代表的值的类型为数组或者对象，则表示数组或者对象的第一个值对应的节点
@@ -643,7 +624,7 @@ struct zzz_Node
     } Value;
 
     // 节点对应的值包含值的个数，如果类型非对象或者数组，则为0
-    zzz_UINT32 Len;
+    zzz_SIZE Len;
 
     // 下一个节点
     struct zzz_Node *Next;
@@ -713,7 +694,7 @@ static inline zzz_BOOL zzz_Skin(const char c)
 }
 
 // 下一个有效字符
-static inline char zzz_Peek(const char *s, zzz_UINT32 *index)
+static inline char zzz_Peek(const char *s, zzz_SIZE *index)
 {
     while (zzz_UNLIKELY(zzz_Skin(s[*index])))
         ++(*index);
@@ -721,7 +702,7 @@ static inline char zzz_Peek(const char *s, zzz_UINT32 *index)
 }
 
 // 消费一个字符
-static inline zzz_BOOL zzz_Consume(const char c, const char *s, zzz_UINT32 *index)
+static inline zzz_BOOL zzz_Consume(const char c, const char *s, zzz_SIZE *index)
 {
     if (s[*index] == c)
     {
@@ -732,7 +713,7 @@ static inline zzz_BOOL zzz_Consume(const char c, const char *s, zzz_UINT32 *inde
 }
 
 // 预期消费一个字符成功
-static inline zzz_BOOL zzz_LikelyConsume(const char c, const char *s, zzz_UINT32 *index)
+static inline zzz_BOOL zzz_LikelyConsume(const char c, const char *s, zzz_SIZE *index)
 {
     if (zzz_LIKELY(s[*index] == c))
     {
@@ -743,7 +724,7 @@ static inline zzz_BOOL zzz_LikelyConsume(const char c, const char *s, zzz_UINT32
 }
 
 // 预期消费一个字符失败
-static inline zzz_BOOL zzz_UnLikelyConsume(const char c, const char *s, zzz_UINT32 *index)
+static inline zzz_BOOL zzz_UnLikelyConsume(const char c, const char *s, zzz_SIZE *index)
 {
     if (zzz_UNLIKELY(s[*index] == c))
     {
@@ -754,7 +735,7 @@ static inline zzz_BOOL zzz_UnLikelyConsume(const char c, const char *s, zzz_UINT
 }
 
 // 预期消费下一个有效字符成功
-static inline zzz_BOOL zzz_LikelyPeekAndConsume(const char c, const char *s, zzz_UINT32 *index)
+static inline zzz_BOOL zzz_LikelyPeekAndConsume(const char c, const char *s, zzz_SIZE *index)
 {
     while (zzz_UNLIKELY(zzz_Skin(s[*index])))
         ++(*index);
@@ -767,7 +748,7 @@ static inline zzz_BOOL zzz_LikelyPeekAndConsume(const char c, const char *s, zzz
 }
 
 // 预期消费下一个有效字符失败
-static inline zzz_BOOL zzz_UnLikelyPeekAndConsume(const char c, const char *s, zzz_UINT32 *index)
+static inline zzz_BOOL zzz_UnLikelyPeekAndConsume(const char c, const char *s, zzz_SIZE *index)
 {
     while (zzz_UNLIKELY(zzz_Skin(s[*index])))
         ++(*index);
@@ -780,9 +761,9 @@ static inline zzz_BOOL zzz_UnLikelyPeekAndConsume(const char c, const char *s, z
 }
 
 // 消费False
-static inline zzz_BOOL zzz_ConsumeFalse(const char *s, zzz_UINT32 *index)
+static inline zzz_BOOL zzz_ConsumeFalse(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((zzz_UINT32 *)("alse")) == *((zzz_UINT32 *)(s + *index)))) {
+    if (zzz_LIKELY(*((zzz_SIZE *)("alse")) == *((zzz_SIZE *)(s + *index)))) {
         *index += 4;
         return zzz_True;
     }
@@ -790,9 +771,9 @@ static inline zzz_BOOL zzz_ConsumeFalse(const char *s, zzz_UINT32 *index)
 }
 
 // 消费True
-static inline zzz_BOOL zzz_ConsumeTrue(const char *s, zzz_UINT32 *index)
+static inline zzz_BOOL zzz_ConsumeTrue(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((zzz_UINT32 *)zzz_StrTrue) == *((zzz_UINT32 *)(s + *index - 1)))) {
+    if (zzz_LIKELY(*((zzz_SIZE *)zzz_StrTrue) == *((zzz_SIZE *)(s + *index - 1)))) {
         *index += 3;
         return zzz_True;
     }
@@ -800,9 +781,9 @@ static inline zzz_BOOL zzz_ConsumeTrue(const char *s, zzz_UINT32 *index)
 }
 
 // 消费Null
-static inline zzz_BOOL zzz_ConsumeNull(const char *s, zzz_UINT32 *index)
+static inline zzz_BOOL zzz_ConsumeNull(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((zzz_UINT32 *)zzz_StrNull) == *((zzz_UINT32 *)(s + *index - 1)))) {
+    if (zzz_LIKELY(*((zzz_SIZE *)zzz_StrNull) == *((zzz_SIZE *)(s + *index - 1)))) {
         *index += 3;
         return zzz_True;
     }
@@ -810,7 +791,7 @@ static inline zzz_BOOL zzz_ConsumeNull(const char *s, zzz_UINT32 *index)
 }
 
 // 十六进制对应的十进制数字
-static inline zzz_UINT32 zzz_HexCodePoint(const char c)
+static inline zzz_SIZE zzz_HexCodePoint(const char c)
 {
     if (c >= '0' && c <= '9')
         return c - '0';
@@ -822,7 +803,7 @@ static inline zzz_UINT32 zzz_HexCodePoint(const char c)
 }
 
 // 专为 zzz_ValueGetUnEscapeString 使用
-static inline zzz_UINT32 zzz_HexCodePointForUnEscape(const char c)
+static inline zzz_SIZE zzz_HexCodePointForUnEscape(const char c)
 {
     if (c >= '0' && c <= '9')
         return c - '0';
@@ -832,9 +813,9 @@ static inline zzz_UINT32 zzz_HexCodePointForUnEscape(const char c)
 }
 
 // 消费一个十六进制字符
-static inline zzz_BOOL zzz_ConsumeHexOne(const char *s, zzz_UINT32 *index, zzz_UINT32 *cp)
+static inline zzz_BOOL zzz_ConsumeHexOne(const char *s, zzz_SIZE *index, zzz_SIZE *cp)
 {
-    zzz_UINT32 tcp = zzz_HexCodePoint(s[*index]);
+    zzz_SIZE tcp = zzz_HexCodePoint(s[*index]);
     if (zzz_LIKELY(tcp < 16))
     {
         *cp = *cp << 4;
@@ -846,7 +827,7 @@ static inline zzz_BOOL zzz_ConsumeHexOne(const char *s, zzz_UINT32 *index, zzz_U
 }
 
 // 专为 zzz_ValueGetUnEscapeString 使用
-static inline void zzz_ConsumeHexOneForUnEscape(const char *s, zzz_UINT32 *index, zzz_UINT32 *cp)
+static inline void zzz_ConsumeHexOneForUnEscape(const char *s, zzz_SIZE *index, zzz_SIZE *cp)
 {
     *cp = *cp << 4;
     *cp += zzz_HexCodePointForUnEscape(s[*index]);
@@ -855,7 +836,7 @@ static inline void zzz_ConsumeHexOneForUnEscape(const char *s, zzz_UINT32 *index
 }
 
 // 消费4个十六进制字符
-static inline zzz_BOOL zzz_ConsumeHex(const char *s, zzz_UINT32 *index, zzz_UINT32 *cp)
+static inline zzz_BOOL zzz_ConsumeHex(const char *s, zzz_SIZE *index, zzz_SIZE *cp)
 {
     if (zzz_LIKELY(zzz_LIKELY(zzz_ConsumeHexOne(s, index, cp)) &&
                    zzz_LIKELY(zzz_ConsumeHexOne(s, index, cp)) &&
@@ -868,7 +849,7 @@ static inline zzz_BOOL zzz_ConsumeHex(const char *s, zzz_UINT32 *index, zzz_UINT
 }
 
 // 专为 zz_ValueGetUnEscapeString 使用
-static inline void zzz_ConsumeHexForUnEscape(const char *s, zzz_UINT32 *index, zzz_UINT32 *cp)
+static inline void zzz_ConsumeHexForUnEscape(const char *s, zzz_SIZE *index, zzz_SIZE *cp)
 {
     zzz_ConsumeHexOneForUnEscape(s, index, cp);
     zzz_ConsumeHexOneForUnEscape(s, index, cp);
@@ -878,13 +859,13 @@ static inline void zzz_ConsumeHexForUnEscape(const char *s, zzz_UINT32 *index, z
 }
 
 // 专为 zz_ValueGetUnEscapeString 使用，追加一个字符
-static inline void zzz_Append(char *s, zzz_UINT32 *index, char c)
+static inline void zzz_Append(char *s, zzz_SIZE *index, char c)
 {
     s[(*index)++] = c;
 }
 
 // 专为 zz_ValueGetUnEscapeString 使用，追加一个UTF8字符
-static inline void zzz_AppendUTF8(char *s, zzz_UINT32 *index, zzz_UINT32 codepoint)
+static inline void zzz_AppendUTF8(char *s, zzz_SIZE *index, zzz_SIZE codepoint)
 {
 
     // UTF8的规则，具体请参考 UNICODE 相关文档
@@ -913,15 +894,15 @@ static inline void zzz_AppendUTF8(char *s, zzz_UINT32 *index, zzz_UINT32 codepoi
 }
 
 // 专为 zz_ValueGetUnEscapeString 使用，追加一个结束符号
-static inline void zzz_AppendEnd(char *s, zzz_UINT32 *index)
+static inline void zzz_AppendEnd(char *s, zzz_SIZE *index)
 {
     zzz_Append(s, index, 0);
 }
 
-static inline void zzz_UnEscapeString(const char *str, zzz_UINT32 len, char *s)
+static inline void zzz_UnEscapeString(const char *str, zzz_SIZE len, char *s)
 {
-    zzz_UINT32 s_index = 0;
-    zzz_UINT32 index;
+    zzz_SIZE s_index = 0;
+    zzz_SIZE index;
     char c;
     for (index = 0; index < len;)
     {
@@ -983,12 +964,12 @@ static inline void zzz_UnEscapeString(const char *str, zzz_UINT32 len, char *s)
             case 'u':
             {
                 index += 2;
-                zzz_UINT32 cp = 0;
+                zzz_SIZE cp = 0;
                 zzz_ConsumeHexForUnEscape(str, &index, &cp);
 
                 if (zzz_UNLIKELY(cp >= 0xD800 && cp <= 0xDBFF))
                 {
-                    zzz_UINT32 cp1 = 0;
+                    zzz_SIZE cp1 = 0;
                     index += 2;
                     zzz_ConsumeHexForUnEscape(str, &index, &cp1);
                     cp = (((cp - 0xD800) << 10) | (cp1 - 0xDC00)) + 0x10000;
@@ -1009,7 +990,7 @@ static inline void zzz_UnEscapeString(const char *str, zzz_UINT32 len, char *s)
 }
 
 // 消费字符串
-static inline zzz_BOOL zzz_ConsumeStr(const char *s, zzz_UINT32 *index)
+static inline zzz_BOOL zzz_ConsumeStr(const char *s, zzz_SIZE *index)
 {
     char c;
     c = s[(*index)++];
@@ -1034,7 +1015,7 @@ static inline zzz_BOOL zzz_ConsumeStr(const char *s, zzz_UINT32 *index)
                 continue;
             case 'u':
             {
-                zzz_UINT32 cp = 0;
+                zzz_SIZE cp = 0;
                 if (zzz_LIKELY(zzz_ConsumeHex(s, index, &cp)))
                 {
                     // 这里是UTF16标准，可以参考网上相关资料
@@ -1045,7 +1026,7 @@ static inline zzz_BOOL zzz_ConsumeStr(const char *s, zzz_UINT32 *index)
                     {
                         if (zzz_LIKELY(zzz_LikelyConsume('\\', s, index) && zzz_LikelyConsume('u', s, index)))
                         {
-                            zzz_UINT32 cp2 = 0;
+                            zzz_SIZE cp2 = 0;
                             if (zzz_LIKELY(zzz_ConsumeHex(s, index, &cp2)))
                             {
                                 if (zzz_UNLIKELY(cp2 < 0xDC00 || cp2 > 0xDFFF))
@@ -1083,9 +1064,9 @@ static inline zzz_BOOL zzz_ConsumeStr(const char *s, zzz_UINT32 *index)
 }
 
 // 检查一个字符串是否符合JSON标准，主要用于 SetStr
-static inline zzz_BOOL zzz_CheckStr(const char *s, zzz_UINT32 *len)
+static inline zzz_BOOL zzz_CheckStr(const char *s, zzz_SIZE *len)
 {
-    zzz_UINT32 index = 0;
+    zzz_SIZE index = 0;
     char c;
     c = s[index++];
     while (zzz_LIKELY(c != 0))
@@ -1109,7 +1090,7 @@ static inline zzz_BOOL zzz_CheckStr(const char *s, zzz_UINT32 *len)
                 continue;
             case 'u':
             {
-                zzz_UINT32 cp = 0;
+                zzz_SIZE cp = 0;
                 if (zzz_LIKELY(zzz_ConsumeHex(s, &index, &cp)))
                 {
                     // 这里是UTF16标准，可以参考网上相关资料
@@ -1120,7 +1101,7 @@ static inline zzz_BOOL zzz_CheckStr(const char *s, zzz_UINT32 *len)
                     {
                         if (zzz_LIKELY(zzz_LikelyConsume('\\', s, &index) && zzz_LikelyConsume('u', s, &index)))
                         {
-                            zzz_UINT32 cp2 = 0;
+                            zzz_SIZE cp2 = 0;
                             if (zzz_LIKELY(zzz_ConsumeHex(s, &index, &cp2)))
                             {
                                 if (zzz_UNLIKELY(cp2 < 0xDC00 || cp2 > 0xDFFF))
@@ -1155,7 +1136,7 @@ static inline zzz_BOOL zzz_CheckStr(const char *s, zzz_UINT32 *len)
 }
 
 // 消费一个数字
-static inline zzz_BOOL zzz_ConsumeNum(const char *s, zzz_UINT32 *index)
+static inline zzz_BOOL zzz_ConsumeNum(const char *s, zzz_SIZE *index)
 {
     --(*index);
 
@@ -1224,9 +1205,9 @@ static inline zzz_BOOL zzz_ConsumeNum(const char *s, zzz_UINT32 *index)
 }
 
 // 检查一个数字是否符合JSON标准，主要用于 SetNum
-static inline zzz_BOOL zzz_CheckNum(const char *s, zzz_UINT32 *len)
+static inline zzz_BOOL zzz_CheckNum(const char *s, zzz_SIZE *len)
 {
-    zzz_UINT32 index = 0;
+    zzz_SIZE index = 0;
 
     zzz_BOOL minus = zzz_Consume('-', s, &index);
 
@@ -1312,7 +1293,7 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
         src_node = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
         *src_node = *v->N;
     }
-    zzz_UINT32 index = 0;
+    zzz_SIZE index = 0;
     struct zzz_Node *node = v->N;
 
     char c = zzz_Peek(s, &index);
@@ -1398,7 +1379,7 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
         return zzz_False;
     case '"':
     {
-        zzz_UINT32 start = index;
+        zzz_SIZE start = index;
         if (zzz_UNLIKELY(zzz_UnLikelyConsume('"', s, &index)))
         {
             node->Type = zzz_JSONTYPESTRING;
@@ -1421,7 +1402,7 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
     }
     default:
     {
-        zzz_UINT32 start = index - 1;
+        zzz_SIZE start = index - 1;
         if (zzz_LIKELY(zzz_ConsumeNum(s, &index)))
         {
             node->Type = zzz_JSONTYPENUM;
@@ -1448,7 +1429,7 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
                     *v->N = *src_node;
                 return zzz_False;
             }
-            zzz_UINT32 start = index;
+            zzz_SIZE start = index;
             if (zzz_UNLIKELY(zzz_UnLikelyConsume('"', s, &index)))
             {
                 node->Key = s + start;
@@ -1563,7 +1544,7 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
             return zzz_False;
         case '"':
         {
-            zzz_UINT32 start = index;
+            zzz_SIZE start = index;
             if (zzz_UNLIKELY(zzz_UnLikelyConsume('"', s, &index)))
             {
                 node->Type = zzz_JSONTYPESTRING;
@@ -1586,7 +1567,7 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
         }
         default:
         {
-            zzz_UINT32 start = index - 1;
+            zzz_SIZE start = index - 1;
             if (zzz_LIKELY(zzz_ConsumeNum(s, &index)))
             {
                 node->Type = zzz_JSONTYPENUM;
@@ -1646,7 +1627,7 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
 }
 
 // 函数说明详见《API》
-static inline zzz_BOOL zzz_ValueParseLen(struct zzz_Value *v, const char *s, zzz_UINT32 len)
+static inline zzz_BOOL zzz_ValueParseLen(struct zzz_Value *v, const char *s, zzz_SIZE len)
 {
     char *str = zzz_AllocatorAlloc(v->A, len + 1);
     zzz_Copy(s, len, str);
@@ -1772,7 +1753,7 @@ static inline const char *zzz_ValueStringify(const struct zzz_Value *v)
 }
 
 // 函数说明详见《API》
-static inline const char *zzz_ValueGetStringFast(const struct zzz_Value *v, zzz_UINT32 *len)
+static inline const char *zzz_ValueGetStringFast(const struct zzz_Value *v, zzz_SIZE *len)
 {
     if (zzz_UNLIKELY(v->N == 0))
         return 0;
@@ -1816,7 +1797,7 @@ static inline const char *zzz_ValueGetUnEscapeString(struct zzz_Value *v)
 }
 
 // 函数说明详见《API》
-static inline const char *zzz_ValueGetNumFast(const struct zzz_Value *v, zzz_UINT32 *len)
+static inline const char *zzz_ValueGetNumFast(const struct zzz_Value *v, zzz_SIZE *len)
 {
     if (zzz_UNLIKELY(v->N == 0))
         return 0;
@@ -1913,7 +1894,7 @@ static inline const char *zzz_ValueGetUnEscapeKey(struct zzz_Value *v)
 }
 
 // 函数说明详见《API》
-static inline const char *zzz_ValueGetKeyFast(const struct zzz_Value *v, zzz_UINT32 *len)
+static inline const char *zzz_ValueGetKeyFast(const struct zzz_Value *v, zzz_SIZE *len)
 {
     if (zzz_UNLIKELY(v->N == 0))
         return 0;
@@ -1944,7 +1925,7 @@ static inline struct zzz_Value *zzz_ValueObjGet(const struct zzz_Value *v, const
 }
 
 // 函数说明详见《API》
-static inline struct zzz_Value *zzz_ValueObjGetLen(const struct zzz_Value *v, const char *key, zzz_UINT32 len)
+static inline struct zzz_Value *zzz_ValueObjGetLen(const struct zzz_Value *v, const char *key, zzz_SIZE len)
 {
     if (zzz_UNLIKELY(v->N == 0))
         return 0;
@@ -1964,7 +1945,7 @@ static inline struct zzz_Value *zzz_ValueObjGetLen(const struct zzz_Value *v, co
 }
 
 // 函数说明详见《API》
-static inline const zzz_JSONTYPE *zzz_ValueType(const struct zzz_Value *v)
+static inline const zzz_JSONType *zzz_ValueType(const struct zzz_Value *v)
 {
     if (zzz_UNLIKELY(v->N == 0))
         return 0;
@@ -1987,7 +1968,7 @@ static inline const zzz_JSONTYPE *zzz_ValueType(const struct zzz_Value *v)
 }
 
 // 函数说明详见《API》
-static inline zzz_UINT32 zzz_ValueSize(const struct zzz_Value *v)
+static inline zzz_SIZE zzz_ValueSize(const struct zzz_Value *v)
 {
     if (zzz_UNLIKELY(v->N == 0))
         return 0;
@@ -1997,14 +1978,14 @@ static inline zzz_UINT32 zzz_ValueSize(const struct zzz_Value *v)
 }
 
 // 函数说明详见《API》
-static inline struct zzz_Value *zzz_ValueArrayGet(const struct zzz_Value *v, zzz_UINT32 index)
+static inline struct zzz_Value *zzz_ValueArrayGet(const struct zzz_Value *v, zzz_SIZE index)
 {
     if (zzz_UNLIKELY(v->N == 0))
         return 0;
     if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPEARRAY))
         return 0;
     struct zzz_Node *next = v->N->Value.Node;
-    zzz_UINT32 i = 0;
+    zzz_SIZE i = 0;
     while (zzz_LIKELY(next != 0))
     {
         if (zzz_UNLIKELY(i == index))
@@ -2208,7 +2189,7 @@ static inline void zzz_ValueSetBool(struct zzz_Value *v, zzz_BOOL b)
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetNumFast(struct zzz_Value *v, const char *num)
 {
-    zzz_UINT32 len = 0;
+    zzz_SIZE len = 0;
     if (zzz_UNLIKELY(zzz_CheckNum(num, &len) == zzz_False))
         return zzz_False;
     zzz_ValueInitCache(v);
@@ -2229,8 +2210,8 @@ static inline zzz_BOOL zzz_ValueSetNumFast(struct zzz_Value *v, const char *num)
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetNumStr(struct zzz_Value *v, const char *num)
 {
-    zzz_UINT32 index = 1;
-    zzz_UINT32 len = 0;
+    zzz_SIZE index = 1;
+    zzz_SIZE len = 0;
     if (zzz_UNLIKELY(zzz_CheckNum(num, &len) == zzz_False))
         return zzz_False;
     zzz_ValueInitCache(v);
@@ -2262,8 +2243,8 @@ static inline zzz_BOOL zzz_ValueSetNum(struct zzz_Value *v, const double d)
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetStrFast(struct zzz_Value *v, const char *str)
 {
-    zzz_UINT32 index = 0;
-    zzz_UINT32 len = 0;
+    zzz_SIZE index = 0;
+    zzz_SIZE len = 0;
     if (zzz_UNLIKELY(zzz_CheckStr(str, &len) == zzz_False))
         return zzz_False;
     zzz_ValueInitCache(v);
@@ -2284,8 +2265,8 @@ static inline zzz_BOOL zzz_ValueSetStrFast(struct zzz_Value *v, const char *str)
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetStr(struct zzz_Value *v, const char *str)
 {
-    zzz_UINT32 index = 0;
-    zzz_UINT32 len = 0;
+    zzz_SIZE index = 0;
+    zzz_SIZE len = 0;
     if (zzz_UNLIKELY(zzz_CheckStr(str, &len) == zzz_False))
         return zzz_False;
     zzz_ValueInitCache(v);
@@ -2308,7 +2289,7 @@ static inline zzz_BOOL zzz_ValueSetStr(struct zzz_Value *v, const char *str)
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetKeyFast(struct zzz_Value *v, const char *key)
 {
-    zzz_UINT32 len = 0;
+    zzz_SIZE len = 0;
     if (zzz_UNLIKELY(zzz_CheckStr(key, &len) == zzz_False))
     {
         return zzz_False;
@@ -2336,7 +2317,7 @@ static inline zzz_BOOL zzz_ValueSetKeyFast(struct zzz_Value *v, const char *key)
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetKey(struct zzz_Value *v, const char *key)
 {
-    zzz_UINT32 len = 0;
+    zzz_SIZE len = 0;
     if (zzz_UNLIKELY(zzz_CheckStr(key, &len) == zzz_False))
     {
         return zzz_False;
@@ -2588,7 +2569,7 @@ static inline zzz_BOOL zzz_ValueArrayAdd(struct zzz_Value *v, const struct zzz_V
 }
 
 // 函数说明详见《API》
-static inline zzz_BOOL zzz_ValueArrayDel(struct zzz_Value *v, zzz_UINT32 index)
+static inline zzz_BOOL zzz_ValueArrayDel(struct zzz_Value *v, zzz_SIZE index)
 {
     struct zzz_Value *dv = zzz_ValueArrayGet(v, index);
     if (zzz_UNLIKELY(dv == 0))

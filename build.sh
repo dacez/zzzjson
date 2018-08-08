@@ -48,6 +48,7 @@ function PerformanceNoNum()
     PerformanceTestOne jsoncpp $output ${files[*]}
     PerformanceTestOne nlohmannjson $output ${files[*]}
     PerformanceTestOne taocppjson $output ${files[*]}
+    PerformanceTestOne zzzjsonbeta $output ${files[*]}
 }
 
 function PerformanceNativeJSONBenchmark()
@@ -67,6 +68,7 @@ function PerformanceNativeJSONBenchmark()
     PerformanceTestOne jsoncpp $output ${files[*]}
     PerformanceTestOne nlohmannjson $output ${files[*]}
     PerformanceTestOne taocppjson $output ${files[*]}
+    PerformanceTestOne zzzjsonbeta $output ${files[*]}
 }
 
 function PerformanceTaoBao()
@@ -86,6 +88,7 @@ function PerformanceTaoBao()
     PerformanceTestOne jsoncpp $output ${files[*]}
     PerformanceTestOne nlohmannjson $output ${files[*]}
     PerformanceTestOne taocppjson $output ${files[*]}
+    PerformanceTestOne zzzjsonbeta $output ${files[*]}
 }
 
 function PerformanceNormal()
@@ -105,6 +108,7 @@ function PerformanceNormal()
     PerformanceTestOne jsoncpp $output ${files[*]}
     PerformanceTestOne nlohmannjson $output ${files[*]}
     PerformanceTestOne taocppjson $output ${files[*]}
+    PerformanceTestOne zzzjsonbeta $output ${files[*]}
 }
 
 function PerformanceRandom()
