@@ -71,6 +71,8 @@
   * [七、编译运行](#七编译运行)
   * [八、计划与进度](#八计划与进度)
 
+![](https://github.com/dacez/zzzJSON/blob/master/resource/zzzJSON.jpg)
+
 ## 一、概述
 
 zzzJSON是一个纯C实现的JSON解析器，代码朴素，注释丰富，简单易懂，拥有极致的JSON解析和序列化速度，提供对JSON数据的读写功能，同时，仅依赖glibc且所有代码均包含在**一个**头文件中，使用极其方便，特别适用以下场景：
