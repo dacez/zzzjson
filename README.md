@@ -1,5 +1,7 @@
 # zzzJSON
 
+![](https://raw.githubusercontent.com/dacez/zzzJSON/master/resource/zzzJSON.jpg)
+
 - [zzzJSON](#zzzjson)
   * [一、概述](#一概述)
     + [zzzJSON的宗旨](#zzzjson的宗旨)
@@ -70,8 +72,6 @@
     + [zzz_EXPECT_MODE](#zzz-expect-mode)
   * [七、编译运行](#七编译运行)
   * [八、计划与进度](#八计划与进度)
-
-![](https://github.com/dacez/zzzJSON/blob/master/resource/zzzJSON.jpg)
 
 ## 一、概述
 
