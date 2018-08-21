@@ -53,12 +53,21 @@
       - [ArrayGet](#arrayget)
       - [Type](#type)
       - [Size](#size)
+    + [写操作](#写操作)
       - [SetBool](#setbool)
+      - [SetNumStr](#setnumstr)
+      - [SetNumLenStr](#setnumlenstr)
+      - [SetNumStrFast](#setnumstrfast)
+      - [SetNumStrLenFast](#setnumstrlenfast)
       - [SetNum](#setnum)
       - [SetStr](#setstr)
+      - [SetStrLen](#setstrlen)
       - [SetStrFast](#setstrfast)
+      - [SetStrLenFast](#setstrlenfast)
       - [SetKey](#setkey)
+      - [SetKeyLen](#setkeylen)
       - [SetKeyFast](#setkeyfast)
+      - [SetKeyLenFast](#setkeylenfast)
       - [SetArray](#setarray)
       - [SetObj](#setobj)
       - [Set](#set)
@@ -478,7 +487,7 @@ void GetAndSet(Value *srcv, Value *desv)
         if (str == 0)
             return;
         // 如果需要拷贝数字，则需要使用SetNumStr
-        if (SetNumFast(desv, str) != True)
+        if (SetNumStrFast(desv, str) != True)
             return;
         break;
     }
@@ -2079,13 +2088,69 @@ int main()
 
 -1.2345678912345561e+25
 
-####SetNumFast
+#### SetNumStrLen
 
 ```c
 // 短命名
-BOOL SetNumFast(Value *v, const char *num);
+BOOL SetNumStrLen(Value *v, const char *num, SIZE len);
 // 长命名
-zzz_BOOL zzz_ValueSetNumFast(struct zzz_Value *v, const char *num);
+zzz_BOOL zzz_ValueSetNumStrLen(struct zzz_Value *v, const char *num, zzz_SIZE len);
+```
+
+作用：
+
+设置值的类型为数字类型，并且赋值。
+
+参数：
+
+- v：值的地址
+- num：值的值
+- len：字符串长度
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- **num**必须为0结尾的字符串；
+- 建议根据实际精度需要使用sprintf把数字变成字符串，为了防止越界，建议使用g而非f。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+#include <stdio.h>
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    // 这个数组不要太短，防止sprintf越界
+    char buff[32];
+    double d = -12345678912345561234568890.0;
+    // double 最大有效数字为17，可以根据实际需求来。
+    // 建议使用g，而不要使用f。
+    sprintf(buff, "%.17g", d);
+    SetNumStrLen(v, buff, strlen(buff));
+    const char *v_str = Stringify(v);
+    if (v_str != 0)
+        printf("%s\n", v_str);
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+-1.2345678912345561e+25
+
+####SetNumStrFast
+
+```c
+// 短命名
+BOOL SetNumStrFast(Value *v, const char *num);
+// 长命名
+zzz_BOOL zzz_ValueSetNumStrFast(struct zzz_Value *v, const char *num);
 ```
 
 作用：
@@ -2123,7 +2188,64 @@ int main()
     // double 最大有效数字为17，可以根据实际需求来。
     // 建议使用g，而不要使用f。
     sprintf(buff, "%.17g", d);
-    SetNumFast(v, buff);
+    SetNumStrFast(v, buff);
+    const char *v_str = Stringify(v);
+    if (v_str != 0)
+        printf("%s\n", v_str);
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+-1.2345678912345561e+25
+
+#### SetNumStrLenFast
+
+```c
+// 短命名
+BOOL SetNumStrLenFast(Value *v, const char *num, SIZE len);
+// 长命名
+zzz_BOOL zzz_ValueSetNumStrLenFast(struct zzz_Value *v, const char *num, zzz_SIZE len);
+```
+
+作用：
+
+SetNumStrLen的快速版本，不对**num**进行拷贝。
+
+参数：
+
+- v：值的地址
+- num：值的值
+- len：字符串长度
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- **num**必须为0结尾的字符串；
+- 在zzzJSON的生命周期内不能对num进行修改，否则会导致不可预测的结果;
+- 建议根据实际精度需要使用sprintf把数字变成字符串，为了防止越界，建议使用g而非f。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+#include <stdio.h>
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    // 这个数组不要太短，防止sprintf越界
+    char buff[32];
+    double d = -12345678912345561234568890.0;
+    // double 最大有效数字为17，可以根据实际需求来。
+    // 建议使用g，而不要使用f。
+    sprintf(buff, "%.17g", d);
+    SetNumStrLenFast(v, buff, strlen(buff));
     const char *v_str = Stringify(v);
     if (v_str != 0)
         printf("%s\n", v_str);
@@ -2160,7 +2282,7 @@ SetNumStr的简单版本，性能不佳。
 
 注意事项：
 
-- 建议使用SetNumFast。
+- 建议使用SetNumStrFast。
 
 正确代码示例：
 
@@ -2235,6 +2357,59 @@ int main()
 
 "123str"
 
+#### SetStrLen 
+
+```c
+// 短命名
+BOOL SetStrLen(Value *v, const char *str, SIZE len);
+// 长命名
+zzz_BOOL zzz_ValueSetStrLen(struct zzz_Value *v, const char *str, zzz_SIZE len);
+```
+
+作用：
+
+设置值的类型为字符串类型，并且赋值。
+
+参数：
+
+- v：值的地址
+- str：值的值
+- len：字符串长度
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- str必须为0结尾的字符串。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+#include <stdio.h>
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "[123,456,789]";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        SetStrLen(v, "123str", 6);
+        const char *v_str = Stringify(v);
+        if (v_str != 0) printf("%s\n", v_str);
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+"123str"
+
 #### SetStrFast
 
 ```c
@@ -2276,6 +2451,59 @@ int main()
     if (ret == True)
     {
         SetStrFast(v, "123str");
+        const char *v_str = Stringify(v);
+        if (v_str != 0) printf("%s\n", v_str);
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+"123str"
+
+#### SetStrLenFast
+
+```c
+// 短命名
+BOOL SetStrLenFast(Value *v, const char *str, SIZE len);
+// 长命名
+zzz_BOOL zzz_ValueSetStrLenFast(struct zzz_Value *v, const char *str, zzz_SIZE len);
+```
+
+作用：
+
+SetStrLen的快速版本，不对**str**进行拷贝。
+
+参数：
+
+- v：值的地址
+- str：值的值
+- len：字符串长度
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- str必须为0结尾的字符串。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+#include <stdio.h>
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "[123,456,789]";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        SetStrLenFast(v, "123str", 6);
         const char *v_str = Stringify(v);
         if (v_str != 0) printf("%s\n", v_str);
     }
@@ -2340,6 +2568,60 @@ int main()
 
 {"key234":123}
 
+#### SetKeyLen
+
+```c
+// 短命名
+BOOL SetKeyLen(Value *v, const char *key, SIZE len);
+// 长命名
+zzz_BOOL zzz_ValueSetKeyLen(struct zzz_Value *v, const char *key, zzz_SIZE len);
+```
+
+作用：
+
+设置值的关键字。
+
+参数：
+
+- v：值的地址
+- key：关键字
+- len：字符串的长度
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- **key**必须为0结尾的字符串。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+#include <stdio.h>
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "{\"key123\":123}";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        Value *vv = ObjGet(v, "key123");
+        SetKeyLen(vv, "key234", 6);
+        const char *v_str = Stringify(v);
+        if (v_str != 0) printf("%s\n", v_str);
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+{"key234":123}
+
 #### SetKeyFast
 
 ```c
@@ -2391,7 +2673,61 @@ int main()
 
 输出如下：
 
-"123str"
+{"key234":123}
+
+#### SetKeyLenFast
+
+```c
+// 短命名
+BOOL SetKeyLenFast(Value *v, const char *key, SIZE len);
+// 长命名
+zzz_BOOL zzz_ValueSetKeyLenFast(struct zzz_Value *v, const char *key, zzz_SIZE len);
+```
+
+作用：
+
+SetKeyLen的快速版本，不对**key**进行拷贝。
+
+参数：
+
+- v：值的地址
+- key：值的值
+- len：字符串的长度
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- key必须为0结尾的字符串。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+#include <stdio.h>
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "{\"key123\":123}";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        Value *vv = ObjGet(v, "key123");
+        SetKeyLenFast(vv, "key234", 6);
+        const char *v_str = Stringify(v);
+        if (v_str != 0) printf("%s\n", v_str);
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+{"key234":123}
 
 #### SetArray 
 

@@ -43,6 +43,11 @@ static const zzz_SIZE zzz_AllocatorInitMemSize = zzz_ALLOCATORINITMEMSIZE;
 #endif
 static const zzz_SIZE zzz_StringInitMemSize = zzz_STRINGINITMEMSIZE;
 
+#ifndef zzz_STRINGCACHEINITMEMSIZE
+#define zzz_STRINGCACHEINITMEMSIZE 128
+#endif
+static const zzz_SIZE zzz_StringCacheInitMemSize = zzz_STRINGCACHEINITMEMSIZE;
+
 // 环境适配
 
 #include <malloc.h> // 使用其 malloc 和 free 函数
@@ -145,15 +150,21 @@ static inline void zzz_ValueSetNull(struct zzz_Value *v);
 
 static inline void zzz_ValueSetBool(struct zzz_Value *v, zzz_BOOL b);
 
-static inline zzz_BOOL zzz_ValueSetNumFast(struct zzz_Value *v, const char *num);
+static inline zzz_BOOL zzz_ValueSetNumStrFast(struct zzz_Value *v, const char *num);
+static inline zzz_BOOL zzz_ValueSetNumStrLenFast(struct zzz_Value *v, const char *num, zzz_SIZE len);
 static inline zzz_BOOL zzz_ValueSetNumStr(struct zzz_Value *v, const char *num);
+static inline zzz_BOOL zzz_ValueSetNumStrLen(struct zzz_Value *v, const char *num, zzz_SIZE len);
 static inline zzz_BOOL zzz_ValueSetNum(struct zzz_Value *v, const double d);
 
 static inline zzz_BOOL zzz_ValueSetStrFast(struct zzz_Value *v, const char *str);
+static inline zzz_BOOL zzz_ValueSetStrLenFast(struct zzz_Value *v, const char *str, zzz_SIZE len);
 static inline zzz_BOOL zzz_ValueSetStr(struct zzz_Value *v, const char *str);
+static inline zzz_BOOL zzz_ValueSetStrLen(struct zzz_Value *v, const char *str, zzz_SIZE len);
 
 static inline zzz_BOOL zzz_ValueSetKeyFast(struct zzz_Value *v, const char *key);
+static inline zzz_BOOL zzz_ValueSetKeyLenFast(struct zzz_Value *v, const char *key, zzz_SIZE len);
 static inline zzz_BOOL zzz_ValueSetKey(struct zzz_Value *v, const char *key);
+static inline zzz_BOOL zzz_ValueSetKeyLen(struct zzz_Value *v, const char *key, zzz_SIZE len);
 
 static inline void zzz_ValueSetArray(struct zzz_Value *v);
 
@@ -195,12 +206,12 @@ typedef zzz_JSONType JSONType;
 #define JSONTYPESTRING zzz_JSONTYPESTRING
 #define JSONTYPENULL zzz_JSONTYPENULL
 #define JSONTYPENUM zzz_JSONTYPENUM
-static const JSONType JSONTypeArray = zzz_JSONTypeArray;
-static const JSONType JSONTypeObj = zzz_JSONTypeObj;
-static const JSONType JSONTypeString = zzz_JSONTypeString;
-static const JSONType JSONTypeNum = zzz_JSONTypeNum;
-static const JSONType JSONTypeBool = zzz_JSONTypeBool;
-static const JSONType JSONTypeNull = zzz_JSONTypeNull;
+static const JSONType JSONTypeArray = zzz_JSONTYPEARRAY;
+static const JSONType JSONTypeObj = zzz_JSONTYPEOBJ;
+static const JSONType JSONTypeString = zzz_JSONTYPESTRING;
+static const JSONType JSONTypeNum = zzz_JSONTYPENUM;
+static const JSONType JSONTypeBool = zzz_JSONTYPEBOOL;
+static const JSONType JSONTypeNull = zzz_JSONTYPENULL;
 
 // 短命名API，详见《API》
 static inline Allocator *NewAllocator()
@@ -319,13 +330,21 @@ static inline void SetBool(Value *v, BOOL b)
 {
     zzz_ValueSetBool(v, b);
 }
-static inline BOOL SetNumFast(Value *v, const char *num)
+static inline BOOL SetNumStrFast(Value *v, const char *num)
 {
-    return zzz_ValueSetNumFast(v, num);
+    return zzz_ValueSetNumStrFast(v, num);
+}
+static inline BOOL SetNumStrLenFast(Value *v, const char *num, SIZE len)
+{
+    return zzz_ValueSetNumStrLenFast(v, num, len);
 }
 static inline BOOL SetNumStr(Value *v, const char *num)
 {
     return zzz_ValueSetNumStr(v, num);
+}
+static inline BOOL SetNumStrLen(Value *v, const char *num, SIZE len)
+{
+    return zzz_ValueSetNumStrLen(v, num, len);
 }
 static inline BOOL SetNum(Value *v, const double d)
 {
@@ -335,17 +354,33 @@ static inline BOOL SetStrFast(Value *v, const char *str)
 {
     return zzz_ValueSetStrFast(v, str);
 }
+static inline BOOL SetStrLenFast(Value *v, const char *str, SIZE len)
+{
+    return zzz_ValueSetStrLenFast(v, str, len);
+}
 static inline BOOL SetStr(Value *v, const char *str)
 {
     return zzz_ValueSetStr(v, str);
+}
+static inline BOOL SetStrLen(Value *v, const char *str, SIZE len)
+{
+    return zzz_ValueSetStrLen(v, str, len);
 }
 static inline BOOL SetKeyFast(Value *v, const char *key)
 {
     return zzz_ValueSetKeyFast(v, key);
 }
+static inline BOOL SetKeyLenFast(Value *v, const char *key, SIZE len)
+{
+    return zzz_ValueSetKeyLenFast(v, key, len);
+}
 static inline BOOL SetKey(Value *v, const char *key)
 {
     return zzz_ValueSetKey(v, key);
+}
+static inline BOOL SetKeyLen(Value *v, const char *key, SIZE len)
+{
+    return zzz_ValueSetKeyLen(v, key, len);
 }
 static inline void SetArray(Value *v)
 {
@@ -548,15 +583,23 @@ struct zzz_String
     struct zzz_Allocator *A;
 };
 
+static struct zzz_String *zzz_StringCache = 0;
+
 // 新建一个字符串
-static inline struct zzz_String *zzz_StringNew(struct zzz_Allocator *alloc)
+static inline struct zzz_String *zzz_StringNew(struct zzz_Allocator *alloc, zzz_SIZE init_size)
 {
-    struct zzz_String *str = (struct zzz_String *)zzz_AllocatorAlloc(alloc, sizeof(struct zzz_String) + zzz_StringInitMemSize);
-    str->Size = zzz_StringInitMemSize;
+    struct zzz_String *str = (struct zzz_String *)zzz_AllocatorAlloc(alloc, sizeof(struct zzz_String) + init_size);
+    str->Size = init_size;
     str->Data = (char *)str + sizeof(struct zzz_String);
     str->Pos = 0;
     str->A = alloc;
     return str;
+}
+
+// 清空一个字符串
+static inline void zzz_StringReset(struct zzz_String *str) 
+{
+    str->Pos = 0;
 }
 
 // 追加字符串
@@ -1134,13 +1177,29 @@ static inline zzz_BOOL zzz_CheckStr(const char *s, zzz_SIZE *len)
     *len = index - 1;
     return zzz_True;
 }
+static inline zzz_BOOL zzz_CheckStrLen(struct zzz_Allocator *alloc, const char *s, zzz_SIZE len)
+{
+    if (zzz_UNLIKELY(zzz_StringCache == 0)) {
+        zzz_StringCache = zzz_StringNew(alloc, zzz_StringCacheInitMemSize);
+    } else {
+        zzz_StringReset(zzz_StringCache);
+    }
+    zzz_StringAppendStr(zzz_StringCache, s, len);
+    zzz_StringAppendEnd(zzz_StringCache);
+    zzz_SIZE avail_len;
+    if (zzz_UNLIKELY(zzz_CheckStr(zzz_StringStr(zzz_StringCache), &avail_len) == zzz_False)){
+        return zzz_False;
+    }
+    if (zzz_UNLIKELY(avail_len != len)) return zzz_False;
+    return zzz_True;
+}
 
 // 消费一个数字
 static inline zzz_BOOL zzz_ConsumeNum(const char *s, zzz_SIZE *index)
 {
     --(*index);
 
-    zzz_BOOL minus = zzz_Consume('-', s, index);
+    if (s[*index] == '-') ++(*index);
 
     if (zzz_UnLikelyConsume('0', s, index))
     {
@@ -1178,11 +1237,7 @@ static inline zzz_BOOL zzz_ConsumeNum(const char *s, zzz_SIZE *index)
     if (s[*index] == 'e' || s[*index] == 'E')
     {
         char c = s[++(*index)];
-        if (c == '-')
-        {
-            ++(*index);
-        }
-        else if (c == '+')
+        if (c == '-' || c == '+')
         {
             ++(*index);
         }
@@ -1209,7 +1264,7 @@ static inline zzz_BOOL zzz_CheckNum(const char *s, zzz_SIZE *len)
 {
     zzz_SIZE index = 0;
 
-    zzz_BOOL minus = zzz_Consume('-', s, &index);
+    if (s[index] == '-') ++(index);
 
     if (zzz_UnLikelyConsume('0', s, &index))
     {
@@ -1271,6 +1326,22 @@ static inline zzz_BOOL zzz_CheckNum(const char *s, zzz_SIZE *len)
     }
     *len = index;
     return zzz_LikelyConsume(0, s, &index);
+}
+static inline zzz_BOOL zzz_CheckNumLen(struct zzz_Allocator *alloc, const char *s, zzz_SIZE len)
+{
+    if (zzz_UNLIKELY(zzz_StringCache == 0)) {
+        zzz_StringCache = zzz_StringNew(alloc, zzz_StringCacheInitMemSize);
+    } else {
+        zzz_StringReset(zzz_StringCache);
+    }
+    zzz_StringAppendStr(zzz_StringCache, s, len);
+    zzz_StringAppendEnd(zzz_StringCache);
+    zzz_SIZE avail_len;
+    if (zzz_UNLIKELY(zzz_CheckNum(zzz_StringStr(zzz_StringCache), &avail_len) == zzz_False)){
+        return zzz_False;
+    }
+    if (zzz_UNLIKELY(avail_len != len)) return zzz_False;
+    return zzz_True;
 }
 
 // 函数说明详见《API》
@@ -1646,7 +1717,7 @@ static inline const char *zzz_ValueStringify(const struct zzz_Value *v)
 {
     if (zzz_UNLIKELY(v->N == 0))
         return "";
-    struct zzz_String *str = zzz_StringNew(v->A);
+    struct zzz_String *str = zzz_StringNew(v->A, zzz_StringInitMemSize);
     struct zzz_Node *node = v->N;
 
     switch (node->Type)
@@ -2187,7 +2258,7 @@ static inline void zzz_ValueSetBool(struct zzz_Value *v, zzz_BOOL b)
 }
 
 // 函数说明详见《API》
-static inline zzz_BOOL zzz_ValueSetNumFast(struct zzz_Value *v, const char *num)
+static inline zzz_BOOL zzz_ValueSetNumStrFast(struct zzz_Value *v, const char *num)
 {
     zzz_SIZE len = 0;
     if (zzz_UNLIKELY(zzz_CheckNum(num, &len) == zzz_False))
@@ -2208,11 +2279,52 @@ static inline zzz_BOOL zzz_ValueSetNumFast(struct zzz_Value *v, const char *num)
 }
 
 // 函数说明详见《API》
+static inline zzz_BOOL zzz_ValueSetNumStrLenFast(struct zzz_Value *v, const char *num, zzz_SIZE len)
+{
+    if (zzz_UNLIKELY(zzz_CheckNumLen(v->A, num, len) == zzz_False))
+        return zzz_False;
+    zzz_ValueInitCache(v);
+    if (zzz_UNLIKELY(v->N == 0))
+    {
+        v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        v->N->Key = 0;
+        v->N->Prev = 0;
+        v->N->Father = 0;
+        v->N->Next = 0;
+    }
+    v->N->Type = zzz_JSONTYPENUM;
+    v->N->Value.Str = num;
+    v->N->Len = len;
+    return zzz_True;
+}
+
+// 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetNumStr(struct zzz_Value *v, const char *num)
 {
-    zzz_SIZE index = 1;
     zzz_SIZE len = 0;
     if (zzz_UNLIKELY(zzz_CheckNum(num, &len) == zzz_False))
+        return zzz_False;
+    zzz_ValueInitCache(v);
+    char *s = zzz_AllocatorAlloc(v->A, len);
+    zzz_Copy(num, len, s);
+    if (zzz_UNLIKELY(v->N == 0))
+    {
+        v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        v->N->Key = 0;
+        v->N->Prev = 0;
+        v->N->Father = 0;
+        v->N->Next = 0;
+    }
+    v->N->Type = zzz_JSONTYPENUM;
+    v->N->Value.Str = s;
+    v->N->Len = len;
+    return zzz_True;
+}
+
+// 函数说明详见《API》
+static inline zzz_BOOL zzz_ValueSetNumStrLen(struct zzz_Value *v, const char *num, zzz_SIZE len)
+{
+    if (zzz_UNLIKELY(zzz_CheckNumLen(v->A, num, len) == zzz_False))
         return zzz_False;
     zzz_ValueInitCache(v);
     char *s = zzz_AllocatorAlloc(v->A, len);
@@ -2237,13 +2349,12 @@ static inline zzz_BOOL zzz_ValueSetNum(struct zzz_Value *v, const double d)
     // double最大精度是17，使用sprintf转出字符串，%.17g，最大长度不超过32
     char *buff = zzz_AllocatorAlloc(v->A, 32);
     zzz_DoubleToStr(d, buff);
-    return zzz_ValueSetNumFast(v, buff);
+    return zzz_ValueSetNumStrFast(v, buff);
 }
 
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetStrFast(struct zzz_Value *v, const char *str)
 {
-    zzz_SIZE index = 0;
     zzz_SIZE len = 0;
     if (zzz_UNLIKELY(zzz_CheckStr(str, &len) == zzz_False))
         return zzz_False;
@@ -2263,11 +2374,52 @@ static inline zzz_BOOL zzz_ValueSetStrFast(struct zzz_Value *v, const char *str)
 }
 
 // 函数说明详见《API》
+static inline zzz_BOOL zzz_ValueSetStrLenFast(struct zzz_Value *v, const char *str, zzz_SIZE len)
+{
+    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, str, len) == zzz_False))
+        return zzz_False;
+    zzz_ValueInitCache(v);
+    if (zzz_UNLIKELY(v->N == 0))
+    {
+        v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        v->N->Key = 0;
+        v->N->Prev = 0;
+        v->N->Father = 0;
+        v->N->Next = 0;
+    }
+    v->N->Type = zzz_JSONTYPESTRING;
+    v->N->Value.Str = str;
+    v->N->Len = len;
+    return zzz_True;
+}
+
+// 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetStr(struct zzz_Value *v, const char *str)
 {
-    zzz_SIZE index = 0;
     zzz_SIZE len = 0;
     if (zzz_UNLIKELY(zzz_CheckStr(str, &len) == zzz_False))
+        return zzz_False;
+    zzz_ValueInitCache(v);
+    char *s = zzz_AllocatorAlloc(v->A, len);
+    zzz_Copy(str, len, s);
+    if (zzz_UNLIKELY(v->N == 0))
+    {
+        v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        v->N->Key = 0;
+        v->N->Prev = 0;
+        v->N->Father = 0;
+        v->N->Next = 0;
+    }
+    v->N->Type = zzz_JSONTYPESTRING;
+    v->N->Value.Str = s;
+    v->N->Len = len;
+    return zzz_True;
+}
+
+// 函数说明详见《API》
+static inline zzz_BOOL zzz_ValueSetStrLen(struct zzz_Value *v, const char *str, zzz_SIZE len)
+{
+    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, str, len) == zzz_False))
         return zzz_False;
     zzz_ValueInitCache(v);
     char *s = zzz_AllocatorAlloc(v->A, len);
@@ -2315,10 +2467,66 @@ static inline zzz_BOOL zzz_ValueSetKeyFast(struct zzz_Value *v, const char *key)
 }
 
 // 函数说明详见《API》
+static inline zzz_BOOL zzz_ValueSetKeyLenFast(struct zzz_Value *v, const char *key, zzz_SIZE len)
+{
+    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, key, len) == zzz_False))
+    {
+        return zzz_False;
+    }
+    if (zzz_UNLIKELY(v->N == 0))
+    {
+        v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        v->N->Prev = 0;
+        v->N->Father = 0;
+        v->N->Next = 0;
+        v->N->Type = zzz_JSONTYPENULL;
+        v->N->Value.Str = zzz_StrNull;
+        v->N->Len = 4;
+    }
+    else if (v->N->Father != 0 && zzz_UNLIKELY(v->N->Father->Type != zzz_JSONTYPEOBJ))
+    {
+        return zzz_False;
+    }
+    zzz_ValueInitCache(v);
+    v->N->Key = key;
+    v->N->KeyLen = len;
+    return zzz_True;
+}
+
+// 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetKey(struct zzz_Value *v, const char *key)
 {
     zzz_SIZE len = 0;
     if (zzz_UNLIKELY(zzz_CheckStr(key, &len) == zzz_False))
+    {
+        return zzz_False;
+    }
+    if (zzz_UNLIKELY(v->N == 0))
+    {
+        v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        v->N->Prev = 0;
+        v->N->Father = 0;
+        v->N->Next = 0;
+        v->N->Type = zzz_JSONTYPENULL;
+        v->N->Value.Str = zzz_StrNull;
+        v->N->Len = 4;
+    }
+    else if (v->N->Father != 0 && zzz_UNLIKELY(v->N->Father->Type != zzz_JSONTYPEOBJ))
+    {
+        return zzz_False;
+    }
+    zzz_ValueInitCache(v);
+    char *s = zzz_AllocatorAlloc(v->A, len);
+    zzz_Copy(key, len, s);
+    v->N->Key = s;
+    v->N->KeyLen = len;
+    return zzz_True;
+}
+
+// 函数说明详见《API》
+static inline zzz_BOOL zzz_ValueSetKeyLen(struct zzz_Value *v, const char *key, zzz_SIZE len)
+{
+    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, key, len) == zzz_False))
     {
         return zzz_False;
     }

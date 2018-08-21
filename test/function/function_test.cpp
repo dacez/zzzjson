@@ -6,48 +6,59 @@
 
 using namespace std;
 
-void MemoryTest() {
+void MemoryTest()
+{
     Allocator *A = NewAllocator();
-    for (SIZE i = 1; i <= zzz_AllocatorInitMemSize; ++i) {
+    for (SIZE i = 1; i <= zzz_AllocatorInitMemSize; ++i)
+    {
         zzz_AllocatorAlloc(A, i);
     }
     ReleaseAllocator(A);
     cout << "Size:" << AllocMemorySize << " AllocCount:" << AllocMemoryCount << " FreeCount:" << FreeMemoryCount << endl;
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void StringTest() {
+void StringTest()
+{
     Allocator *A = NewAllocator();
     const char *str = "1234567890abcdefghijklmnopqrstuvwxyz`~!@#$%^&*()_+-=|\\}{:[];'?><,./\"";
-    for (SIZE i = 0; i < sizeof(str); ++i) {
-        zzz_String *zs = zzz_StringNew(A);
+    for (SIZE i = 0; i < sizeof(str); ++i)
+    {
+        zzz_String *zs = zzz_StringNew(A, zzz_StringInitMemSize);
         zzz_StringAppendStr(zs, str, i);
         CheckRet(__func__, __LINE__, string(zzz_StringStr(zs), zs->Pos) == string(str, i));
         zzz_StringAppendEnd(zs);
-        CheckRet(__func__, __LINE__, *(zzz_StringStr(zs)+i) == 0);
+        CheckRet(__func__, __LINE__, *(zzz_StringStr(zs) + i) == 0);
     }
-    for (SIZE i = sizeof(str) - 1; ; --i) {
-        zzz_String *zs = zzz_StringNew(A);
-        for (SIZE j = 0; j < i; ++j) {
-            zzz_StringAppendChar(zs, *(str+j));
+    for (SIZE i = sizeof(str) - 1;; --i)
+    {
+        zzz_String *zs = zzz_StringNew(A, zzz_StringInitMemSize);
+        for (SIZE j = 0; j < i; ++j)
+        {
+            zzz_StringAppendChar(zs, *(str + j));
         }
         CheckRet(__func__, __LINE__, string(zzz_StringStr(zs), zs->Pos) == string(str, i));
         zzz_StringAppendEnd(zs);
-        CheckRet(__func__, __LINE__, *(zzz_StringStr(zs)+i) == 0);
-        if (i == 0) break;
+        CheckRet(__func__, __LINE__, *(zzz_StringStr(zs) + i) == 0);
+        if (i == 0)
+            break;
     }
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void SkinTest() {
+void SkinTest()
+{
     const char s[] = "abc\t\n\r d";
     SIZE index = 0;
     SIZE skinSum = 0;
-    for (SIZE i = 0; i < sizeof(s); ++i) {
-        if (zzz_Skin(s[i])) ++skinSum;
+    for (SIZE i = 0; i < sizeof(s); ++i)
+    {
+        if (zzz_Skin(s[i]))
+            ++skinSum;
     }
     CheckRet(__func__, __LINE__, skinSum == 4);
 }
-void PeekTest() {
+void PeekTest()
+{
     const char s[] = "abc\t\n\r d";
     SIZE index = 0;
 
@@ -62,9 +73,9 @@ void PeekTest() {
 
     CheckRet(__func__, __LINE__, zzz_Peek(s, &index) == 'd');
     CheckRet(__func__, __LINE__, index == 8);
-
 }
-void ConsumeTest() {
+void ConsumeTest()
+{
     const char s[] = "abc\t\n\r d";
     SIZE index = 0;
 
@@ -106,7 +117,7 @@ void ConsumeTest() {
     CheckRet(__func__, __LINE__, zzz_LikelyConsume('d', s, &index) == zzz_False);
     CheckRet(__func__, __LINE__, index == 3);
 
-       index = 0;
+    index = 0;
 
     CheckRet(__func__, __LINE__, zzz_UnLikelyConsume('a', s, &index) == zzz_True);
     CheckRet(__func__, __LINE__, index == 1);
@@ -126,7 +137,8 @@ void ConsumeTest() {
     CheckRet(__func__, __LINE__, zzz_UnLikelyConsume('d', s, &index) == zzz_False);
     CheckRet(__func__, __LINE__, index == 3);
 }
-void PeekAndConsumeTest() {
+void PeekAndConsumeTest()
+{
     const char s[] = "abc\t\n\r d";
     SIZE index = 0;
 
@@ -146,9 +158,9 @@ void PeekAndConsumeTest() {
     CheckRet(__func__, __LINE__, index == 7);
 
     CheckRet(__func__, __LINE__, zzz_LikelyPeekAndConsume('d', s, &index) == zzz_True);
-    CheckRet(__func__, __LINE__, index == 8);    
+    CheckRet(__func__, __LINE__, index == 8);
 
-     index = 0;
+    index = 0;
 
     CheckRet(__func__, __LINE__, zzz_UnLikelyPeekAndConsume('a', s, &index) == zzz_True);
     CheckRet(__func__, __LINE__, index == 1);
@@ -166,9 +178,10 @@ void PeekAndConsumeTest() {
     CheckRet(__func__, __LINE__, index == 7);
 
     CheckRet(__func__, __LINE__, zzz_UnLikelyPeekAndConsume('d', s, &index) == zzz_True);
-    CheckRet(__func__, __LINE__, index == 8);    
+    CheckRet(__func__, __LINE__, index == 8);
 }
-void ConsumeTrueFalseNullTest() {
+void ConsumeTrueFalseNullTest()
+{
     SIZE index = 1;
     CheckRet(__func__, __LINE__, zzz_ConsumeTrue(zzz_StrTrue, &index) == zzz_True);
     CheckRet(__func__, __LINE__, index == 4);
@@ -184,26 +197,30 @@ void ConsumeTrueFalseNullTest() {
     CheckRet(__func__, __LINE__, zzz_ConsumeFalse(zzz_StrTrue, &index) == zzz_False);
     index = 1;
     CheckRet(__func__, __LINE__, zzz_ConsumeNull(zzz_StrFalse, &index) == zzz_False);
-    
 }
-void HexCodePointTest() {
+void HexCodePointTest()
+{
     char z = '0';
     char a = 'a';
-    for (SIZE i = 0; i < 10; ++i) {
-        CheckRet(__func__, __LINE__, zzz_HexCodePoint(z+i) == i);
+    for (SIZE i = 0; i < 10; ++i)
+    {
+        CheckRet(__func__, __LINE__, zzz_HexCodePoint(z + i) == i);
     }
-    for (SIZE i = 0; i < 6; ++i) {
-        CheckRet(__func__, __LINE__, zzz_HexCodePoint(a+i) == i+10);
+    for (SIZE i = 0; i < 6; ++i)
+    {
+        CheckRet(__func__, __LINE__, zzz_HexCodePoint(a + i) == i + 10);
     }
-    for (SIZE i = 6; i < 10; ++i) {
-        CheckRet(__func__, __LINE__, zzz_HexCodePoint(a+i) == 16);
+    for (SIZE i = 6; i < 10; ++i)
+    {
+        CheckRet(__func__, __LINE__, zzz_HexCodePoint(a + i) == 16);
     }
 }
-void ConsumeHexTest() {
-    const char * vaildHex0 = "fabb";
-    const char * vaildHex1 = "1111";
-    const char * vaildHex2 = "f10b";
-    const char * invailHex = "fhbb";
+void ConsumeHexTest()
+{
+    const char *vaildHex0 = "fabb";
+    const char *vaildHex1 = "1111";
+    const char *vaildHex2 = "f10b";
+    const char *invailHex = "fhbb";
     SIZE index = 0;
     SIZE cp = 0;
     CheckRet(__func__, __LINE__, zzz_ConsumeHex(vaildHex0, &index, &cp) == zzz_True);
@@ -222,15 +239,16 @@ void ConsumeHexTest() {
     index = 0;
     CheckRet(__func__, __LINE__, zzz_ConsumeHex(invailHex, &index, &cp) == zzz_False);
 }
-void ConsumeStrTest() {
-    const char * vaildStr0 = "0198273645!@@#$%$wqfufewkgefyegrlfbdal[]'';;~~`\"";
-    const char * vaildStr1 = "0198273645 \\t\\r\\n\\b\\f\\\" wqfufewkgefyegrlfbdal\"";
-    const char * vaildStr2 = "0198273645 \\uD123\\ud222\\u1F00 \\ud801\\udc01 wqfufewkgefyegrlfbdal\"";
-    const char * invailStr0 = "019827\t3645\"";
-    const char * invailStr1 = "019827 \\ud801\\ud801 3645\"";
-    const char * invailStr2 = "019827 \\udc01 3645\"";
-    const char * invailStr3 = "019827";
-    const char * vailStr4 = "\"";
+void ConsumeStrTest()
+{
+    const char *vaildStr0 = "0198273645!@@#$%$wqfufewkgefyegrlfbdal[]'';;~~`\"";
+    const char *vaildStr1 = "0198273645 \\t\\r\\n\\b\\f\\\" wqfufewkgefyegrlfbdal\"";
+    const char *vaildStr2 = "0198273645 \\uD123\\ud222\\u1F00 \\ud801\\udc01 wqfufewkgefyegrlfbdal\"";
+    const char *invailStr0 = "019827\t3645\"";
+    const char *invailStr1 = "019827 \\ud801\\ud801 3645\"";
+    const char *invailStr2 = "019827 \\udc01 3645\"";
+    const char *invailStr3 = "019827";
+    const char *vailStr4 = "\"";
     SIZE index = 0;
     CheckRet(__func__, __LINE__, zzz_ConsumeStr(vaildStr0, &index) == zzz_True);
     CheckRet(__func__, __LINE__, index == strlen(vaildStr0));
@@ -259,15 +277,16 @@ void ConsumeStrTest() {
     CheckRet(__func__, __LINE__, zzz_ConsumeStr(vailStr4, &index) == zzz_True);
     CheckRet(__func__, __LINE__, index == strlen(vailStr4));
 }
-void CheckStrTest() {
-    const char * vaildStr0 = "0198273645!@@#$%$wqfufewkgefyegrlfbdal[]'';;~~`";
-    const char * vaildStr1 = "0198273645 \\t\\r\\n\\b\\f\\\" wqfufewkgefyegrlfbdal";
-    const char * vaildStr2 = "0198273645 \\uD123\\ud222\\u1F00 \\ud801\\udc01 wqfufewkgefyegrlfbdal";
-    const char * invailStr0 = "019827\t3645";
-    const char * invailStr1 = "019827 \\ud801\\ud801 3645";
-    const char * invailStr2 = "019827 \\udc01 3645";
-    const char * invailStr3 = "019827";
-    const char * vailStr4 = "";
+void CheckStrTest()
+{
+    const char *vaildStr0 = "0198273645!@@#$%$wqfufewkgefyegrlfbdal[]'';;~~`";
+    const char *vaildStr1 = "0198273645 \\t\\r\\n\\b\\f\\\" wqfufewkgefyegrlfbdal";
+    const char *vaildStr2 = "0198273645 \\uD123\\ud222\\u1F00 \\ud801\\udc01 wqfufewkgefyegrlfbdal";
+    const char *invailStr0 = "019827\t3645";
+    const char *invailStr1 = "019827 \\ud801\\ud801 3645";
+    const char *invailStr2 = "019827 \\udc01 3645";
+    const char *invailStr3 = "019827";
+    const char *vailStr4 = "";
     SIZE len = 0;
     CheckRet(__func__, __LINE__, zzz_CheckStr(vaildStr0, &len) == zzz_True);
     CheckRet(__func__, __LINE__, len == strlen(vaildStr0));
@@ -284,30 +303,31 @@ void CheckStrTest() {
 
     CheckRet(__func__, __LINE__, zzz_CheckStr(invailStr2, &len) == zzz_False);
 
-    CheckRet(__func__, __LINE__, zzz_CheckStr(invailStr3, &len) == zzz_True);   
+    CheckRet(__func__, __LINE__, zzz_CheckStr(invailStr3, &len) == zzz_True);
 
     CheckRet(__func__, __LINE__, zzz_CheckStr(vailStr4, &len) == zzz_True);
     CheckRet(__func__, __LINE__, len == strlen(vailStr4));
 }
-void ConsumeNumTest() {
-    const char * vaildNum0 = "0.1234e123";
-    const char * vaildNum1 = "123000";
-    const char * vaildNum2 = "123000E123";
-    const char * vaildNum3 = "0";
-    const char * vaildNum4 = "1.23000E123";
-    const char * vaildNum5 = "-1.23000E123";
-    const char * vaildNum6 = "1.23000E-123";
-    const char * vaildNum7 = "0.0";
-    const char * vaildNum8 = "0.03e-123";
-    const char * vaildNum9 = "0.1e0123";
-    const char * vaildNum10 = "0.00000";
+void ConsumeNumTest()
+{
+    const char *vaildNum0 = "0.1234e123";
+    const char *vaildNum1 = "123000";
+    const char *vaildNum2 = "123000E123";
+    const char *vaildNum3 = "0";
+    const char *vaildNum4 = "1.23000E123";
+    const char *vaildNum5 = "-1.23000E123";
+    const char *vaildNum6 = "1.23000E-123";
+    const char *vaildNum7 = "0.0";
+    const char *vaildNum8 = "0.03e-123";
+    const char *vaildNum9 = "0.1e0123";
+    const char *vaildNum10 = "0.00000";
 
-    const char * invaildNum0 = "00";
-    const char * invaildNum1 = ".";
-    const char * invaildNum2 = ".123";
-    const char * invaildNum3 = "01";
-    const char * invaildNum4 = "0.1E1.23";
-    const char * invaildNum5 = "+123";
+    const char *invaildNum0 = "00";
+    const char *invaildNum1 = ".";
+    const char *invaildNum2 = ".123";
+    const char *invaildNum3 = "01";
+    const char *invaildNum4 = "0.1E1.23";
+    const char *invaildNum5 = "+123";
 
     SIZE index = 1;
     CheckRet(__func__, __LINE__, zzz_ConsumeNum(vaildNum0, &index) == zzz_True);
@@ -376,27 +396,27 @@ void ConsumeNumTest() {
 
     index = 1;
     CheckRet(__func__, __LINE__, zzz_ConsumeNum(invaildNum5, &index) == zzz_False);
-
 }
-void CheckNumTest() {
-    const char * vaildNum0 = "0.1234e123";
-    const char * vaildNum1 = "123000";
-    const char * vaildNum2 = "123000E123";
-    const char * vaildNum3 = "0";
-    const char * vaildNum4 = "1.23000E123";
-    const char * vaildNum5 = "-1.23000E123";
-    const char * vaildNum6 = "1.23000E-123";
-    const char * vaildNum7 = "0.0";
-    const char * vaildNum8 = "0.03e-123";
-    const char * vaildNum9 = "0.1e0123";
-    const char * vaildNum10 = "0.00000";
+void CheckNumTest()
+{
+    const char *vaildNum0 = "0.1234e123";
+    const char *vaildNum1 = "123000";
+    const char *vaildNum2 = "123000E123";
+    const char *vaildNum3 = "0";
+    const char *vaildNum4 = "1.23000E123";
+    const char *vaildNum5 = "-1.23000E123";
+    const char *vaildNum6 = "1.23000E-123";
+    const char *vaildNum7 = "0.0";
+    const char *vaildNum8 = "0.03e-123";
+    const char *vaildNum9 = "0.1e0123";
+    const char *vaildNum10 = "0.00000";
 
-    const char * invaildNum0 = "00";
-    const char * invaildNum1 = ".";
-    const char * invaildNum2 = ".123";
-    const char * invaildNum3 = "01";
-    const char * invaildNum4 = "0.1E1.23";
-    const char * invaildNum5 = "+123";
+    const char *invaildNum0 = "00";
+    const char *invaildNum1 = ".";
+    const char *invaildNum2 = ".123";
+    const char *invaildNum3 = "01";
+    const char *invaildNum4 = "0.1E1.23";
+    const char *invaildNum5 = "+123";
 
     SIZE len = 1;
     CheckRet(__func__, __LINE__, zzz_CheckNum(vaildNum0, &len) == zzz_True);
@@ -459,9 +479,9 @@ void CheckNumTest() {
 
     len = 1;
     CheckRet(__func__, __LINE__, zzz_CheckNum(invaildNum5, &len) == zzz_False);
-
 }
-void ParseAndStringifyTest() {
+void ParseAndStringifyTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[]";
     Value *v = NewValue(A);
@@ -511,7 +531,8 @@ void ParseAndStringifyTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void GetStringTest() {
+void GetStringTest()
+{
     Allocator *A = NewAllocator();
     Value *v = NewValue(A);
     const char *json = "\"str\"";
@@ -546,7 +567,8 @@ void GetStringTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void GetNumTest() {
+void GetNumTest()
+{
     Allocator *A = NewAllocator();
     Value *v = NewValue(A);
     const char *json = "123";
@@ -554,15 +576,15 @@ void GetNumTest() {
     SIZE len;
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     num = GetNumFast(v, &len);
-    CheckRet(__func__, __LINE__,  num != 0);
+    CheckRet(__func__, __LINE__, num != 0);
     CheckRet(__func__, __LINE__, string(num, len) == string("123"));
     num = GetNumStr(v);
-    CheckRet(__func__, __LINE__,  num != 0);
-    CheckRet(__func__, __LINE__,  strlen(num) == 3);
+    CheckRet(__func__, __LINE__, num != 0);
+    CheckRet(__func__, __LINE__, strlen(num) == 3);
     CheckRet(__func__, __LINE__, string(num) == string("123"));
     const double *d = GetNum(v);
-    CheckRet(__func__, __LINE__,  d != 0);
-    CheckRet(__func__, __LINE__,  *d == 123);
+    CheckRet(__func__, __LINE__, d != 0);
+    CheckRet(__func__, __LINE__, *d == 123);
 
     json = "[]";
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
@@ -572,7 +594,8 @@ void GetNumTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void GetKeyTest() {
+void GetKeyTest()
+{
     Allocator *A = NewAllocator();
     Value *v = NewValue(A);
     const char *json = "{\"key\":123}";
@@ -580,31 +603,31 @@ void GetKeyTest() {
     SIZE len;
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     key = GetKeyFast(ObjGet(v, "key"), &len);
-    CheckRet(__func__, __LINE__,  key != 0);
+    CheckRet(__func__, __LINE__, key != 0);
     CheckRet(__func__, __LINE__, string(key, len) == string("key"));
 
     key = GetKey(ObjGet(v, "key"));
-    CheckRet(__func__, __LINE__,  key != 0);
-    CheckRet(__func__, __LINE__,  strlen(key) == 3);
+    CheckRet(__func__, __LINE__, key != 0);
+    CheckRet(__func__, __LINE__, strlen(key) == 3);
     CheckRet(__func__, __LINE__, string(key) == string("key"));
 
     Value *vv = ObjGet(v, "key");
     SetKey(vv, "key1");
     key = GetKey(vv);
-    CheckRet(__func__, __LINE__,  key != 0);
-    CheckRet(__func__, __LINE__,  strlen(key) == 4);
+    CheckRet(__func__, __LINE__, key != 0);
+    CheckRet(__func__, __LINE__, strlen(key) == 4);
     CheckRet(__func__, __LINE__, string(key) == string("key1"));
 
     SetKey(vv, "key2");
     key = GetUnEscapeKey(vv);
-    CheckRet(__func__, __LINE__,  key != 0);
-    CheckRet(__func__, __LINE__,  strlen(key) == 4);
+    CheckRet(__func__, __LINE__, key != 0);
+    CheckRet(__func__, __LINE__, strlen(key) == 4);
     CheckRet(__func__, __LINE__, string(key) == string("key2"));
 
     SetKey(vv, "key3");
     key = GetUnEscapeKey(vv);
-    CheckRet(__func__, __LINE__,  key != 0);
-    CheckRet(__func__, __LINE__,  strlen(key) == 4);
+    CheckRet(__func__, __LINE__, key != 0);
+    CheckRet(__func__, __LINE__, strlen(key) == 4);
     CheckRet(__func__, __LINE__, string(key) == string("key3"));
 
     json = "[]";
@@ -615,47 +638,50 @@ void GetKeyTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void GetBoolTest() {
+void GetBoolTest()
+{
     Allocator *A = NewAllocator();
     Value *v = NewValue(A);
     const char *json = "false";
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     const zzz_BOOL *ret = GetBool(v);
-    CheckRet(__func__, __LINE__,  ret != 0);
+    CheckRet(__func__, __LINE__, ret != 0);
     CheckRet(__func__, __LINE__, *ret == zzz_False);
 
     json = "true";
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     ret = GetBool(v);
-    CheckRet(__func__, __LINE__,  ret != 0);
+    CheckRet(__func__, __LINE__, ret != 0);
     CheckRet(__func__, __LINE__, *ret == zzz_True);
 
     json = "{}";
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     ret = GetBool(v);
-    CheckRet(__func__, __LINE__,  ret == 0);
+    CheckRet(__func__, __LINE__, ret == 0);
 
     ReleaseAllocator(A);
-    CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);    
+    CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void IsNullTest() {
+void IsNullTest()
+{
     Allocator *A = NewAllocator();
     Value *v = NewValue(A);
     const char *json = "null";
     zzz_BOOL b;
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     zzz_BOOL ret = IsNull(v);
-    CheckRet(__func__, __LINE__,  ret == zzz_True);
+    CheckRet(__func__, __LINE__, ret == zzz_True);
 
     json = "true";
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     ret = IsNull(v);
-    CheckRet(__func__, __LINE__,  ret == zzz_False);
+    CheckRet(__func__, __LINE__, ret == zzz_False);
 
     ReleaseAllocator(A);
-    CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);        
+    CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void ObjGetTest() {
+void ObjGetTest()
+{
     Allocator *A = NewAllocator();
     Value *v = NewValue(A);
     const char *json = "{\"null\":null}";
@@ -663,18 +689,19 @@ void ObjGetTest() {
     Value *gv = ObjGet(v, "null");
     const JSONType *t;
     t = Type(gv);
-    CheckRet(__func__, __LINE__,  *t == zzz_JSONTypeNull);
+    CheckRet(__func__, __LINE__, *t == zzz_JSONTypeNull);
 
     json = "{\"null\":123}";
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     gv = ObjGet(v, "null");
     t = Type(gv);
-    CheckRet(__func__, __LINE__,  *t == zzz_JSONTypeNum);
+    CheckRet(__func__, __LINE__, *t == zzz_JSONTypeNum);
 
     ReleaseAllocator(A);
-    CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);        
+    CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void SizeTest() {
+void SizeTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[]";
     Value *v = NewValue(A);
@@ -718,36 +745,39 @@ void SizeTest() {
     CheckRet(__func__, __LINE__, Size(v) == 1);
 
     ReleaseAllocator(A);
-    CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);    
+    CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void ArrayGetTest() {
+void ArrayGetTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[]";
     Value *v = NewValue(A);
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
-    Value *gv = ArrayGet(v,0);
+    Value *gv = ArrayGet(v, 0);
     CheckRet(__func__, __LINE__, gv == 0);
 
     json = "[true,false,null,[null,false,[],true],[\"\",123,\"str\"],null]";
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
-    gv = ArrayGet(v,3);
+    gv = ArrayGet(v, 3);
     const JSONType *t;
     t = Type(gv);
     CheckRet(__func__, __LINE__, *t == zzz_JSONTypeArray);
-    gv = ArrayGet(v,30);
+    gv = ArrayGet(v, 30);
     CheckRet(__func__, __LINE__, gv == 0);
 
     ReleaseAllocator(A);
-    CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);    
+    CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void BeginAndNextTest() {
+void BeginAndNextTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[true,false,null,[null,false,[],true],[\"\",123,\"str\"],null]";
     Value *v = NewValue(A);
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     Value *next = Begin(v);
     SIZE count = 0;
-    while (next) {
+    while (next)
+    {
         ++count;
         next = Next(next);
     }
@@ -755,7 +785,8 @@ void BeginAndNextTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void CopyAndMoveTest() {
+void CopyAndMoveTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[true,false,null,[{\"key\":123},null,false,[],true],[\"\",123,\"str\"],null]";
     Value *v = NewValue(A);
@@ -777,7 +808,8 @@ void CopyAndMoveTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void SetNullTest() {
+void SetNullTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[true,false,null,[null,false,[],true],[\"\",123,\"str\"],null]";
     Value *v = NewValue(A);
@@ -791,7 +823,8 @@ void SetNullTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void SetBoolTest() {
+void SetBoolTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[true,false,null,[null,false,[],true],[\"\",123,\"str\"],null]";
     Value *v = NewValue(A);
@@ -805,31 +838,47 @@ void SetBoolTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void SetNumTest() {
+void SetNumTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[true,false,null,[null,false,[],true],[\"\",123,\"str\"],null]";
     Value *v = NewValue(A);
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     Value *sv = ArrayGet(v, 0);
-    SetNumFast(sv, "123");
+    SetNumStrFast(sv, "123");
+    CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[123,false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
+    SetNumStrLenFast(sv, "123", 3);
     CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[123,false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
     SetNumStr(sv, "1234");
     CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[1234,false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
+    SetNumStrLen(sv, "1234", 4);
+    CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[1234,false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
     SetNum(sv, 12345);
     CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[12345,false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
-    CheckRet(__func__, __LINE__, SetNumFast(sv, "123abc") == zzz_False);
+    CheckRet(__func__, __LINE__, SetNumStrFast(sv, "123abc") == zzz_False);
+    CheckRet(__func__, __LINE__, SetNumStrLenFast(sv, "123abc", 6) == zzz_False);
+    CheckRet(__func__, __LINE__, SetNumStrLenFast(sv, "123\0", 4) == zzz_False);
+    CheckRet(__func__, __LINE__, SetNumStrLenFast(sv, "123\0", 3) == zzz_True);
     CheckRet(__func__, __LINE__, SetNumStr(sv, "123abc") == zzz_False);
+    CheckRet(__func__, __LINE__, SetNumStrLen(sv, "123abc", 6) == zzz_False);
+    CheckRet(__func__, __LINE__, SetNumStrLen(sv, "123\0", 4) == zzz_False);
+    CheckRet(__func__, __LINE__, SetNumStrLen(sv, "123\0", 3) == zzz_True);
     Value *vv = NewValue(A);
-    SetNumFast(vv, "123");
+    SetNumStrFast(vv, "123");
+    CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("123"));
+    SetNumStrLenFast(vv, "123", 3);
     CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("123"));
     SetNumStr(vv, "1234");
+    CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("1234"));
+    SetNumStrLen(vv, "1234", 4);
     CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("1234"));
     SetNum(vv, 12345);
     CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("12345"));
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void SetStrTest() {
+void SetStrTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[true,false,null,[null,false,[],true],[\"\",123,\"str\"],null]";
     Value *v = NewValue(A);
@@ -837,21 +886,34 @@ void SetStrTest() {
     Value *sv = ArrayGet(v, 0);
     SetStrFast(sv, "123");
     CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[\"123\",false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
+    SetStrLenFast(sv, "123", 3);
+    CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[\"123\",false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
     SetStr(sv, "1234");
     CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[\"1234\",false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
+    SetStrLen(sv, "1234", 4);
+    CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[\"1234\",false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
     CheckRet(__func__, __LINE__, SetStrFast(sv, "123ab\tc") == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrLenFast(sv, "123ab\tc", 7) == zzz_False);
     CheckRet(__func__, __LINE__, SetStr(sv, "123a\nbc") == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrLen(sv, "123a\nbc", 7) == zzz_False);
     CheckRet(__func__, __LINE__, SetStr(sv, "123a\\udc01bc") == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrLen(sv, "123a\\udc01bc", 12) == zzz_False);
     CheckRet(__func__, __LINE__, SetStr(sv, "123a\"aaa") == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrLen(sv, "123a\"aaa", 8) == zzz_False);
     Value *vv = NewValue(A);
     SetStrFast(vv, "123");
     CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("\"123\""));
+    SetStrLenFast(vv, "123", 3);
+    CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("\"123\""));
     SetStr(vv, "1234");
+    CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("\"1234\""));
+    SetStrLen(vv, "1234", 4);
     CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("\"1234\""));
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void SetObjArrayTest() {
+void SetObjArrayTest()
+{
     Allocator *A = NewAllocator();
     Value *v = NewValue(A);
     SetArray(v);
@@ -861,14 +923,15 @@ void SetObjArrayTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void SetKeyTest() {
+void SetKeyTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[{\"key\":true},false,null,[null,false,[],true],[\"\",123,\"str\"],null]";
     Value *v = NewValue(A);
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     Value *sv = ArrayGet(v, 0);
     CheckRet(__func__, __LINE__, SetKeyFast(sv, "123") == zzz_False);
-    sv = ObjGet(sv,"key");
+    sv = ObjGet(sv, "key");
     SetKeyFast(sv, "123");
     CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[{\"123\":true},false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
     SetKey(sv, "1234");
@@ -886,7 +949,8 @@ void SetKeyTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void ValueSetTest() {
+void ValueSetTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[{\"key\":true},false,null,[null,false,[],true],[\"\",123,\"str\"],null]";
     Value *v = NewValue(A);
@@ -915,7 +979,8 @@ void ValueSetTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void ValueObjAddTest() {
+void ValueObjAddTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[{\"key\":true},false,{\"key1\":true},[null,false,[],true],[\"\",123,\"str\"],null]";
     Value *v = NewValue(A);
@@ -945,7 +1010,8 @@ void ValueObjAddTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void ValueArrayAddTest() {
+void ValueArrayAddTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[{\"key\":true},false,[],[null,false,[],true],[\"\",123,\"str\"],null]";
     Value *v = NewValue(A);
@@ -975,7 +1041,8 @@ void ValueArrayAddTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void DelTest() {
+void DelTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[{\"key\":true},false,{\"key1\":true},[null,false,[],true],[\"\",123,\"str\"],null]";
     Value *v = NewValue(A);
@@ -989,68 +1056,75 @@ void DelTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void GetAndSet(Value *srcv, Value *desv) {
+void GetAndSet(Value *srcv, Value *desv)
+{
     const JSONType *t;
     t = Type(srcv);
-    switch (*t) {
-        case JSONTYPEARRAY:
+    switch (*t)
+    {
+    case JSONTYPEARRAY:
+    {
+        SetArray(desv);
+        Value *next = Begin(srcv);
+        while (next != 0)
         {
-            SetArray(desv);
-            Value *next = Begin(srcv);
-            while (next != 0) {
-                Value *v = NewValue(desv->A);
-                GetAndSet(next, v);
-                ArrayAddFast(desv, v);
-                next = Next(next);
-            }
+            Value *v = NewValue(desv->A);
+            GetAndSet(next, v);
+            ArrayAddFast(desv, v);
+            next = Next(next);
         }
-        break;
-        case JSONTYPEOBJ:
+    }
+    break;
+    case JSONTYPEOBJ:
+    {
+        SetObj(desv);
+        Value *next = Begin(srcv);
+        while (next != 0)
         {
-            SetObj(desv);
-            Value *next = Begin(srcv);
-            while (next != 0) {
-                Value *v = NewValue(desv->A);
-                SetKeyFast(v, GetKey(next));
-                GetAndSet(next, v);
-                ObjAddFast(desv, v);
-                next = Next(next);
-            }
+            Value *v = NewValue(desv->A);
+            SetKeyFast(v, GetKey(next));
+            GetAndSet(next, v);
+            ObjAddFast(desv, v);
+            next = Next(next);
         }
-        break;
-        case JSONTYPEBOOL:
-        {
-            const zzz_BOOL *b = GetBool(srcv);
-            if (b == 0)
-                return;
-            SetBool(desv, *b);
-        }
-        break;
-        case JSONTYPENULL:
-        {
-            zzz_BOOL b;
-            if (IsNull(srcv) == zzz_False)
-                return;
-            SetNull(desv);
-        }
-        break;
-        case JSONTYPESTRING:
-        {
-            const char *str = GetString(srcv);
-            if (str == 0) return;
-            SetStrFast(desv, str);
-        }
-        break;
-        case JSONTYPENUM:
-        {
-            const char *str = GetNumStr(srcv);
-            if (str == 0) return;
-            SetNumFast(desv, str);
-        }
-        break;
+    }
+    break;
+    case JSONTYPEBOOL:
+    {
+        const zzz_BOOL *b = GetBool(srcv);
+        if (b == 0)
+            return;
+        SetBool(desv, *b);
+    }
+    break;
+    case JSONTYPENULL:
+    {
+        zzz_BOOL b;
+        if (IsNull(srcv) == zzz_False)
+            return;
+        SetNull(desv);
+    }
+    break;
+    case JSONTYPESTRING:
+    {
+        const char *str = GetString(srcv);
+        if (str == 0)
+            return;
+        SetStrFast(desv, str);
+    }
+    break;
+    case JSONTYPENUM:
+    {
+        const char *str = GetNumStr(srcv);
+        if (str == 0)
+            return;
+        SetNumStrFast(desv, str);
+    }
+    break;
     }
 }
-void GetSetTest() {
+void GetSetTest()
+{
     Allocator *A = NewAllocator();
     const char *json = "[{\"key\":true},false,{\"key1\":true},[null,false,[],true],[\"\",123,\"str\"],null]";
     Value *srcv = NewValue(A);
@@ -1061,12 +1135,15 @@ void GetSetTest() {
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
-void GetSetTest1() {
+void GetSetTest1()
+{
     string data_path = "test/conformance/data/roundtrip/roundtrip";
-    for (int i = 1; i <= 37; ++i) {
+    for (int i = 1; i <= 37; ++i)
+    {
         stringstream ss;
         ss << data_path;
-        if (i < 10) ss << "0";
+        if (i < 10)
+            ss << "0";
         ss << i;
         ss << ".json";
         string json = Read(ss.str());
@@ -1204,7 +1281,8 @@ BOOL GenRandomValue(Value *v, int *len, int level, int max_len, int max_level)
     return True;
 }
 
-void CoreTest() {
+void CoreTest()
+{
     int max_len = 100000;
     int max_level = 100;
     int len = 0;
@@ -1215,7 +1293,8 @@ void CoreTest() {
     CheckRet(__func__, __LINE__, json != 0);
     ReleaseAllocator(A);
 }
-int main() {
+int main()
+{
     printf("==================%s==================\n", "function_test");
     MemoryTest();
     StringTest();

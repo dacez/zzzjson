@@ -1,5 +1,5 @@
 #include "zzzjson.h"
-
+#include <stdio.h>
 int main()
 {
     Allocator *A = NewAllocator();
@@ -8,13 +8,10 @@ int main()
     BOOL ret = ParseFast(v, json);
     if (ret == True)
     {
-        Value *vv = ObjGetLen(v, "key123", 6);
-        if (vv != 0)
-        {
-            SetNumStr(vv, "1234");
-            const char *ret_json = Stringify(v);
-            printf("%s\n", ret_json);
-        }
+        Value *vv = ObjGet(v, "key123");
+        SetKeyLenFast(vv, "key234", 6);
+        const char *v_str = Stringify(v);
+        if (v_str != 0) printf("%s\n", v_str);
     }
     ReleaseAllocator(A);
 }
