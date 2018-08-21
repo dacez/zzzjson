@@ -2033,7 +2033,7 @@ int main()
 
 false
 
-####SetNumStr
+#### SetNumStr
 
 ```c
 // 短命名
@@ -2144,7 +2144,7 @@ int main()
 
 -1.2345678912345561e+25
 
-####SetNumStrFast
+#### SetNumStrFast
 
 ```c
 // 短命名
