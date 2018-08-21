@@ -56,7 +56,7 @@
     + [写操作](#写操作)
       - [SetBool](#setbool)
       - [SetNumStr](#setnumstr)
-      - [SetNumLenStr](#setnumlenstr)
+      - [SetNumStrLen](#setnumlenstr)
       - [SetNumStrFast](#setnumstrfast)
       - [SetNumStrLenFast](#setnumstrlenfast)
       - [SetNum](#setnum)
