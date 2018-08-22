@@ -420,7 +420,7 @@ void GetAndSet(Value *srcv, Value *desv)
         return;
     switch (*t)
     {
-    case TYPEARRAY:
+    case JSONTYPEARRAY:
     {
         // 如果是数组，则把当前值设为数组，然后遍历并复制数组中的每个值
         SetArray(desv);
@@ -435,7 +435,7 @@ void GetAndSet(Value *srcv, Value *desv)
         }
         break;
     }
-    case TYPEOBJ:
+    case JSONTYPEOBJ:
     {
         // 如果是对象，则把当前值设为对象，然后遍历并复制对象中的每个值
         SetObj(desv);
@@ -451,7 +451,7 @@ void GetAndSet(Value *srcv, Value *desv)
         }
         break;
     }
-    case TYPEBOOL:
+    case JSONTYPEBOOL:
     {
         // 如果是布尔值，则获取并复制该值
         const zzz_BOOL *b = GetBool(srcv);
@@ -460,7 +460,7 @@ void GetAndSet(Value *srcv, Value *desv)
         SetBool(desv, *b);
         break;
     }
-    case TYPENULL:
+    case JSONTYPENULL:
     {
         // 如果是空，则复制该值
         if (IsNull(srcv) == False)
@@ -469,7 +469,7 @@ void GetAndSet(Value *srcv, Value *desv)
         break;
     }
 
-    case TYPESTRING:
+    case JSONTYPESTRING:
     {
         // 如果是字符串，则获取并复制该字符串
         const char *str = GetString(srcv);
@@ -480,7 +480,7 @@ void GetAndSet(Value *srcv, Value *desv)
             return;
         break;
     }
-    case TYPENUM:
+    case JSONTYPENUM:
     {
         // 如果是数字，则获取并复制该数字
         const char *str = GetNumStr(srcv);
