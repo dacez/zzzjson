@@ -895,7 +895,7 @@ static inline zzz_BOOL zzz_ConsumeHex(const char *s, zzz_SIZE *index, zzz_SIZE *
     return zzz_False;
 }
 
-// 专为 zz_ValueGetUnEscapeString 使用
+// 专为 zzz_ValueGetUnEscapeString 使用
 static inline void zzz_ConsumeHexForUnEscape(const char *s, zzz_SIZE *index, zzz_SIZE *cp)
 {
     zzz_ConsumeHexOneForUnEscape(s, index, cp);
@@ -905,13 +905,13 @@ static inline void zzz_ConsumeHexForUnEscape(const char *s, zzz_SIZE *index, zzz
     return;
 }
 
-// 专为 zz_ValueGetUnEscapeString 使用，追加一个字符
+// 专为 zzz_ValueGetUnEscapeString 使用，追加一个字符
 static inline void zzz_Append(char *s, zzz_SIZE *index, char c)
 {
     s[(*index)++] = c;
 }
 
-// 专为 zz_ValueGetUnEscapeString 使用，追加一个UTF8字符
+// 专为 zzz_ValueGetUnEscapeString 使用，追加一个UTF8字符
 static inline void zzz_AppendUTF8(char *s, zzz_SIZE *index, zzz_SIZE codepoint)
 {
 
@@ -940,7 +940,7 @@ static inline void zzz_AppendUTF8(char *s, zzz_SIZE *index, zzz_SIZE codepoint)
     }
 }
 
-// 专为 zz_ValueGetUnEscapeString 使用，追加一个结束符号
+// 专为 zzz_ValueGetUnEscapeString 使用，追加一个结束符号
 static inline void zzz_AppendEnd(char *s, zzz_SIZE *index)
 {
     zzz_Append(s, index, 0);
@@ -1181,6 +1181,7 @@ static inline zzz_BOOL zzz_CheckStr(const char *s, zzz_SIZE *len)
     *len = index - 1;
     return zzz_True;
 }
+// 较为省事的一种实现方法，后面会实现更高效的算法
 static inline zzz_BOOL zzz_CheckStrLen(struct zzz_Allocator *alloc, const char *s, zzz_SIZE len)
 {
     if (zzz_UNLIKELY(zzz_StringCache == 0)) {
