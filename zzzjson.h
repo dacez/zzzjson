@@ -1,8 +1,14 @@
 #ifndef zzz_JSON_H
 #define zzz_JSON_H
 
+#include <malloc.h> // 使用其 malloc 和 free 函数
+#include <string.h> // 使用其 memcpy 函数
+#include <stdlib.h> // 使用其 atof 函数
+#include <stdio.h>  // 使用其 sprintf 函数
+#include <stdint.h> // 使用其 uint32_t 
+
 // 长命名的 类型 & 常量 & 用作常量的宏，详见《数据结构》
-typedef unsigned int zzz_SIZE;
+typedef uint32_t zzz_SIZE;
 
 typedef char zzz_BOOL;
 static const zzz_BOOL zzz_True = 1;
@@ -38,11 +44,13 @@ static const zzz_SIZE zzz_Delta = zzz_DELTA;
 #endif
 static const zzz_SIZE zzz_AllocatorInitMemSize = zzz_ALLOCATORINITMEMSIZE;
 
+// Stringify函数初始化字符串的大小
 #ifndef zzz_STRINGINITMEMSIZE
 #define zzz_STRINGINITMEMSIZE 1024
 #endif
 static const zzz_SIZE zzz_StringInitMemSize = zzz_STRINGINITMEMSIZE;
 
+// 用zzz_String作为Cache时初始化内存的大小，后面可能去掉
 #ifndef zzz_STRINGCACHEINITMEMSIZE
 #define zzz_STRINGCACHEINITMEMSIZE 128
 #endif
@@ -50,10 +58,6 @@ static const zzz_SIZE zzz_StringCacheInitMemSize = zzz_STRINGCACHEINITMEMSIZE;
 
 // 环境适配
 
-#include <malloc.h> // 使用其 malloc 和 free 函数
-#include <string.h> // 使用其 memcpy 函数
-#include <stdlib.h> // 使用其 atof 函数
-#include <stdio.h>  // 使用其 sprintf 函数
 
 #ifndef zzz_MEMORY_MODE
 #define zzz_MEMORY_MODE 1
@@ -806,7 +810,7 @@ static inline zzz_BOOL zzz_UnLikelyPeekAndConsume(const char c, const char *s, z
 // 消费False
 static inline zzz_BOOL zzz_ConsumeFalse(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((zzz_SIZE *)("alse")) == *((zzz_SIZE *)(s + *index)))) {
+    if (zzz_LIKELY(*((uint32_t *)("alse")) == *((zzz_SIZE *)(s + *index)))) {
         *index += 4;
         return zzz_True;
     }
@@ -816,7 +820,7 @@ static inline zzz_BOOL zzz_ConsumeFalse(const char *s, zzz_SIZE *index)
 // 消费True
 static inline zzz_BOOL zzz_ConsumeTrue(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((zzz_SIZE *)zzz_StrTrue) == *((zzz_SIZE *)(s + *index - 1)))) {
+    if (zzz_LIKELY(*((uint32_t *)zzz_StrTrue) == *((zzz_SIZE *)(s + *index - 1)))) {
         *index += 3;
         return zzz_True;
     }
@@ -826,7 +830,7 @@ static inline zzz_BOOL zzz_ConsumeTrue(const char *s, zzz_SIZE *index)
 // 消费Null
 static inline zzz_BOOL zzz_ConsumeNull(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((zzz_SIZE *)zzz_StrNull) == *((zzz_SIZE *)(s + *index - 1)))) {
+    if (zzz_LIKELY(*((uint32_t *)zzz_StrNull) == *((zzz_SIZE *)(s + *index - 1)))) {
         *index += 3;
         return zzz_True;
     }
