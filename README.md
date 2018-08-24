@@ -363,12 +363,12 @@ zzzJSON一共有三种基础类型，分别是：
 
 | 长命名     | 短命名             | 值   |
 | ---------- | ------------------ | ---- |
-| JSONTYPEBOOL   | zzz_JSONTYPEBOOL   | 1    |
-| JSONTYPEARRAY  | zzz_JSONTYPEARRAY  | 2    |
-| JSONTYPEOBJ    | zzz_JSONTYPEOBJ    | 3    |
-| JSONTYPESTRING | zzz_JSONTYPESTRING | 4    |
-| JSONTYPENULL   | zzz_JSONTYPENULL   | 5    |
-| JSONTYPENUM    | zzz_JSONTYPENUM    | 6    |
+| zzz_JSONTYPEBOOL    | JSONTYPEBOOL   | 1    |
+| zzz_JSONTYPEARRAY   | JSONTYPEARRAY  | 2    |
+| zzz_JSONTYPEOBJ     | JSONTYPEOBJ    | 3    |
+| zzz_JSONTYPESTRING  | JSONTYPESTRING | 4    |
+| zzz_JSONTYPENULL    | JSONTYPENULL   | 5    |
+| zzz_JSONTYPENUM     | JSONTYPENUM    | 6    |
 
 ### 结构
 
