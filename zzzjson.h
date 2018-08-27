@@ -2,7 +2,7 @@
 #define zzz_JSON_H
 
 #include <string.h> // 使用其 memcpy 函数
-#include <stdlib.h> // 使用其 atof 函数
+#include <stdlib.h> // 使用其 atof malloc free 函数
 #include <stdio.h>  // 使用其 sprintf 函数
 #include <stdint.h> // 使用其 uint32_t 
 
