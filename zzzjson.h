@@ -1,7 +1,6 @@
 #ifndef zzz_JSON_H
 #define zzz_JSON_H
 
-#include <malloc.h> // 使用其 malloc 和 free 函数
 #include <string.h> // 使用其 memcpy 函数
 #include <stdlib.h> // 使用其 atof 函数
 #include <stdio.h>  // 使用其 sprintf 函数
