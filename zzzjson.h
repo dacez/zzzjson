@@ -4,7 +4,7 @@
 #include <string.h> // 使用其 memcpy 函数
 #include <stdlib.h> // 使用其 atof malloc free 函数
 #include <stdio.h>  // 使用其 sprintf 函数
-#include <stdint.h> // 使用其 uint32_t 
+#include <stdint.h> // 使用其 uint32_t
 
 // 长命名的 类型 & 常量 & 用作常量的宏，详见《数据结构》
 typedef uint32_t zzz_SIZE;
@@ -56,7 +56,6 @@ static const zzz_SIZE zzz_StringInitMemSize = zzz_STRINGINITMEMSIZE;
 static const zzz_SIZE zzz_StringCacheInitMemSize = zzz_STRINGCACHEINITMEMSIZE;
 
 // 环境适配
-
 
 #ifndef zzz_MEMORY_MODE
 #define zzz_MEMORY_MODE 1
@@ -469,7 +468,8 @@ static inline zzz_BOOL zzz_StrIsEqual(const char *a, const char *b, zzz_SIZE len
 // 字符串比较，len为b的长度。
 static inline zzz_BOOL zzz_StrIsEqualLen(const char *a, zzz_SIZE a_len, const char *b, zzz_SIZE b_len)
 {
-    if (zzz_LIKELY(a_len != b_len)) {
+    if (zzz_LIKELY(a_len != b_len))
+    {
         return zzz_False;
     }
     zzz_SIZE i;
@@ -600,7 +600,7 @@ static inline struct zzz_String *zzz_StringNew(struct zzz_Allocator *alloc, zzz_
 }
 
 // 清空一个字符串
-static inline void zzz_StringReset(struct zzz_String *str) 
+static inline void zzz_StringReset(struct zzz_String *str)
 {
     str->Pos = 0;
 }
@@ -809,7 +809,8 @@ static inline zzz_BOOL zzz_UnLikelyPeekAndConsume(const char c, const char *s, z
 // 消费False
 static inline zzz_BOOL zzz_ConsumeFalse(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((uint32_t *)("alse")) == *((zzz_SIZE *)(s + *index)))) {
+    if (zzz_LIKELY(*((uint32_t *)("alse")) == *((zzz_SIZE *)(s + *index))))
+    {
         *index += 4;
         return zzz_True;
     }
@@ -819,7 +820,8 @@ static inline zzz_BOOL zzz_ConsumeFalse(const char *s, zzz_SIZE *index)
 // 消费True
 static inline zzz_BOOL zzz_ConsumeTrue(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((uint32_t *)zzz_StrTrue) == *((zzz_SIZE *)(s + *index - 1)))) {
+    if (zzz_LIKELY(*((uint32_t *)zzz_StrTrue) == *((zzz_SIZE *)(s + *index - 1))))
+    {
         *index += 3;
         return zzz_True;
     }
@@ -829,7 +831,8 @@ static inline zzz_BOOL zzz_ConsumeTrue(const char *s, zzz_SIZE *index)
 // 消费Null
 static inline zzz_BOOL zzz_ConsumeNull(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((uint32_t *)zzz_StrNull) == *((zzz_SIZE *)(s + *index - 1)))) {
+    if (zzz_LIKELY(*((uint32_t *)zzz_StrNull) == *((zzz_SIZE *)(s + *index - 1))))
+    {
         *index += 3;
         return zzz_True;
     }
@@ -908,6 +911,12 @@ static inline void zzz_ConsumeHexForUnEscape(const char *s, zzz_SIZE *index, zzz
 static inline void zzz_Append(char *s, zzz_SIZE *index, char c)
 {
     s[(*index)++] = c;
+}
+
+static inline void zzz_AppendLen(char *s, zzz_SIZE *index, const char *str, zzz_SIZE len)
+{
+    zzz_Copy(str, len, s + (*index));
+    *index += len;
 }
 
 // 专为 zzz_ValueGetUnEscapeString 使用，追加一个UTF8字符
@@ -1035,6 +1044,154 @@ static inline void zzz_UnEscapeString(const char *str, zzz_SIZE len, char *s)
     return;
 }
 
+// str必定不为空，因此，一定会返回一个非空字符串
+static inline const char *zzz_EscapeString(const char *str, struct zzz_Allocator *a)
+{
+    zzz_SIZE l = 0;
+    zzz_SIZE index = 0;
+    const char *src = str;
+    while (zzz_UNLIKELY(*str != 0))
+    {
+        switch (*str)
+        {
+        case '"':
+        case 'b':
+        case 'f':
+        case 'n':
+        case 'r':
+        case 't':
+            l += 2;
+            break;
+        default:
+            l += 1;
+            break;
+        }
+        ++str;
+    }
+    str = src;
+    char *s = zzz_AllocatorAlloc(a, l + 1);
+    l = 0;
+    while (zzz_UNLIKELY(*str != 0))
+    {
+        switch (*str)
+        {
+        case '"':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\\"", 2);
+            break;
+        case 'b':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\b", 2);
+            break;
+        case 'f':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\f", 2);
+            break;
+        case 'n':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\n", 2);
+            break;
+        case 'r':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\r", 2);
+            break;
+        case 't':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\t", 2);
+            break;
+        default:
+            ++l;
+            break;
+        }
+        ++str;
+    }
+    zzz_AppendEnd(s, &index);
+    return s;
+}
+
+// str必定不为空，因此，一定会返回一个非空字符串
+static inline const char *zzz_EscapeStringLen(const char *str, struct zzz_Allocator *a, zzz_SIZE len)
+{
+    zzz_SIZE l = 0;
+    zzz_SIZE index = 0;
+    const char *src = str;
+    while (zzz_UNLIKELY(*str != 0))
+    {
+        switch (*str)
+        {
+        case '"':
+        case 'b':
+        case 'f':
+        case 'n':
+        case 'r':
+        case 't':
+            l += 2;
+            break;
+        default:
+            l += 1;
+            break;
+        }
+        ++str;
+        --len;
+        if (zzz_UNLIKELY(len == 0))
+            break;
+    }
+    str = src;
+    char *s = zzz_AllocatorAlloc(a, l + 1);
+    l = 0;
+    while (zzz_UNLIKELY(*str != 0))
+    {
+        switch (*str)
+        {
+        case '"':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\\"", 2);
+            break;
+        case 'b':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\b", 2);
+            break;
+        case 'f':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\f", 2);
+            break;
+        case 'n':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\n", 2);
+            break;
+        case 'r':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\r", 2);
+            break;
+        case 't':
+            l = 0;
+            zzz_AppendLen(s, &index, str - l, l);
+            zzz_AppendLen(s, &index, "\\t", 2);
+            break;
+        default:
+            ++l;
+            break;
+        }
+        ++str;
+        --len;
+        if (zzz_UNLIKELY(len == 0))
+            break;
+    }
+    zzz_AppendEnd(s, &index);
+    return s;
+}
+
 // 消费字符串
 static inline zzz_BOOL zzz_ConsumeStr(const char *s, zzz_SIZE *index)
 {
@@ -1110,15 +1267,29 @@ static inline zzz_BOOL zzz_ConsumeStr(const char *s, zzz_SIZE *index)
 }
 
 // 检查一个字符串是否符合JSON标准，主要用于 SetStr
-static inline zzz_BOOL zzz_CheckStr(const char *s, zzz_SIZE *len)
+static inline zzz_BOOL zzz_CheckStr(const char *s, zzz_SIZE *len, zzz_BOOL *need_escape)
 {
+    *need_escape = zzz_False;
     zzz_SIZE index = 0;
     char c;
     c = s[index++];
     while (zzz_LIKELY(c != 0))
     {
         if (zzz_UNLIKELY(zzz_UNLIKELY((unsigned char)c <= 0x1f) || zzz_UNLIKELY(c == '"')))
+        {
+            switch (c)
+            {
+            case '"':
+            case 'b':
+            case 'f':
+            case 'n':
+            case 'r':
+            case 't':
+                *need_escape = zzz_True;
+                break;
+            }
             return zzz_False;
+        }
         if (zzz_UNLIKELY(c == '\\'))
         {
             c = s[index++];
@@ -1181,20 +1352,25 @@ static inline zzz_BOOL zzz_CheckStr(const char *s, zzz_SIZE *len)
     return zzz_True;
 }
 // 较为省事的一种实现方法，后面会实现更高效的算法
-static inline zzz_BOOL zzz_CheckStrLen(struct zzz_Allocator *alloc, const char *s, zzz_SIZE len)
+static inline zzz_BOOL zzz_CheckStrLen(struct zzz_Allocator *alloc, const char *s, zzz_SIZE len, zzz_BOOL *need_escape)
 {
-    if (zzz_UNLIKELY(zzz_StringCache == 0)) {
+    if (zzz_UNLIKELY(zzz_StringCache == 0))
+    {
         zzz_StringCache = zzz_StringNew(alloc, zzz_StringCacheInitMemSize);
-    } else {
+    }
+    else
+    {
         zzz_StringReset(zzz_StringCache);
     }
     zzz_StringAppendStr(zzz_StringCache, s, len);
     zzz_StringAppendEnd(zzz_StringCache);
     zzz_SIZE avail_len;
-    if (zzz_UNLIKELY(zzz_CheckStr(zzz_StringStr(zzz_StringCache), &avail_len) == zzz_False)){
+    if (zzz_UNLIKELY(zzz_CheckStr(zzz_StringStr(zzz_StringCache), &avail_len, need_escape) == zzz_False))
+    {
         return zzz_False;
     }
-    if (zzz_UNLIKELY(avail_len != len)) return zzz_False;
+    if (zzz_UNLIKELY(avail_len != len))
+        return zzz_False;
     return zzz_True;
 }
 
@@ -1203,7 +1379,8 @@ static inline zzz_BOOL zzz_ConsumeNum(const char *s, zzz_SIZE *index)
 {
     --(*index);
 
-    if (s[*index] == '-') ++(*index);
+    if (s[*index] == '-')
+        ++(*index);
 
     if (zzz_UnLikelyConsume('0', s, index))
     {
@@ -1268,7 +1445,8 @@ static inline zzz_BOOL zzz_CheckNum(const char *s, zzz_SIZE *len)
 {
     zzz_SIZE index = 0;
 
-    if (s[index] == '-') ++(index);
+    if (s[index] == '-')
+        ++(index);
 
     if (zzz_UnLikelyConsume('0', s, &index))
     {
@@ -1333,18 +1511,23 @@ static inline zzz_BOOL zzz_CheckNum(const char *s, zzz_SIZE *len)
 }
 static inline zzz_BOOL zzz_CheckNumLen(struct zzz_Allocator *alloc, const char *s, zzz_SIZE len)
 {
-    if (zzz_UNLIKELY(zzz_StringCache == 0)) {
+    if (zzz_UNLIKELY(zzz_StringCache == 0))
+    {
         zzz_StringCache = zzz_StringNew(alloc, zzz_StringCacheInitMemSize);
-    } else {
+    }
+    else
+    {
         zzz_StringReset(zzz_StringCache);
     }
     zzz_StringAppendStr(zzz_StringCache, s, len);
     zzz_StringAppendEnd(zzz_StringCache);
     zzz_SIZE avail_len;
-    if (zzz_UNLIKELY(zzz_CheckNum(zzz_StringStr(zzz_StringCache), &avail_len) == zzz_False)){
+    if (zzz_UNLIKELY(zzz_CheckNum(zzz_StringStr(zzz_StringCache), &avail_len) == zzz_False))
+    {
         return zzz_False;
     }
-    if (zzz_UNLIKELY(avail_len != len)) return zzz_False;
+    if (zzz_UNLIKELY(avail_len != len))
+        return zzz_False;
     return zzz_True;
 }
 
@@ -2356,12 +2539,31 @@ static inline zzz_BOOL zzz_ValueSetNum(struct zzz_Value *v, const double d)
     return zzz_ValueSetNumStrFast(v, buff);
 }
 
+static inline zzz_BOOL zzz_ValueSetStrEscape(struct zzz_Value *v, const char *str)
+{
+    zzz_ValueInitCache(v);
+    const char *es = zzz_EscapeString(str, v->A);
+    return zzz_ValueSetStrFast(v, es);
+}
+
+static inline zzz_BOOL zzz_ValueSetStrLenEscape(struct zzz_Value *v, const char *str, zzz_SIZE len)
+{
+    zzz_ValueInitCache(v);
+    const char *es = zzz_EscapeStringLen(str, v->A, len);
+    return zzz_ValueSetStrFast(v, es);
+}
+
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetStrFast(struct zzz_Value *v, const char *str)
 {
     zzz_SIZE len = 0;
-    if (zzz_UNLIKELY(zzz_CheckStr(str, &len) == zzz_False))
+    zzz_BOOL need_escape = zzz_False;
+    if (zzz_UNLIKELY(zzz_CheckStr(str, &len, &need_escape) == zzz_False))
+    {
+        if (need_escape)
+            return zzz_ValueSetStrEscape(v, str);
         return zzz_False;
+    }
     zzz_ValueInitCache(v);
     if (zzz_UNLIKELY(v->N == 0))
     {
@@ -2380,8 +2582,13 @@ static inline zzz_BOOL zzz_ValueSetStrFast(struct zzz_Value *v, const char *str)
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetStrLenFast(struct zzz_Value *v, const char *str, zzz_SIZE len)
 {
-    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, str, len) == zzz_False))
+    zzz_BOOL need_escape = zzz_False;
+    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, str, len, &need_escape) == zzz_False))
+    {
+        if (need_escape)
+            return zzz_ValueSetStrLenEscape(v, str, len);
         return zzz_False;
+    }
     zzz_ValueInitCache(v);
     if (zzz_UNLIKELY(v->N == 0))
     {
@@ -2401,8 +2608,13 @@ static inline zzz_BOOL zzz_ValueSetStrLenFast(struct zzz_Value *v, const char *s
 static inline zzz_BOOL zzz_ValueSetStr(struct zzz_Value *v, const char *str)
 {
     zzz_SIZE len = 0;
-    if (zzz_UNLIKELY(zzz_CheckStr(str, &len) == zzz_False))
+    zzz_BOOL need_escape = zzz_False;
+    if (zzz_UNLIKELY(zzz_CheckStr(str, &len, &need_escape) == zzz_False))
+    {
+        if (need_escape)
+            return zzz_ValueSetStrEscape(v, str);
         return zzz_False;
+    }
     zzz_ValueInitCache(v);
     char *s = zzz_AllocatorAlloc(v->A, len);
     zzz_Copy(str, len, s);
@@ -2423,8 +2635,13 @@ static inline zzz_BOOL zzz_ValueSetStr(struct zzz_Value *v, const char *str)
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetStrLen(struct zzz_Value *v, const char *str, zzz_SIZE len)
 {
-    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, str, len) == zzz_False))
+    zzz_BOOL need_escape = zzz_False;
+    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, str, len, &need_escape) == zzz_False))
+    {
+        if (need_escape)
+            return zzz_ValueSetStrLenEscape(v, str, len);
         return zzz_False;
+    }
     zzz_ValueInitCache(v);
     char *s = zzz_AllocatorAlloc(v->A, len);
     zzz_Copy(str, len, s);
@@ -2442,12 +2659,29 @@ static inline zzz_BOOL zzz_ValueSetStrLen(struct zzz_Value *v, const char *str, 
     return zzz_True;
 }
 
+static inline zzz_BOOL zzz_ValueSetKeyEscape(struct zzz_Value *v, const char *key)
+{
+    zzz_ValueInitCache(v);
+    const char *es = zzz_EscapeString(key, v->A);
+    return zzz_ValueSetKeyFast(v, es);
+}
+
+static inline zzz_BOOL zzz_ValueSetKeyLenEscape(struct zzz_Value *v, const char *key, zzz_SIZE len)
+{
+    zzz_ValueInitCache(v);
+    const char *es = zzz_EscapeStringLen(key, v->A, len);
+    return zzz_ValueSetKeyFast(v, es);
+}
+
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetKeyFast(struct zzz_Value *v, const char *key)
 {
     zzz_SIZE len = 0;
-    if (zzz_UNLIKELY(zzz_CheckStr(key, &len) == zzz_False))
+    zzz_BOOL need_escape = zzz_False;
+    if (zzz_UNLIKELY(zzz_CheckStr(key, &len, &need_escape) == zzz_False))
     {
+        if (need_escape)
+            return zzz_ValueSetKeyEscape(v, key);
         return zzz_False;
     }
     if (zzz_UNLIKELY(v->N == 0))
@@ -2473,8 +2707,11 @@ static inline zzz_BOOL zzz_ValueSetKeyFast(struct zzz_Value *v, const char *key)
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetKeyLenFast(struct zzz_Value *v, const char *key, zzz_SIZE len)
 {
-    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, key, len) == zzz_False))
+    zzz_BOOL need_escape = zzz_False;
+    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, key, len, &need_escape) == zzz_False))
     {
+        if (need_escape)
+            return zzz_ValueSetKeyLenEscape(v, key, len);
         return zzz_False;
     }
     if (zzz_UNLIKELY(v->N == 0))
@@ -2501,8 +2738,11 @@ static inline zzz_BOOL zzz_ValueSetKeyLenFast(struct zzz_Value *v, const char *k
 static inline zzz_BOOL zzz_ValueSetKey(struct zzz_Value *v, const char *key)
 {
     zzz_SIZE len = 0;
-    if (zzz_UNLIKELY(zzz_CheckStr(key, &len) == zzz_False))
+    zzz_BOOL need_escape = zzz_False;
+    if (zzz_UNLIKELY(zzz_CheckStr(key, &len, &need_escape) == zzz_False))
     {
+        if (need_escape)
+            return zzz_ValueSetKeyEscape(v, key);
         return zzz_False;
     }
     if (zzz_UNLIKELY(v->N == 0))
@@ -2530,8 +2770,11 @@ static inline zzz_BOOL zzz_ValueSetKey(struct zzz_Value *v, const char *key)
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetKeyLen(struct zzz_Value *v, const char *key, zzz_SIZE len)
 {
-    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, key, len) == zzz_False))
+    zzz_BOOL need_escape = zzz_False;
+    if (zzz_UNLIKELY(zzz_CheckStrLen(v->A, key, len, &need_escape) == zzz_False))
     {
+        if (need_escape)
+            return zzz_ValueSetKeyLenEscape(v, key, len);
         return zzz_False;
     }
     if (zzz_UNLIKELY(v->N == 0))
