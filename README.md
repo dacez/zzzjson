@@ -37,9 +37,9 @@
       - [ParseFast](#parsefast)
       - [Stringify](#stringify)
     + [读操作](#读操作)
-      - [GetString](#getstring)
-      - [GetStringFast](#getstringfast)
-      - [GetUnEscapeString](#getunescapestring)
+      - [GetStr](#getstring)
+      - [GetStrFast](#getstringfast)
+      - [GetUnEscapeStr](#getunescapestring)
       - [GetNumStr](#getnumstr)
       - [GetNumFast](#getnumfast)
       - [GetNum](#getnum)
@@ -64,10 +64,14 @@
       - [SetStrLen](#setstrlen)
       - [SetStrFast](#setstrfast)
       - [SetStrLenFast](#setstrlenfast)
+      - [SetStrEscape](#setstrescape)
+      - [SetStrLenEscape](#setstrlenescape)
       - [SetKey](#setkey)
       - [SetKeyLen](#setkeylen)
       - [SetKeyFast](#setkeyfast)
       - [SetKeyLenFast](#setkeylenfast)
+      - [SetKeyEscape](#setkeyescape)
+      - [SetKeyLenEscape](#setkeylenescape)
       - [SetArray](#setarray)
       - [SetObj](#setobj)
       - [Set](#set)
@@ -353,7 +357,7 @@ zzzJSON一共有三种基础类型，分别是：
 | 布尔类型 | zzz_True           | True       | 1    |
 | 布尔类型 | zzz_False          | False      | 0    |
 | JSON类型 | zzz_JSONTypeArray  | JSONTypeArray  | 2    |
-| JSON类型 | zzz_JSONTypeObj    | JSONTypeObj    | 3    |
+| JSON类型 | zzz_JSONTypeObject    | JSONTypeObject    | 3    |
 | JSON类型 | zzz_JSONTypeString | JSONTypeString | 4    |
 | JSON类型 | zzz_JSONTypeNum    | JSONTypeNum    | 6    |
 | JSON类型 | zzz_JSONTypeBool   | JSONTypeBool   | 1    |
@@ -365,7 +369,7 @@ zzzJSON一共有三种基础类型，分别是：
 | ---------- | ------------------ | ---- |
 | zzz_JSONTYPEBOOL    | JSONTYPEBOOL   | 1    |
 | zzz_JSONTYPEARRAY   | JSONTYPEARRAY  | 2    |
-| zzz_JSONTYPEOBJ     | JSONTYPEOBJ    | 3    |
+| zzz_JSONTYPEOBJECT     | JSONTYPEOBJECT    | 3    |
 | zzz_JSONTYPESTRING  | JSONTYPESTRING | 4    |
 | zzz_JSONTYPENULL    | JSONTYPENULL   | 5    |
 | zzz_JSONTYPENUM     | JSONTYPENUM    | 6    |
@@ -435,7 +439,7 @@ void GetAndSet(Value *srcv, Value *desv)
         }
         break;
     }
-    case JSONTYPEOBJ:
+    case JSONTYPEOBJECT:
     {
         // 如果是对象，则把当前值设为对象，然后遍历并复制对象中的每个值
         SetObj(desv);
@@ -472,7 +476,7 @@ void GetAndSet(Value *srcv, Value *desv)
     case JSONTYPESTRING:
     {
         // 如果是字符串，则获取并复制该字符串
-        const char *str = GetString(srcv);
+        const char *str = GetStr(srcv);
         if (str == 0)
             return;
         // 如果需要拷贝字符串，则需要使用SetStr
@@ -880,13 +884,13 @@ int main() {
 
 读操作不仅包含了获取值数据的各种操作，而且提供了拷贝操作。
 
-#### GetString
+#### GetStr
 
 ```c
 // 短命名
-const char *GetString(Value *v);
+const char *GetStr(Value *v);
 // 长命名
-const char *zzz_ValueGetString(struct zzz_Value *v);
+const char *zzz_ValueGetStr(struct zzz_Value *v);
 ```
 
 作用：
@@ -921,7 +925,7 @@ int main()
         Value *vv = ArrayGet(v, 0);
         if (vv != 0)
         {
-            const char *str = GetString(vv);
+            const char *str = GetStr(vv);
             if (str != 0)
                 printf("%s\n", str);
         }
@@ -934,13 +938,13 @@ int main()
 
 str
 
-#### GetStringFast
+#### GetStrFast
 
 ```c
 // 短命名
-const char *GetStringFast(const Value *v, SIZE *len);
+const char *GetStrFast(const Value *v, SIZE *len);
 // 长命名
-const char *zzz_ValueGetStringFast(const struct zzz_Value *v, zzz_SIZE *len);
+const char *zzz_ValueGetStrFast(const struct zzz_Value *v, zzz_SIZE *len);
 ```
 
 作用：
@@ -977,7 +981,7 @@ int main()
         if (vv != 0)
         {
             SIZE len = 0;
-            const char *str = GetStringFast(vv, &len);
+            const char *str = GetStrFast(vv, &len);
             if (str != 0){
                 int i = 0;
                 for (i = 0; i < len; ++i) printf("%c", str[i]);
@@ -993,13 +997,13 @@ int main()
 
 str
 
-#### GetUnEscapeString
+#### GetUnEscapeStr
 
 ```c
 // 短命名
-const char *GetUnEscapeString(Value *v);
+const char *GetUnEscapeStr(Value *v);
 // 长命名
-const char *zzz_ValueGetUnEscapeString(struct zzz_Value *v);
+const char *zzz_ValueGetUnEscapeStr(struct zzz_Value *v);
 ```
 
 作用：
@@ -1034,7 +1038,7 @@ int main()
     BOOL ret = ParseFast(v, json);
     if (ret == True)
     {
-        const char *str = GetUnEscapeString(v);
+        const char *str = GetUnEscapeStr(v);
         if (str != 0) printf("%s\n", str);
     }
     ReleaseAllocator(A);
@@ -2383,7 +2387,7 @@ zzz_BOOL zzz_ValueSetStrLen(struct zzz_Value *v, const char *str, zzz_SIZE len);
 
 注意事项：
 
-- str必须为0结尾的字符串。
+- 无
 
 正确代码示例：
 
@@ -2488,7 +2492,7 @@ SetStrLen的快速版本，不对**str**进行拷贝。
 
 注意事项：
 
-- str必须为0结尾的字符串。
+- 无
 
 正确代码示例：
 
@@ -2514,6 +2518,111 @@ int main()
 输出如下：
 
 "123str"
+
+#### SetStrEscape
+
+```c
+// 短命名
+BOOL SetStrEscape(Value *v, const char *str);
+// 长命名
+zzz_BOOL zzz_ValueSetStrEscape(struct zzz_Value *v, const char *str);
+```
+
+作用：
+
+设置值的类型为字符串类型，并且对str进行加密（\r => \ \ r），然后赋值。
+
+参数：
+
+- v：值的地址
+- str：值的值
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- str必须为0结尾的字符串。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+#include <stdio.h>
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "[123,456,789]";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        SetStrEscape(v, "123\nstr");
+        const char *v_str = Stringify(v);
+        if (v_str != 0) printf("%s\n", v_str);
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+"123\nstr"
+
+#### SetStrLenEscape
+
+```c
+// 短命名
+BOOL SetStrLenEscape(Value *v, const char *str, SIZE len);
+// 长命名
+zzz_BOOL zzz_ValueSetStrLenEscape(struct zzz_Value *v, const char *str, zzz_SIZE len);
+```
+
+作用：
+
+设置值的类型为字符串类型，并且对str进行加密（\r => \ \ r），然后赋值。
+
+参数：
+
+- v：值的地址
+- str：值的值
+- len：字符串长度
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- 无
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+#include <stdio.h>
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "[123,456,789]";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        SetStrLenEscape(v, "123\nstr", strlen("123\nstr"));
+        const char *v_str = Stringify(v);
+        if (v_str != 0) printf("%s\n", v_str);
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+"123\nstr"
 
 #### SetKey 
 
@@ -2728,6 +2837,113 @@ int main()
 输出如下：
 
 {"key234":123}
+
+#### SetKeyEscape
+
+```c
+// 短命名
+BOOL SetKeyEscape(Value *v, const char *key);
+// 长命名
+zzz_BOOL zzz_ValueSetKeyEscape(struct zzz_Value *v, const char *key);
+```
+
+作用：
+
+设置值的关键字，并且对key进行加密（\r => \ \ r）。
+
+参数：
+
+- v：值的地址
+- key：值的值
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- key必须为0结尾的字符串。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+#include <stdio.h>
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "{\"key123\":123}";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        Value *vv = ObjGet(v, "key123");
+        SetKeyEscape(vv, "key\n234");
+        const char *v_str = Stringify(v);
+        if (v_str != 0) printf("%s\n", v_str);
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+{"key\n234":123}
+
+#### SetKeyLenEscape
+
+```c
+// 短命名
+BOOL SetKeyLenEscape(Value *v, const char *key, SIZE len);
+// 长命名
+zzz_BOOL zzz_ValueSetKeyLenEscape(struct zzz_Value *v, const char *key, zzz_SIZE len);
+```
+
+作用：
+
+设置值的关键字，并且对key进行加密（\r => \ \ r）。
+
+参数：
+
+- v：值的地址
+- key：值的值
+- len：key的长度
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- 无
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+#include <stdio.h>
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "{\"key123\":123}";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        Value *vv = ObjGet(v, "key123");
+        SetKeyLenEscape(vv, "key\n234", strlen("key\n234"));
+        const char *v_str = Stringify(v);
+        if (v_str != 0) printf("%s\n", v_str);
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+{"key\n234":123}
 
 #### SetArray 
 

@@ -1140,7 +1140,7 @@ static inline const char *zzz_EscapeStrLen(const char *str, struct zzz_Allocator
         ++str;
         --len;
     }
-    char *s = zzz_AllocatorAlloc(a, len+1);
+    char *s = zzz_AllocatorAlloc(a, l+1);
     zzz_SIZE index = 0;
     str = src;
     len = srcLen;
