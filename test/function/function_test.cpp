@@ -288,6 +288,7 @@ void CheckStrTest()
     const char *invailStr3 = "019827";
     const char *vailStr4 = "";
     SIZE len = 0;
+    zzz_BOOL need_escape = zzz_False;
     CheckRet(__func__, __LINE__, zzz_CheckStr(vaildStr0, &len) == zzz_True);
     CheckRet(__func__, __LINE__, len == strlen(vaildStr0));
 
@@ -480,6 +481,41 @@ void CheckNumTest()
     len = 1;
     CheckRet(__func__, __LINE__, zzz_CheckNum(invaildNum5, &len) == zzz_False);
 }
+void EscapeStrTest() {
+    const char *str = 
+    "极其朴素的代码，丰富的文档和注释，没有任何花销的技巧，简单易读好修改是zzzJSON的第一宗旨，因为放心地使"
+    "用开源代码的前提是能够驾驭开源代码，zzzJSON使用最朴素的语法，没有任何花销，简单易读，丰富的文档和注释"
+    "使使用者在需要增加新特性时，能够轻松修改，最大限度地降低使用者的心智负担。极致的解析和序列化速度是"
+    "zzzJSON的灵魂，在解析和序列化方面，zzzJSON的表现非常惊艳。读时解析是zzzJSON的特色，在业务开发过程中，"
+    "经常需要修改一个大JSON的一个小部分，或者获取其中一个值，读时解析在解析JSON文本时只判断数字的正确性，而"
+    "不把数字转换成数字类型，最大限度地减少解析数字造成的性能开销。使用时可以根据业务要求，选择不同精度的解析"
+    "函数，甚至使用超过双精度浮点型的精度。";
+    zzz_Allocator *A = zzz_AllocatorNew();
+    const char * des = zzz_EscapeStr(str, A);
+    CheckRet(__func__, __LINE__, string(des) == string(str));
+
+    const char *str1 = 
+    "极其朴素的代码，丰富的文档和注释，没有任何花销的技巧，简单易读好修改是zzzJSON的第一宗旨，因为放心地使"
+    "用开源代码的前提是能够驾驭开源代码，zzzJSON使用最朴素的语法，没有任何花销，简单易读，丰富的文档和注释"
+    "使使用者在需要增加新特性时，能够轻松修改，最大限度地降低使用者的心智负担。极致的解析和序列化速度是"
+    "zzzJSON的灵魂，在解析和序列化方面，zzzJSON的表现非常惊艳。读时解析是zzzJSON的特色，在业务开发过程中，"
+    "经常需要修改一个大JSON的一个小部分，或者获取其中一个值，读时解析在解析JSON文本时只判断数字的正确性，而"
+    "不把数字转换成数字类型，最大限度地减少解析数字造成的性能开销。使用时可以根据业务要求，选择不同精度的解析"
+    "函数，甚至使用超过双精度浮点型的精度。\r\t \n\b \f \\ \"";
+    const char *str2 = 
+    "极其朴素的代码，丰富的文档和注释，没有任何花销的技巧，简单易读好修改是zzzJSON的第一宗旨，因为放心地使"
+    "用开源代码的前提是能够驾驭开源代码，zzzJSON使用最朴素的语法，没有任何花销，简单易读，丰富的文档和注释"
+    "使使用者在需要增加新特性时，能够轻松修改，最大限度地降低使用者的心智负担。极致的解析和序列化速度是"
+    "zzzJSON的灵魂，在解析和序列化方面，zzzJSON的表现非常惊艳。读时解析是zzzJSON的特色，在业务开发过程中，"
+    "经常需要修改一个大JSON的一个小部分，或者获取其中一个值，读时解析在解析JSON文本时只判断数字的正确性，而"
+    "不把数字转换成数字类型，最大限度地减少解析数字造成的性能开销。使用时可以根据业务要求，选择不同精度的解析"
+    "函数，甚至使用超过双精度浮点型的精度。\\r\\t \\n\\b \\f \\\\ \\\"";
+
+    const char * des1 = zzz_EscapeStr(str1, A);
+    CheckRet(__func__, __LINE__, string(des1) == string(str2));
+
+    zzz_AllocatorRelease(A);
+}
 void ParseAndStringifyTest()
 {
     Allocator *A = NewAllocator();
@@ -539,28 +575,28 @@ void GetStringTest()
     const char *str;
     SIZE len;
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
-    str = GetStringFast(v, &len);
+    str = GetStrFast(v, &len);
     CheckRet(__func__, __LINE__, str != 0);
     CheckRet(__func__, __LINE__, string(str, len) == string("str"));
-    str = GetString(v);
+    str = GetStr(v);
     CheckRet(__func__, __LINE__, str != 0);
     CheckRet(__func__, __LINE__, strlen(str) == 3);
     CheckRet(__func__, __LINE__, string(str) == string("str"));
 
     json = "123";
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
-    str = GetStringFast(v, &len);
+    str = GetStrFast(v, &len);
     CheckRet(__func__, __LINE__, str == 0);
 
     json = "\"\\u007a\\u007a\\u007a\\u004A\\u0053\\u004F\\u004E\\u597D\\u68D2\\uD87E\\uDD21\"";
     CheckRet(__func__, __LINE__, ParseFast(v, json) == zzz_True);
-    str = GetUnEscapeString(v);
+    str = GetUnEscapeStr(v);
     CheckRet(__func__, __LINE__, str != 0);
     CheckRet(__func__, __LINE__, string(str) == string("zzzJSON好棒爵"));
 
     json = "\"\\t \\n \\r \\t \\b \\\\ \\\" \\/ \"";
     CheckRet(__func__, __LINE__, ParseFast(v, json) == zzz_True);
-    str = GetUnEscapeString(v);
+    str = GetUnEscapeStr(v);
     CheckRet(__func__, __LINE__, str != 0);
     CheckRet(__func__, __LINE__, string(str) == string("\t \n \r \t \b \\ \" / "));
 
@@ -893,13 +929,54 @@ void SetStrTest()
     SetStrLen(sv, "1234", 4);
     CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[\"1234\",false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
     CheckRet(__func__, __LINE__, SetStrFast(sv, "123ab\tc") == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrEscape(sv, "123ab\tc") == zzz_True);
+    SIZE len = 0;
+    const char *str = GetStrFast(sv, &len);
+    CheckRet(__func__, __LINE__, str != 0);
+    CheckRet(__func__, __LINE__, string(str, len) == "123ab\\tc");
+
     CheckRet(__func__, __LINE__, SetStrLenFast(sv, "123ab\tc", 7) == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrLenEscape(sv, "123ab\tc", 7) == zzz_True);
+    str = GetStrFast(sv, &len);
+    CheckRet(__func__, __LINE__, str != 0);
+    CheckRet(__func__, __LINE__, string(str, len) == "123ab\\tc");
+
     CheckRet(__func__, __LINE__, SetStr(sv, "123a\nbc") == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrEscape(sv, "123a\nbc") == zzz_True);
+    str = GetStrFast(sv, &len);
+    CheckRet(__func__, __LINE__, str != 0);
+    CheckRet(__func__, __LINE__, string(str, len) == "123a\\nbc");
+
     CheckRet(__func__, __LINE__, SetStrLen(sv, "123a\nbc", 7) == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrLenEscape(sv, "123a\nbc", 7) == zzz_True);
+    str = GetStrFast(sv, &len);
+    CheckRet(__func__, __LINE__, str != 0);
+    CheckRet(__func__, __LINE__, string(str, len) == "123a\\nbc");
+
     CheckRet(__func__, __LINE__, SetStr(sv, "123a\\udc01bc") == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrEscape(sv, "123a\\udc01bc") == zzz_True);
+    str = GetStrFast(sv, &len);
+    CheckRet(__func__, __LINE__, str != 0);
+    CheckRet(__func__, __LINE__, string(str, len) == "123a\\\\udc01bc");
+
     CheckRet(__func__, __LINE__, SetStrLen(sv, "123a\\udc01bc", 12) == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrLenEscape(sv, "123a\\udc01bc", 12) == zzz_True);
+    str = GetStrFast(sv, &len);
+    CheckRet(__func__, __LINE__, str != 0);
+    CheckRet(__func__, __LINE__, string(str, len) == "123a\\\\udc01bc");
+
     CheckRet(__func__, __LINE__, SetStr(sv, "123a\"aaa") == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrEscape(sv, "123a\"aaa") == zzz_True);
+    str = GetStrFast(sv, &len);
+    CheckRet(__func__, __LINE__, str != 0);
+    CheckRet(__func__, __LINE__, string(str, len) == "123a\\\"aaa");
+
     CheckRet(__func__, __LINE__, SetStrLen(sv, "123a\"aaa", 8) == zzz_False);
+    CheckRet(__func__, __LINE__, SetStrLenEscape(sv, "123a\"aaa", 8) == zzz_True);
+    str = GetStrFast(sv, &len);
+    CheckRet(__func__, __LINE__, str != 0);
+    CheckRet(__func__, __LINE__, string(str, len) == "123a\\\"aaa");
+
     Value *vv = NewValue(A);
     SetStrFast(vv, "123");
     CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("\"123\""));
@@ -936,11 +1013,41 @@ void SetKeyTest()
     CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[{\"123\":true},false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
     SetKey(sv, "1234");
     CheckRet(__func__, __LINE__, string(Stringify(v)) == string("[{\"1234\":true},false,null,[null,false,[],true],[\"\",123,\"str\"],null]"));
+
     CheckRet(__func__, __LINE__, SetKeyFast(sv, "123ab\tc") == zzz_False);
-    CheckRet(__func__, __LINE__, SetKeyFast(sv, "123a\nbc") == zzz_False);
-    CheckRet(__func__, __LINE__, SetKey(sv, "123a\\udc01bc") == zzz_False);
+    CheckRet(__func__, __LINE__, SetKeyEscape(sv, "123ab\tc") == zzz_True);
+    SIZE len = 0;
+    const char *key = GetKeyFast(sv, &len);
+    CheckRet(__func__, __LINE__, key != 0);
+    CheckRet(__func__, __LINE__, string(key, len) == "123ab\\tc");
     CheckRet(__func__, __LINE__, SetKey(sv, "123a\"aaa") == zzz_False);
+    CheckRet(__func__, __LINE__, SetKeyEscape(sv, "123a\"aaa") == zzz_True);
+    key = GetKeyFast(sv, &len);
+    CheckRet(__func__, __LINE__, key != 0);
+    CheckRet(__func__, __LINE__, string(key, len) == "123a\\\"aaa");
     CheckRet(__func__, __LINE__, string(Stringify(sv)) == string("true"));
+
+    CheckRet(__func__, __LINE__, SetKeyLen(sv, "123ab\tc", 7) == zzz_False);
+    CheckRet(__func__, __LINE__, SetKeyLenEscape(sv, "123ab\tc", 7) == zzz_True);
+    len = 0;
+    key = GetKeyFast(sv, &len);
+    CheckRet(__func__, __LINE__, key != 0);
+    CheckRet(__func__, __LINE__, string(key, len) == "123ab\\tc");
+
+    CheckRet(__func__, __LINE__, SetKeyLenFast(sv, "123a\"aaa", 8) == zzz_False);
+    CheckRet(__func__, __LINE__, SetKeyLenEscape(sv, "123a\"aaa", 8) == zzz_True);
+    key = GetKeyFast(sv, &len);
+    CheckRet(__func__, __LINE__, key != 0);
+    CheckRet(__func__, __LINE__, string(key, len) == "123a\\\"aaa");
+    CheckRet(__func__, __LINE__, string(Stringify(sv)) == string("true"));
+
+    CheckRet(__func__, __LINE__, SetKey(sv, "123a\\udc01bc") == zzz_False);
+    CheckRet(__func__, __LINE__, SetKeyEscape(sv, "123a\\udc01bc") == zzz_True);
+    key = GetKeyFast(sv, &len);
+    CheckRet(__func__, __LINE__, key != 0);
+    CheckRet(__func__, __LINE__, string(key, len) == "123a\\\\udc01bc");
+    CheckRet(__func__, __LINE__, string(Stringify(sv)) == string("true"));
+
     Value *vv = NewValue(A);
     SetKeyFast(vv, "123");
     CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("null"));
@@ -1075,7 +1182,7 @@ void GetAndSet(Value *srcv, Value *desv)
         }
     }
     break;
-    case JSONTYPEOBJ:
+    case JSONTYPEOBJECT:
     {
         SetObj(desv);
         Value *next = Begin(srcv);
@@ -1107,7 +1214,7 @@ void GetAndSet(Value *srcv, Value *desv)
     break;
     case JSONTYPESTRING:
     {
-        const char *str = GetString(srcv);
+        const char *str = GetStr(srcv);
         if (str == 0)
             return;
         SetStrFast(desv, str);
@@ -1309,6 +1416,7 @@ int main()
     CheckStrTest();
     ConsumeNumTest();
     CheckNumTest();
+    EscapeStrTest();
     ParseAndStringifyTest();
     GetStringTest();
     GetNumTest();

@@ -26,7 +26,7 @@ void GetAndSet(Value *srcv, Value *desv)
         }
         break;
     }
-    case JSONTYPEOBJ:
+    case JSONTYPEOBJECT:
     {
         // 如果是对象，则把当前值设为对象，然后遍历并复制对象中的每个值
         SetObj(desv);
@@ -63,7 +63,7 @@ void GetAndSet(Value *srcv, Value *desv)
     case JSONTYPESTRING:
     {
         // 如果是字符串，则获取并复制该字符串
-        const char *str = GetString(srcv);
+        const char *str = GetStr(srcv);
         if (str == 0)
             return;
         // 如果需要拷贝字符串，则需要使用SetStr

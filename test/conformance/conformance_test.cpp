@@ -58,7 +58,7 @@ void StringTestOne(const string &s, const string &e) {
         CheckRet(__func__, __LINE__, ret == True);
         Value *vv = ArrayGet(v, 0);
         CheckRet(__func__, __LINE__, vv != 0);
-        const char *ret_str = GetUnEscapeString(vv);
+        const char *ret_str = GetUnEscapeStr(vv);
         CheckRet(__func__, __LINE__, ret_str != 0);
         CheckRet(__func__, __LINE__, e == string(ret_str));
         ReleaseAllocator(A);
