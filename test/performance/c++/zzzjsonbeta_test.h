@@ -4,7 +4,7 @@
 #define z_STRINGINITMEMSIZE 4096 * 2
 #define z_DELTA 2                     
 #define z_SHORT_API 0
-#include "../../../zzzjson_beta.h"
+#include "../../../beta/zzzjson_beta.h"
 
 class zzzjsonbetaTest : public Test
 {
