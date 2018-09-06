@@ -2235,19 +2235,18 @@ static inline struct zzz_Value *zzz_ValueNext(const struct zzz_Value *v)
 }
 
 // 函数说明详见《API》
-static inline struct zzz_Value *zzz_ValueCopy(const struct zzz_Value *v)
+static inline zzz_BOOL zzz_ValueCopyFrom(struct zzz_Value *v, const struct zzz_Value *vv)
 {
-    if (zzz_UNLIKELY(v->N == 0))
-        return 0;
-    struct zzz_Value *const ret_val = zzz_ValueNew(v->A);
+    if (zzz_UNLIKELY(vv->N == 0))
+        return zzz_False;
     struct zzz_Allocator *const A = v->A;
-    ret_val->N = (struct zzz_Node *)zzz_AllocatorAlloc(A, sizeof(struct zzz_Node));
-    ret_val->N->Prev = 0;
-    ret_val->N->Next = 0;
-    ret_val->N->Father = 0;
+    v->N = (struct zzz_Node *)zzz_AllocatorAlloc(A, sizeof(struct zzz_Node));
+    v->N->Prev = 0;
+    v->N->Next = 0;
+    v->N->Father = 0;
 
-    struct zzz_Node *node = v->N;
-    struct zzz_Node *des_node = ret_val->N;
+    struct zzz_Node *node = vv->N;
+    struct zzz_Node *des_node = v->N;
 
     do
     {
@@ -2297,7 +2296,7 @@ static inline struct zzz_Value *zzz_ValueCopy(const struct zzz_Value *v)
         }
         break;
         }
-        while (zzz_LIKELY(node != v->N))
+        while (zzz_LIKELY(node != vv->N))
         {
             if (zzz_LIKELY(node->Next != 0))
             {
@@ -2317,8 +2316,16 @@ static inline struct zzz_Value *zzz_ValueCopy(const struct zzz_Value *v)
                 des_node = des_node->Father;
             }
         }
-    } while (zzz_LIKELY(node != v->N));
+    } while (zzz_LIKELY(node != vv->N));
 
+    return zzz_True;
+}
+
+// 函数说明详见《API》
+static inline struct zzz_Value *zzz_ValueCopy(const struct zzz_Value *v)
+{
+    struct zzz_Value *ret_val = zzz_ValueNew(v->A);
+    if (zzz_UNLIKELY(zzz_ValueCopyFrom(ret_val, v) == zzz_False)) return 0;
     return ret_val;
 }
 
