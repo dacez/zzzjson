@@ -15,4 +15,5 @@ build/parson.o
 randomlongjsontest.txt
 randomshortjsontest.txt
 canada_test
-sample
+go.mod
+zzzjson
