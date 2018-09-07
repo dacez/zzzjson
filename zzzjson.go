@@ -67,12 +67,11 @@ func (v *Value) Stringify() *string {
 }
 
 func (v *Value) GetKey() *string {
-	var l C.zzz_SIZE
-	ret := C.zzz_ValueGetKeyFast(v.V, &l)
+	ret := C.zzz_ValueGetKey(v.V)
 	if ret == nil {
 		return nil
 	}
-	retStr := C.GoString(ret)[0:l]
+	retStr := C.GoString(ret)
 	return &retStr
 }
 
@@ -86,12 +85,11 @@ func (v *Value) GetUnEscapeKey() *string {
 }
 
 func (v *Value) GetStr() *string {
-	var l C.zzz_SIZE
-	ret := C.zzz_ValueGetStrFast(v.V, &l)
+	ret := C.zzz_ValueGetStr(v.V)
 	if ret == nil {
 		return nil
 	}
-	retStr := C.GoString(ret)[0:l]
+	retStr := C.GoString(ret)
 	return &retStr
 }
 
@@ -105,12 +103,11 @@ func (v *Value) GetUnEscapeStr() *string {
 }
 
 func (v *Value) GetNum() *string {
-	var l C.zzz_SIZE
-	ret := C.zzz_ValueGetNumFast(v.V, &l)
+	ret := C.zzz_ValueGetNumStr(v.V)
 	if ret == nil {
 		return nil
 	}
-	retStr := C.GoString(ret)[0:l]
+	retStr := C.GoString(ret)
 	return &retStr
 }
 
