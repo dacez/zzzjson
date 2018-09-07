@@ -21,8 +21,8 @@ const (
 )
 
 const (
-	zzz_True  = C.zzz_BOOL(1)
-	zzz_False = C.zzz_BOOL(0)
+	zzzTrue  = C.zzz_BOOL(1)
+	zzzFalse = C.zzz_BOOL(0)
 )
 
 type Allocator struct {
@@ -51,7 +51,7 @@ func NewValue(allocator *Allocator) *Value {
 
 func (v *Value) Parse(s string) bool {
 	ret := C.ParseFast(v.V, C.CString(s))
-	if ret != zzz_True {
+	if ret != zzzTrue {
 		return false
 	}
 	return true
@@ -117,7 +117,7 @@ func (v *Value) GetBool() *bool {
 		return nil
 	}
 	b := false
-	if *ret == zzz_True {
+	if *ret == zzzTrue {
 		b = true
 	}
 	return &b
@@ -125,7 +125,7 @@ func (v *Value) GetBool() *bool {
 
 func (v *Value) IsNull() bool {
 	ret := C.zzz_ValueIsNull(v.V)
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -191,7 +191,7 @@ func (v *Value) Copy() *Value {
 
 func (v *Value) Move() bool {
 	ret := C.zzz_ValueMove(v.V)
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -203,15 +203,15 @@ func (v *Value) SetNull() {
 
 func (v *Value) SetBool(b bool) {
 	if b == true {
-		C.zzz_ValueSetBool(v.V, zzz_True)
+		C.zzz_ValueSetBool(v.V, zzzTrue)
 	} else {
-		C.zzz_ValueSetBool(v.V, zzz_False)
+		C.zzz_ValueSetBool(v.V, zzzFalse)
 	}
 }
 
 func (v *Value) SetNumStr(num string) bool {
 	ret := C.zzz_ValueSetNumStrFast(v.V, C.CString(num))
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -219,7 +219,7 @@ func (v *Value) SetNumStr(num string) bool {
 
 func (v *Value) SetStr(str string) bool {
 	ret := C.zzz_ValueSetStrFast(v.V, C.CString(str))
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -227,7 +227,7 @@ func (v *Value) SetStr(str string) bool {
 
 func (v *Value) SetStrEscape(str string) bool {
 	ret := C.zzz_ValueSetStrEscape(v.V, C.CString(str))
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -235,7 +235,7 @@ func (v *Value) SetStrEscape(str string) bool {
 
 func (v *Value) SetKey(key string) bool {
 	ret := C.zzz_ValueSetKeyFast(v.V, C.CString(key))
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -243,7 +243,7 @@ func (v *Value) SetKey(key string) bool {
 
 func (v *Value) SetKeyEscape(key string) bool {
 	ret := C.zzz_ValueSetKeyEscape(v.V, C.CString(key))
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -259,7 +259,7 @@ func (v *Value) SetObj() {
 
 func (v *Value) Set(vv *Value) bool {
 	ret := C.zzz_ValueSet(v.V, vv.V)
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -267,7 +267,7 @@ func (v *Value) Set(vv *Value) bool {
 
 func (v *Value) SetFast(vv *Value) bool {
 	ret := C.zzz_ValueSetFast(v.V, vv.V)
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -275,7 +275,7 @@ func (v *Value) SetFast(vv *Value) bool {
 
 func (v *Value) ObjAdd(vv *Value) bool {
 	ret := C.zzz_ValueObjAdd(v.V, vv.V)
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -283,7 +283,7 @@ func (v *Value) ObjAdd(vv *Value) bool {
 
 func (v *Value) ObjAddFast(vv *Value) bool {
 	ret := C.zzz_ValueObjAddFast(v.V, vv.V)
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -291,7 +291,7 @@ func (v *Value) ObjAddFast(vv *Value) bool {
 
 func (v *Value) ArrayAdd(vv *Value) bool {
 	ret := C.zzz_ValueArrayAdd(v.V, vv.V)
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -299,7 +299,7 @@ func (v *Value) ArrayAdd(vv *Value) bool {
 
 func (v *Value) ArrayAddFast(vv *Value) bool {
 	ret := C.zzz_ValueArrayAddFast(v.V, vv.V)
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -307,7 +307,7 @@ func (v *Value) ArrayAddFast(vv *Value) bool {
 
 func (v *Value) ObjDel(key string) bool {
 	ret := C.zzz_ValueObjDel(v.V, C.CString(key))
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
@@ -315,7 +315,7 @@ func (v *Value) ObjDel(key string) bool {
 
 func (v *Value) ArrayDel(index JSONSize) bool {
 	ret := C.zzz_ValueArrayDel(v.V, C.zzz_SIZE(index))
-	if ret == zzz_True {
+	if ret == zzzTrue {
 		return true
 	}
 	return false
