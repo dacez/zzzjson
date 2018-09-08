@@ -2,6 +2,7 @@ package zzzJSON
 
 /*
 #cgo CFLAGS: -Wall -O3
+#define zzz_SHORT_API 0
 #include "zzzjson.h"
 */
 import (
