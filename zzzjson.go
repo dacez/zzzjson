@@ -1,4 +1,4 @@
-package zzzJSON
+package zzzjson
 
 /*
 #cgo CFLAGS: -Wall -O3
@@ -28,7 +28,7 @@ const (
 	JSONTypeObject JSONType = 3
 	JSONTypeString JSONType = 4
 	JSONTypeNull   JSONType = 5
-	JSONTypeNum    JSONType = 6
+	JSONTypeNumber JSONType = 6
 )
 
 const (
@@ -36,17 +36,26 @@ const (
 	zzzFalse = C.zzz_BOOL(0)
 )
 
+/*
+Allocator allocate memory for zzzJSON
+*/
 type Allocator struct {
 	A *C.struct_zzz_Allocator
 }
 
+/*
+NewAllocator create an allocator
+*/
 func NewAllocator() *Allocator {
 	var allocator Allocator
 	allocator.A = C.zzz_AllocatorNew()
 	return &allocator
 }
 
-func ReleaseAllocator(allocator *Allocator) {
+/*
+ReleaseAllocator free an allocator
+*/
+func (allocator *Allocator) ReleaseAllocator() {
 	C.zzz_AllocatorRelease(allocator.A)
 }
 

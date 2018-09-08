@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 
-	"github.com/dacez/zzzJSON"
+	"github.com/dacez/zzzjson"
 )
 
 func main() {
 
-	A := zzzJSON.NewAllocator()
-	defer zzzJSON.ReleaseAllocator(A)
-	V := zzzJSON.NewValue(A)
+	A := zzzjson.NewAllocator()
+	defer A.ReleaseAllocator()
+	V := zzzjson.NewValue(A)
 	json := `[true,false]`
 
 	ret := V.Parse(json)
