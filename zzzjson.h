@@ -19,11 +19,11 @@ typedef char zzz_JSONType;
 #define zzz_JSONTYPEOBJECT 3
 #define zzz_JSONTYPESTRING 4
 #define zzz_JSONTYPENULL 5
-#define zzz_JSONTYPENUM 6
+#define zzz_JSONTYPENUMBER 6
 static const zzz_JSONType zzz_JSONTypeArray = zzz_JSONTYPEARRAY;
 static const zzz_JSONType zzz_JSONTypeObject = zzz_JSONTYPEOBJECT;
 static const zzz_JSONType zzz_JSONTypeString = zzz_JSONTYPESTRING;
-static const zzz_JSONType zzz_JSONTypeNum = zzz_JSONTYPENUM;
+static const zzz_JSONType zzz_JSONTypeNumber = zzz_JSONTYPENUMBER;
 static const zzz_JSONType zzz_JSONTypeBool = zzz_JSONTYPEBOOL;
 static const zzz_JSONType zzz_JSONTypeNull = zzz_JSONTYPENULL;
 
@@ -211,11 +211,11 @@ typedef zzz_JSONType JSONType;
 #define JSONTYPEOBJECT zzz_JSONTYPEOBJECT
 #define JSONTYPESTRING zzz_JSONTYPESTRING
 #define JSONTYPENULL zzz_JSONTYPENULL
-#define JSONTYPENUM zzz_JSONTYPENUM
+#define JSONTYPENUMBER zzz_JSONTYPENUMBER
 static const JSONType JSONTypeArray = JSONTYPEARRAY;
 static const JSONType JSONTypeObject = JSONTYPEOBJECT;
 static const JSONType JSONTypeString = JSONTYPESTRING;
-static const JSONType JSONTypeNum = JSONTYPENUM;
+static const JSONType JSONTypeNumber = JSONTYPENUMBER;
 static const JSONType JSONTypeBool = JSONTYPEBOOL;
 static const JSONType JSONTypeNull = JSONTYPENULL;
 
@@ -1612,7 +1612,7 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
         zzz_SIZE start = index - 1;
         if (zzz_LIKELY(zzz_ConsumeNum(s, &index)))
         {
-            node->Type = zzz_JSONTYPENUM;
+            node->Type = zzz_JSONTYPENUMBER;
             node->Value.Str = s + start;
             node->Len = index - start;
             break;
@@ -1777,7 +1777,7 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
             zzz_SIZE start = index - 1;
             if (zzz_LIKELY(zzz_ConsumeNum(s, &index)))
             {
-                node->Type = zzz_JSONTYPENUM;
+                node->Type = zzz_JSONTYPENUMBER;
                 node->Value.Str = s + start;
                 node->Len = index - start;
                 break;
@@ -2008,7 +2008,7 @@ static inline const char *zzz_ValueGetNumFast(const struct zzz_Value *v, zzz_SIZ
 {
     if (zzz_UNLIKELY(v->N == 0))
         return 0;
-    if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPENUM))
+    if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPENUMBER))
         return 0;
     *len = v->N->Len;
     return v->N->Value.Str;
@@ -2019,7 +2019,7 @@ static inline const char *zzz_ValueGetNumStr(struct zzz_Value *v)
 {
     if (zzz_UNLIKELY(v->N == 0))
         return 0;
-    if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPENUM))
+    if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPENUMBER))
         return 0;
     if (zzz_UNLIKELY(v->CacheStr != 0))
         return v->CacheStr;
@@ -2035,7 +2035,7 @@ static inline const double *zzz_ValueGetNum(struct zzz_Value *v)
 {
     if (zzz_UNLIKELY(v->N == 0))
         return 0;
-    if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPENUM))
+    if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPENUMBER))
         return 0;
     if (zzz_UNLIKELY(v->Cache.Num != 0))
         return v->Cache.Num;
@@ -2164,8 +2164,8 @@ static inline const zzz_JSONType *zzz_ValueType(const struct zzz_Value *v)
         return &zzz_JSONTypeObject;
     case zzz_JSONTYPESTRING:
         return &zzz_JSONTypeString;
-    case zzz_JSONTYPENUM:
-        return &zzz_JSONTypeNum;
+    case zzz_JSONTYPENUMBER:
+        return &zzz_JSONTypeNumber;
     case zzz_JSONTYPEBOOL:
         return &zzz_JSONTypeBool;
     case zzz_JSONTYPENULL:
@@ -2286,7 +2286,7 @@ static inline zzz_BOOL zzz_ValueCopyFrom(struct zzz_Value *v, const struct zzz_V
             des_node->Value.Str = node->Value.Str;
             des_node->Len = node->Len;
             break;
-        case zzz_JSONTYPENUM:
+        case zzz_JSONTYPENUMBER:
         case zzz_JSONTYPESTRING:
         {
             char *s = zzz_AllocatorAlloc(A, node->Len);
@@ -2415,7 +2415,7 @@ static inline zzz_BOOL zzz_ValueSetNumStrFast(struct zzz_Value *v, const char *n
         v->N->Father = 0;
         v->N->Next = 0;
     }
-    v->N->Type = zzz_JSONTYPENUM;
+    v->N->Type = zzz_JSONTYPENUMBER;
     v->N->Value.Str = num;
     v->N->Len = len;
     return zzz_True;
@@ -2435,7 +2435,7 @@ static inline zzz_BOOL zzz_ValueSetNumStrLenFast(struct zzz_Value *v, const char
         v->N->Father = 0;
         v->N->Next = 0;
     }
-    v->N->Type = zzz_JSONTYPENUM;
+    v->N->Type = zzz_JSONTYPENUMBER;
     v->N->Value.Str = num;
     v->N->Len = len;
     return zzz_True;
@@ -2458,7 +2458,7 @@ static inline zzz_BOOL zzz_ValueSetNumStr(struct zzz_Value *v, const char *num)
         v->N->Father = 0;
         v->N->Next = 0;
     }
-    v->N->Type = zzz_JSONTYPENUM;
+    v->N->Type = zzz_JSONTYPENUMBER;
     v->N->Value.Str = s;
     v->N->Len = len;
     return zzz_True;
@@ -2480,7 +2480,7 @@ static inline zzz_BOOL zzz_ValueSetNumStrLen(struct zzz_Value *v, const char *nu
         v->N->Father = 0;
         v->N->Next = 0;
     }
-    v->N->Type = zzz_JSONTYPENUM;
+    v->N->Type = zzz_JSONTYPENUMBER;
     v->N->Value.Str = s;
     v->N->Len = len;
     return zzz_True;

@@ -731,7 +731,7 @@ void ObjGetTest()
     CheckRet(__func__, __LINE__, ParseLen(v, json, strlen(json)) == zzz_True);
     gv = ObjGet(v, "null");
     t = Type(gv);
-    CheckRet(__func__, __LINE__, *t == zzz_JSONTypeNum);
+    CheckRet(__func__, __LINE__, *t == zzz_JSONTypeNumber);
 
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
@@ -1220,7 +1220,7 @@ void GetAndSet(Value *srcv, Value *desv)
         SetStrFast(desv, str);
     }
     break;
-    case JSONTYPENUM:
+    case JSONTYPENUMBER:
     {
         const char *str = GetNumStr(srcv);
         if (str == 0)

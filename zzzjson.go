@@ -9,9 +9,19 @@ import (
 	"C"
 )
 
+/* 
+JSONSize size for zzzJSON
+*/
 type JSONSize C.zzz_SIZE
+/*
+JSONType type for JSON
+*/
 type JSONType C.zzz_JSONType
 
+/*
+6 types for JSON
+include bool array object string null and number 
+*/
 const (
 	JSONTypeBool   JSONType = 1
 	JSONTypeArray  JSONType = 2
