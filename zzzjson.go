@@ -50,7 +50,7 @@ func NewValue(allocator *Allocator) *Value {
 }
 
 func (v *Value) Parse(s string) bool {
-	ret := C.ParseFast(v.V, C.CString(s))
+	ret := C.zzz_ValueParseFast(v.V, C.CString(s))
 	if ret != zzzTrue {
 		return false
 	}
