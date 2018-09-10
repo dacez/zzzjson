@@ -527,7 +527,7 @@ struct zzz_Allocator
 // 函数说明详见《API》
 static inline struct zzz_Allocator *zzz_AllocatorNew()
 {
-    // 每次分配一大块内存，避免多次分配
+    // 分配大块内存
     void *ptr = zzz_New(sizeof(struct zzz_Allocator) + sizeof(struct zzz_ANode) + zzz_AllocatorInitMemSize);
     struct zzz_Allocator *alloc = (struct zzz_Allocator *)ptr;
     alloc->Root = (struct zzz_ANode *)((char *)ptr + sizeof(struct zzz_Allocator));
@@ -565,12 +565,13 @@ static inline void zzz_AllocatorAppendChild(zzz_SIZE init_size, struct zzz_Alloc
     node->Data = (char *)ptr + sizeof(struct zzz_ANode);
     node->Pos = 0;
     node->Next = 0;
+    // 在ANode组成的链表最后加一个ANode
     alloc->End->Next = node;
     alloc->End = node;
     return;
 }
 
-// 函数说明详见《API》
+// 分配大小为size的内存
 static inline char *zzz_AllocatorAlloc(struct zzz_Allocator *alloc, zzz_SIZE size)
 {
     struct zzz_ANode *cur_node = alloc->End;
@@ -581,7 +582,7 @@ static inline char *zzz_AllocatorAlloc(struct zzz_Allocator *alloc, zzz_SIZE siz
         // 通过循环计算最终需要的空间大小
         // 这里应该有更好的方法，就是直接通过计算所得
         while (zzz_UNLIKELY(size > s))
-            s *= zzz_Delta;
+            s *= zzz_Delta; // 每次分配内存的大小是上次的zzz_Delta倍
         zzz_AllocatorAppendChild(s, alloc);
         cur_node = alloc->End;
     }
@@ -2039,7 +2040,7 @@ static inline const double *zzz_ValueGetNum(struct zzz_Value *v)
         return 0;
     if (zzz_UNLIKELY(v->Cache.Num != 0))
         return v->Cache.Num;
-    double *d = (double *)zzz_AllocatorAlloc(v->A, sizeof(d) / sizeof(char));
+    double *d = (double *)zzz_AllocatorAlloc(v->A, sizeof(double) / sizeof(char));
     *d = zzz_StrToDouble(v->N->Value.Str);
     v->Cache.Num = d;
     return d;
