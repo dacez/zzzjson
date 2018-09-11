@@ -828,7 +828,7 @@ static inline zzz_BOOL zzz_UnLikelyPeekAndConsume(const char c, const char *s, z
 // 消费False
 static inline zzz_BOOL zzz_ConsumeFalse(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((uint32_t *)("alse")) == *((zzz_SIZE *)(s + *index))))
+    if (zzz_LIKELY(*((uint32_t *)("alse")) == *((uint32_t *)(s + *index))))
     {
         *index += 4;
         return zzz_True;
@@ -839,7 +839,7 @@ static inline zzz_BOOL zzz_ConsumeFalse(const char *s, zzz_SIZE *index)
 // 消费True
 static inline zzz_BOOL zzz_ConsumeTrue(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((uint32_t *)zzz_StrTrue) == *((zzz_SIZE *)(s + *index - 1))))
+    if (zzz_LIKELY(*((uint32_t *)zzz_StrTrue) == *((uint32_t *)(s + *index - 1))))
     {
         *index += 3;
         return zzz_True;
@@ -850,7 +850,7 @@ static inline zzz_BOOL zzz_ConsumeTrue(const char *s, zzz_SIZE *index)
 // 消费Null
 static inline zzz_BOOL zzz_ConsumeNull(const char *s, zzz_SIZE *index)
 {
-    if (zzz_LIKELY(*((uint32_t *)zzz_StrNull) == *((zzz_SIZE *)(s + *index - 1))))
+    if (zzz_LIKELY(*((uint32_t *)zzz_StrNull) == *((uint32_t *)(s + *index - 1))))
     {
         *index += 3;
         return zzz_True;
