@@ -7,7 +7,10 @@
 #include <stdint.h> // 使用其 uint32_t
 
 // 长命名的 类型 & 常量 & 用作常量的宏，详见《数据结构》
-typedef uint32_t zzz_SIZE;
+#ifndef zzz_SIZETYPE
+#define zzz_SIZETYPE uint32_t
+#endif
+typedef zzz_SIZETYPE zzz_SIZE;
 
 typedef char zzz_BOOL;
 static const zzz_BOOL zzz_True = 1;
@@ -2235,7 +2238,7 @@ static inline struct zzz_Value *zzz_ValueNext(const struct zzz_Value *v)
     return 0;
 }
 
-// 函数说明详见《API》
+// 把vv拷贝到v
 static inline zzz_BOOL zzz_ValueCopyFrom(struct zzz_Value *v, const struct zzz_Value *vv)
 {
     if (zzz_UNLIKELY(vv->N == 0))
