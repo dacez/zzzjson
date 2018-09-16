@@ -359,7 +359,7 @@ zzzJSON一共有三种基础类型，分别是：
 | JSON类型 | zzz_JSONTypeArray  | JSONTypeArray  | 2    |
 | JSON类型 | zzz_JSONTypeObject    | JSONTypeObject    | 3    |
 | JSON类型 | zzz_JSONTypeString | JSONTypeString | 4    |
-| JSON类型 | zzz_JSONTypeNum    | JSONTypeNum    | 6    |
+| JSON类型 | zzz_JSONTypeNumber    | JSONTypeNumber    | 6    |
 | JSON类型 | zzz_JSONTypeBool   | JSONTypeBool   | 1    |
 | JSON类型 | zzz_JSONTypeNull   | JSONTypeNull   | 5    |
 
@@ -372,7 +372,7 @@ zzzJSON一共有三种基础类型，分别是：
 | zzz_JSONTYPEOBJECT     | JSONTYPEOBJECT    | 3    |
 | zzz_JSONTYPESTRING  | JSONTYPESTRING | 4    |
 | zzz_JSONTYPENULL    | JSONTYPENULL   | 5    |
-| zzz_JSONTYPENUM     | JSONTYPENUM    | 6    |
+| zzz_JSONTYPENUMBER     | JSONTYPENUMBER    | 6    |
 
 ### 结构
 
@@ -484,7 +484,7 @@ void GetAndSet(Value *srcv, Value *desv)
             return;
         break;
     }
-    case JSONTYPENUM:
+    case JSONTYPENUMBER:
     {
         // 如果是数字，则获取并复制该数字
         const char *str = GetNumStr(srcv);

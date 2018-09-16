@@ -71,7 +71,7 @@ void GetAndSet(Value *srcv, Value *desv)
             return;
         break;
     }
-    case JSONTYPENUM:
+    case JSONTYPENUMBER:
     {
         // 如果是数字，则获取并复制该数字
         const char *str = GetNumStr(srcv);

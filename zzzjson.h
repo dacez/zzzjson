@@ -719,7 +719,7 @@ struct zzz_Value
 static inline void zzz_ValueInitCache(struct zzz_Value *v)
 {
     v->CacheStr = 0;
-    v->Cache.UnEscapeStr = 0;
+    v->Cache.Num = 0;
     v->CacheKey = 0;
     v->CacheUnEscapeKey = 0;
 }
