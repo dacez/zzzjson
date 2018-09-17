@@ -154,6 +154,12 @@ class Value
     {
         zzz_ValueSetBool(val, b);
     }
+    bool SetNumStr(const char *num) {
+        return zzz_ValueSetNumStr(val, num);
+    }
+    bool SetNumStrLen(const char *num, SIZE len) {
+        return zzz_ValueSetNumStrLen(val, num, len);
+    }
     bool SetNumStrFast(const char *num)
     {
         return zzz_ValueSetNumStrFast(val, num);
