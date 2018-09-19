@@ -160,6 +160,10 @@ static inline zzz_BOOL zzz_ValueSetNumStrLenFast(struct zzz_Value *v, const char
 static inline zzz_BOOL zzz_ValueSetNumStr(struct zzz_Value *v, const char *num);
 static inline zzz_BOOL zzz_ValueSetNumStrLen(struct zzz_Value *v, const char *num, zzz_SIZE len);
 static inline zzz_BOOL zzz_ValueSetNum(struct zzz_Value *v, const double d);
+static inline zzz_BOOL zzz_ValueSetDouble(struct zzz_Value *v, const double d);
+static inline zzz_BOOL zzz_ValueSetInt(struct zzz_Value *v, const int n);
+static inline zzz_BOOL zzz_ValueSetLong(struct zzz_Value *v, const long n);
+static inline zzz_BOOL zzz_ValueSetLongLong(struct zzz_Value *v, const long long n);
 
 static inline zzz_BOOL zzz_ValueSetStrFast(struct zzz_Value *v, const char *str);
 static inline zzz_BOOL zzz_ValueSetStrLenFast(struct zzz_Value *v, const char *str, zzz_SIZE len);
@@ -358,6 +362,22 @@ static inline BOOL SetNumStrLen(Value *v, const char *num, SIZE len)
 static inline BOOL SetNum(Value *v, const double d)
 {
     return zzz_ValueSetNum(v, d);
+}
+static inline BOOL SetDouble(Value *v, const double d)
+{
+    return zzz_ValueSetDouble(v, d);
+}
+static inline BOOL SetInt(Value *v, const int d)
+{
+    return zzz_ValueSetInt(v, d);
+}
+static inline BOOL SetLong(Value *v, const long d)
+{
+    return zzz_ValueSetLong(v, d);
+}
+static inline BOOL SetLongLong(Value *v, const long long d)
+{
+    return zzz_ValueSetLongLong(v, d);
 }
 static inline BOOL SetStrFast(Value *v, const char *str)
 {
@@ -2515,6 +2535,10 @@ static inline zzz_BOOL zzz_ValueSetNumStrLen(struct zzz_Value *v, const char *nu
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetNum(struct zzz_Value *v, const double d)
 {
+    return zzz_ValueSetDouble(v, d);
+}
+
+static inline zzz_BOOL zzz_ValueSetDouble(struct zzz_Value *v, const double d) {
     zzz_ValueInitCache(v);
     char *num = zzz_AllocatorAlloc(v->A, 32);
     zzz_SIZE len = zzz_DoubleToStr(d, num);
@@ -2530,10 +2554,6 @@ static inline zzz_BOOL zzz_ValueSetNum(struct zzz_Value *v, const double d)
     v->N->Value.Str = num;
     v->N->Len = len;
     return zzz_True;
-}
-
-static inline zzz_BOOL zzz_ValueSetDouble(struct zzz_Value *v, const double d) {
-    return zzz_ValueSetNum(v, d);
 }
 
 static inline zzz_BOOL zzz_ValueSetInt(struct zzz_Value *v, const int n) {
