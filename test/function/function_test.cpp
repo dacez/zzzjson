@@ -910,6 +910,16 @@ void SetNumTest()
     CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("1234"));
     SetNum(vv, 12345);
     CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("12345"));
+
+    SetDouble(vv, 12345.233);
+    CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("12345.233"));
+    SetInt(vv, -12345);
+    CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("-12345"));
+    SetLong(vv, -123456);
+    CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("-123456"));
+    SetLongLong(vv, -1234567890987);
+    CheckRet(__func__, __LINE__, string(Stringify(vv)) == string("-1234567890987"));
+
     ReleaseAllocator(A);
     CheckRet(__func__, __LINE__, AllocMemoryCount == FreeMemoryCount);
 }
