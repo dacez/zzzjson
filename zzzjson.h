@@ -459,14 +459,36 @@ static inline zzz_SIZE zzz_StrLen(const char *str)
     return (zzz_SIZE)strlen(str);
 }
 
+static inline int zzz_StrToInt(const char *str) {
+    return atoi(str);
+}
+static inline long zzz_StrToLong(const char *str) {
+    return atol(str);
+}
+static inline long long zzz_StrToLongLong(const char *str) {
+    return atoll(str);
+}
 static inline double zzz_StrToDouble(const char *str)
 {
     return atof(str);
 }
 
-static inline void zzz_DoubleToStr(double d, char *buff)
+static inline zzz_SIZE zzz_IntToStr(int n, char *buff) {
+    // int 最大长度不超过12
+    return snprintf(buff, 12, "%d", n);
+}
+static inline zzz_SIZE zzz_LongToStr(long n, char *buff) {
+    // long 最大长度不超过24
+    return snprintf(buff, 24, "%ld", n);
+}
+static inline zzz_SIZE zzz_LongLongToStr(long long n, char *buff) {
+    // long long 最大长度不超过24
+    return snprintf(buff, 24, "%lld", n);
+}
+static inline zzz_SIZE zzz_DoubleToStr(double n, char *buff)
 {
-    sprintf(buff, "%.17g", d);
+    // double最大精度是17，使用sprintf转出字符串，%.17g，最大长度不超过32
+    return snprintf(buff, 32, "%.17g", n);
 }
 
 // 字符串比较，a必须以0结束，len为b的长度。
@@ -2493,10 +2515,79 @@ static inline zzz_BOOL zzz_ValueSetNumStrLen(struct zzz_Value *v, const char *nu
 // 函数说明详见《API》
 static inline zzz_BOOL zzz_ValueSetNum(struct zzz_Value *v, const double d)
 {
-    // double最大精度是17，使用sprintf转出字符串，%.17g，最大长度不超过32
-    char *buff = zzz_AllocatorAlloc(v->A, 32);
-    zzz_DoubleToStr(d, buff);
-    return zzz_ValueSetNumStrFast(v, buff);
+    zzz_ValueInitCache(v);
+    char *num = zzz_AllocatorAlloc(v->A, 32);
+    zzz_SIZE len = zzz_DoubleToStr(d, num);
+    if (zzz_UNLIKELY(v->N == 0))
+    {
+        v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        v->N->Key = 0;
+        v->N->Prev = 0;
+        v->N->Father = 0;
+        v->N->Next = 0;
+    }
+    v->N->Type = zzz_JSONTYPENUMBER;
+    v->N->Value.Str = num;
+    v->N->Len = len;
+    return zzz_True;
+}
+
+static inline zzz_BOOL zzz_ValueSetDouble(struct zzz_Value *v, const double d) {
+    return zzz_ValueSetNum(v, d);
+}
+
+static inline zzz_BOOL zzz_ValueSetInt(struct zzz_Value *v, const int n) {
+    zzz_ValueInitCache(v);
+    char *num = zzz_AllocatorAlloc(v->A, 16);
+    zzz_SIZE len = zzz_IntToStr(n, num);
+    if (zzz_UNLIKELY(v->N == 0))
+    {
+        v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        v->N->Key = 0;
+        v->N->Prev = 0;
+        v->N->Father = 0;
+        v->N->Next = 0;
+    }
+    v->N->Type = zzz_JSONTYPENUMBER;
+    v->N->Value.Str = num;
+    v->N->Len = len;
+    return zzz_True;
+}
+
+static inline zzz_BOOL zzz_ValueSetLong(struct zzz_Value *v, const long n) {
+    zzz_ValueInitCache(v);
+    char *num = zzz_AllocatorAlloc(v->A, 24);
+    zzz_SIZE len = zzz_LongToStr(n, num);
+    if (zzz_UNLIKELY(v->N == 0))
+    {
+        v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        v->N->Key = 0;
+        v->N->Prev = 0;
+        v->N->Father = 0;
+        v->N->Next = 0;
+    }
+    v->N->Type = zzz_JSONTYPENUMBER;
+    v->N->Value.Str = num;
+    v->N->Len = len;
+    return zzz_True;
+}
+
+static inline zzz_BOOL zzz_ValueSetLongLong(struct zzz_Value *v, const long long n) {
+    zzz_ValueInitCache(v);
+    char *num = zzz_AllocatorAlloc(v->A, 24);
+    zzz_SIZE len = zzz_LongLongToStr(n, num);
+    if (zzz_UNLIKELY(v->N == 0))
+    {
+        v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        v->N->Key = 0;
+        v->N->Prev = 0;
+        v->N->Father = 0;
+        v->N->Next = 0;
+    }
+    v->N->Type = zzz_JSONTYPENUMBER;
+    v->N->Value.Str = num;
+    v->N->Len = len;
+    return zzz_True;
 }
 
 static inline zzz_BOOL zzz_ValueSetStrEscape(struct zzz_Value *v, const char *str)
