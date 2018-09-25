@@ -43,6 +43,10 @@
       - [GetNumStr](#getnumstr)
       - [GetNumFast](#getnumfast)
       - [GetNum](#getnum)
+      - [GetDouble](#getdouble)
+      - [GetInt](#getint)
+      - [GetLong](#getlong)
+      - [GetLongLong](#getlonglong)
       - [GetBool](#getbool)
       - [IsNull](#isnull)
       - [GetKey](#getkey)
@@ -60,6 +64,10 @@
       - [SetNumStrFast](#setnumstrfast)
       - [SetNumStrLenFast](#setnumstrlenfast)
       - [SetNum](#setnum)
+      - [SetDouble](#setdouble)
+      - [SetInt](#setint)
+      - [SetLong](#setlong)
+      - [SetLongLong](#setlonglong)
       - [SetStr](#setstr)
       - [SetStrLen](#setstrlen)
       - [SetStrFast](#setstrfast)
@@ -1177,7 +1185,7 @@ const double * zzz_ValueGetNum(struct zzz_Value *v);
 
 作用：
 
-GetNumStr的简单版本，性能不佳。
+GetNumStr的简单版本。
 
 参数：
 
@@ -1190,7 +1198,6 @@ GetNumStr的简单版本，性能不佳。
 注意事项：
 
 - 需要判断返回值是不是0，防止导致不可预测的结果；
-- 建议使用GetNumFast。
 
 正确代码示例：
 
@@ -1220,6 +1227,225 @@ int main()
 输出如下：
 
 123.45678998837847
+
+#### GetDouble
+
+```c
+// 短命名
+const double *GetDouble(Value *v);
+// 长命名
+const double * zzz_ValueGetDouble(struct zzz_Value *v);
+```
+
+作用：
+
+获得值类型为数字的值。
+
+参数：
+
+- v：值的地址
+
+返回：
+
+- 浮点型的地址，如果为0，则表示获取失败
+
+注意事项：
+
+- 需要判断返回值是不是0，防止导致不可预测的结果；
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "[\"str\",123.4567899883784758435486768576854]";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        Value *vv = ArrayGet(v, 1);
+        if (vv != 0)
+        {
+            const double *d = GetDouble(vv);
+            if (d != 0){
+                printf("%.17g\n", *d);
+            }
+        }
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+123.45678998837847
+
+#### GetInt
+
+```c
+// 短命名
+const double *GetInt(Value *v);
+// 长命名
+const double * zzz_ValueGetInt(struct zzz_Value *v);
+```
+
+作用：
+
+获得值类型为数字的值。
+
+参数：
+
+- v：值的地址
+
+返回：
+
+- 浮点型的地址，如果为0，则表示获取失败
+
+注意事项：
+
+- 需要判断返回值是不是0，防止导致不可预测的结果；
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "[\"str\",123]";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        Value *vv = ArrayGet(v, 1);
+        if (vv != 0)
+        {
+            const int *d = GetInt(vv);
+            if (d != 0){
+                printf("%d\n", *d);
+            }
+        }
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+123
+
+#### GetLong
+
+```c
+// 短命名
+const double *GetLong(Value *v);
+// 长命名
+const double * zzz_ValueGetLong(struct zzz_Value *v);
+```
+
+作用：
+
+获得值类型为数字的值。
+
+参数：
+
+- v：值的地址
+
+返回：
+
+- 浮点型的地址，如果为0，则表示获取失败
+
+注意事项：
+
+- 需要判断返回值是不是0，防止导致不可预测的结果；
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "[\"str\",123]";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        Value *vv = ArrayGet(v, 1);
+        if (vv != 0)
+        {
+            const long *d = GetLong(vv);
+            if (d != 0){
+                printf("%ld\n", *d);
+            }
+        }
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+123
+
+#### GetLongLong
+
+```c
+// 短命名
+const double *GetLongLong(Value *v);
+// 长命名
+const double * zzz_ValueGetLongLong(struct zzz_Value *v);
+```
+
+作用：
+
+获得值类型为数字的值。
+
+参数：
+
+- v：值的地址
+
+返回：
+
+- 浮点型的地址，如果为0，则表示获取失败
+
+注意事项：
+
+- 需要判断返回值是不是0，防止导致不可预测的结果；
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    const char *json = "[\"str\",123]";
+    BOOL ret = ParseFast(v, json);
+    if (ret == True)
+    {
+        Value *vv = ArrayGet(v, 1);
+        if (vv != 0)
+        {
+            const long long *d = GetLongLong(vv);
+            if (d != 0){
+                printf("%lld\n", *d);
+            }
+        }
+    }
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+123
 
 #### GetBool 
 
@@ -2272,7 +2498,7 @@ zzz_BOOL zzz_ValueSetNum(struct zzz_Value *v, const double d);
 
 作用：
 
-SetNumStr的简单版本，性能不佳。
+SetNumStr的简单版本。
 
 参数：
 
@@ -2286,7 +2512,7 @@ SetNumStr的简单版本，性能不佳。
 
 注意事项：
 
-- 建议使用SetNumStrFast。
+- 无。
 
 正确代码示例：
 
@@ -2308,6 +2534,200 @@ int main()
 输出如下：
 
 -1.2345678912345561e+25
+
+#### SetDouble
+
+```c
+// 短命名
+BOOL SetDouble(Value *v, const double d);
+// 长命名
+zzz_BOOL zzz_ValueSetDouble(struct zzz_Value *v, const double d);
+```
+
+作用：
+
+SetNumStr的简单版本。
+
+参数：
+
+- v：值的地址
+- d：值的值
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- 无。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    double d = -12345678912345561234568890.0;
+    SetDouble(v, d);
+    const char *v_str = Stringify(v);
+    if (v_str != 0)
+        printf("%s\n", v_str);
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+-1.2345678912345561e+25
+
+#### SetInt
+
+```c
+// 短命名
+BOOL SetInt(Value *v, const int d);
+// 长命名
+zzz_BOOL zzz_ValueSetInt(struct zzz_Value *v, const int d);
+```
+
+作用：
+
+SetNumStr的简单版本。
+
+参数：
+
+- v：值的地址
+- d：值的值
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- 无。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    int d = -123;
+    SetInt(v, d);
+    const char *v_str = Stringify(v);
+    if (v_str != 0)
+        printf("%s\n", v_str);
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+-123
+
+#### SetLong
+
+```c
+// 短命名
+BOOL SetLong(Value *v, const long d);
+// 长命名
+zzz_BOOL zzz_ValueSetLong(struct zzz_Value *v, const long d);
+```
+
+作用：
+
+SetNumStr的简单版本。
+
+参数：
+
+- v：值的地址
+- d：值的值
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- 无。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    long d = -123;
+    SetLong(v, d);
+    const char *v_str = Stringify(v);
+    if (v_str != 0)
+        printf("%s\n", v_str);
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+-123
+
+
+#### SetLongLong
+
+```c
+// 短命名
+BOOL SetLongLong(Value *v, const long long d);
+// 长命名
+zzz_BOOL zzz_ValueSetLongLong(struct zzz_Value *v, const long long d);
+```
+
+作用：
+
+SetNumStr的简单版本。
+
+参数：
+
+- v：值的地址
+- d：值的值
+
+返回：
+
+- True：设置成功
+- False：设置失败
+
+注意事项：
+
+- 无。
+
+正确代码示例：
+
+```c
+#include "zzzjson.h"
+int main()
+{
+    Allocator *A = NewAllocator();
+    Value *v = NewValue(A);
+    long long d = -123;
+    SetLongLong(v, d);
+    const char *v_str = Stringify(v);
+    if (v_str != 0)
+        printf("%s\n", v_str);
+    ReleaseAllocator(A);
+}
+```
+
+输出如下：
+
+-123
+
 
 #### SetStr 
 
