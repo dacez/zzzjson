@@ -155,9 +155,9 @@ static inline struct zzz_Value *zzz_ValueNext(const struct zzz_Value *v);
 static inline struct zzz_Value *zzz_ValueCopy(const struct zzz_Value *v);
 static inline zzz_BOOL zzz_ValueMove(struct zzz_Value *v);
 
-static inline void zzz_ValueSetNull(struct zzz_Value *v);
+static inline zzz_BOOL zzz_ValueSetNull(struct zzz_Value *v);
 
-static inline void zzz_ValueSetBool(struct zzz_Value *v, zzz_BOOL b);
+static inline zzz_BOOL zzz_ValueSetBool(struct zzz_Value *v, zzz_BOOL b);
 
 static inline zzz_BOOL zzz_ValueSetNumStrFast(struct zzz_Value *v, const char *num);
 static inline zzz_BOOL zzz_ValueSetNumStrLenFast(struct zzz_Value *v, const char *num, zzz_SIZE len);
@@ -183,9 +183,9 @@ static inline zzz_BOOL zzz_ValueSetKeyLen(struct zzz_Value *v, const char *key, 
 static inline zzz_BOOL zzz_ValueSetKeyEscape(struct zzz_Value *v, const char *key);
 static inline zzz_BOOL zzz_ValueSetKeyLenEscape(struct zzz_Value *v, const char *key, zzz_SIZE len);
 
-static inline void zzz_ValueSetArray(struct zzz_Value *v);
+static inline zzz_BOOL zzz_ValueSetArray(struct zzz_Value *v);
 
-static inline void zzz_ValueSetObj(struct zzz_Value *v);
+static inline zzz_BOOL zzz_ValueSetObj(struct zzz_Value *v);
 
 static inline zzz_BOOL zzz_ValueSetFast(struct zzz_Value *v, struct zzz_Value *vv);
 static inline zzz_BOOL zzz_ValueSet(struct zzz_Value *v, const struct zzz_Value *vv);
@@ -355,13 +355,13 @@ static inline BOOL Move(Value *v)
 {
     return zzz_ValueMove(v);
 }
-static inline void SetNull(Value *v)
+static inline BOOL SetNull(Value *v)
 {
-    zzz_ValueSetNull(v);
+    return zzz_ValueSetNull(v);
 }
-static inline void SetBool(Value *v, BOOL b)
+static inline BOOL SetBool(Value *v, BOOL b)
 {
-    zzz_ValueSetBool(v, b);
+    return zzz_ValueSetBool(v, b);
 }
 static inline BOOL SetNumStrFast(Value *v, const char *num)
 {
@@ -439,19 +439,21 @@ static inline BOOL SetKeyLen(Value *v, const char *key, SIZE len)
 {
     return zzz_ValueSetKeyLen(v, key, len);
 }
-static inline BOOL SetKeyEscape(Value *v, const char *key) {
+static inline BOOL SetKeyEscape(Value *v, const char *key)
+{
     return zzz_ValueSetKeyEscape(v, key);
 }
-static inline BOOL SetKeyLenEscape(Value *v, const char *key, SIZE len) {
+static inline BOOL SetKeyLenEscape(Value *v, const char *key, SIZE len)
+{
     return zzz_ValueSetKeyLenEscape(v, key, len);
 }
-static inline void SetArray(Value *v)
+static inline BOOL SetArray(Value *v)
 {
-    zzz_ValueSetArray(v);
+    return zzz_ValueSetArray(v);
 }
-static inline void SetObj(Value *v)
+static inline BOOL SetObj(Value *v)
 {
-    zzz_ValueSetObj(v);
+    return zzz_ValueSetObj(v);
 }
 static inline BOOL SetFast(Value *v, Value *vv)
 {
@@ -499,13 +501,16 @@ static inline zzz_SIZE zzz_StrLen(const char *str)
     return (zzz_SIZE)strlen(str);
 }
 
-static inline int zzz_StrToInt(const char *str) {
+static inline int zzz_StrToInt(const char *str)
+{
     return atoi(str);
 }
-static inline long zzz_StrToLong(const char *str) {
+static inline long zzz_StrToLong(const char *str)
+{
     return atol(str);
 }
-static inline long long zzz_StrToLongLong(const char *str) {
+static inline long long zzz_StrToLongLong(const char *str)
+{
     return atoll(str);
 }
 static inline double zzz_StrToDouble(const char *str)
@@ -513,15 +518,18 @@ static inline double zzz_StrToDouble(const char *str)
     return atof(str);
 }
 
-static inline zzz_SIZE zzz_IntToStr(int n, char *buff) {
+static inline zzz_SIZE zzz_IntToStr(int n, char *buff)
+{
     // int 最大长度不超过12
     return snprintf(buff, 12, "%d", n);
 }
-static inline zzz_SIZE zzz_LongToStr(long n, char *buff) {
+static inline zzz_SIZE zzz_LongToStr(long n, char *buff)
+{
     // long 最大长度不超过24
     return snprintf(buff, 24, "%ld", n);
 }
-static inline zzz_SIZE zzz_LongLongToStr(long long n, char *buff) {
+static inline zzz_SIZE zzz_LongLongToStr(long long n, char *buff)
+{
     // long long 最大长度不超过24
     return snprintf(buff, 24, "%lld", n);
 }
@@ -594,6 +602,8 @@ static inline struct zzz_Allocator *zzz_AllocatorNew()
 {
     // 分配大块内存
     void *ptr = zzz_New(sizeof(struct zzz_Allocator) + sizeof(struct zzz_ANode) + zzz_AllocatorInitMemSize);
+    if (zzz_UNLIKELY(ptr == 0))
+        return 0;
     struct zzz_Allocator *alloc = (struct zzz_Allocator *)ptr;
     alloc->Root = (struct zzz_ANode *)((char *)ptr + sizeof(struct zzz_Allocator));
     alloc->End = alloc->Root;
@@ -621,10 +631,12 @@ static inline void zzz_AllocatorRelease(struct zzz_Allocator *alloc)
 }
 
 // 追加一个大小为 init_size 的节点。
-static inline void zzz_AllocatorAppendChild(zzz_SIZE init_size, struct zzz_Allocator *alloc)
+static inline zzz_BOOL zzz_AllocatorAppendChild(zzz_SIZE init_size, struct zzz_Allocator *alloc)
 {
     // 每次分配一大块内存，避免多次分配
     void *ptr = zzz_New(sizeof(struct zzz_ANode) + init_size);
+    if (zzz_UNLIKELY(ptr == 0))
+        return zzz_False;
     struct zzz_ANode *node = (struct zzz_ANode *)ptr;
     node->Size = init_size;
     node->Data = (char *)ptr + sizeof(struct zzz_ANode);
@@ -633,7 +645,7 @@ static inline void zzz_AllocatorAppendChild(zzz_SIZE init_size, struct zzz_Alloc
     // 在ANode组成的链表最后加一个ANode
     alloc->End->Next = node;
     alloc->End = node;
-    return;
+    return zzz_True;
 }
 
 // 分配大小为size的内存
@@ -648,7 +660,8 @@ static inline char *zzz_AllocatorAlloc(struct zzz_Allocator *alloc, zzz_SIZE siz
         // 这里应该有更好的方法，就是直接通过计算所得
         while (zzz_UNLIKELY(size > s))
             s *= zzz_Delta; // 每次分配内存的大小是上次的zzz_Delta倍
-        zzz_AllocatorAppendChild(s, alloc);
+        if (zzz_UNLIKELY(zzz_AllocatorAppendChild(s, alloc) == zzz_False))
+            return 0;
         cur_node = alloc->End;
     }
     char *ret = cur_node->Data + cur_node->Pos;
@@ -676,6 +689,8 @@ static struct zzz_String *zzz_StringCache = 0;
 static inline struct zzz_String *zzz_StringNew(struct zzz_Allocator *alloc, zzz_SIZE init_size)
 {
     struct zzz_String *str = (struct zzz_String *)zzz_AllocatorAlloc(alloc, sizeof(struct zzz_String) + init_size);
+    if (zzz_UNLIKELY(str == 0))
+        return 0;
     str->Size = init_size;
     str->Data = (char *)str + sizeof(struct zzz_String);
     str->Pos = 0;
@@ -690,7 +705,7 @@ static inline void zzz_StringReset(struct zzz_String *str)
 }
 
 // 追加字符串
-static inline void zzz_StringAppendStr(struct zzz_String *str, const char *s, zzz_SIZE size)
+static inline zzz_BOOL zzz_StringAppendStr(struct zzz_String *str, const char *s, zzz_SIZE size)
 {
     zzz_SIZE src_s = str->Size;
     if (zzz_UNLIKELY(str->Pos + size > src_s))
@@ -700,15 +715,18 @@ static inline void zzz_StringAppendStr(struct zzz_String *str, const char *s, zz
             src_s *= zzz_Delta;
         const char *src_d = str->Data;
         str->Data = (char *)zzz_AllocatorAlloc(str->A, src_s);
+        if (zzz_UNLIKELY(str->Data == 0))
+            return zzz_False;
         str->Size = src_s;
         zzz_Copy(src_d, str->Pos, str->Data);
     }
     zzz_Copy(s, size, str->Data + str->Pos);
     str->Pos += size;
+    return zzz_True;
 }
 
 // 追加字符
-static inline void zzz_StringAppendChar(struct zzz_String *str, const char c)
+static inline zzz_BOOL zzz_StringAppendChar(struct zzz_String *str, const char c)
 {
     zzz_SIZE src_s = str->Size;
     if (zzz_UNLIKELY(str->Pos + 1 > src_s))
@@ -716,17 +734,20 @@ static inline void zzz_StringAppendChar(struct zzz_String *str, const char c)
         src_s *= zzz_Delta;
         const char *src_d = str->Data;
         str->Data = (char *)zzz_AllocatorAlloc(str->A, src_s);
+        if (zzz_UNLIKELY(str->Data == 0))
+            return zzz_False;
         str->Size = src_s;
         zzz_Copy(src_d, str->Pos, str->Data);
     }
     *(str->Data + str->Pos) = c;
     str->Pos += 1;
+    return zzz_True;
 }
 
 // 追加结束符
-static inline void zzz_StringAppendEnd(struct zzz_String *str)
+static inline zzz_BOOL zzz_StringAppendEnd(struct zzz_String *str)
 {
-    zzz_StringAppendChar(str, 0);
+    return zzz_StringAppendChar(str, 0);
 }
 
 // 获得字符串
@@ -777,6 +798,8 @@ struct zzz_Value
 static inline struct zzz_Value *zzz_ValueNew(struct zzz_Allocator *alloc)
 {
     struct zzz_Value *v = (struct zzz_Value *)zzz_AllocatorAlloc(alloc, sizeof(struct zzz_Value));
+    if (zzz_UNLIKELY(v == 0))
+        return 0;
     v->A = alloc;
     v->N = 0;
     return v;
@@ -786,6 +809,8 @@ static inline struct zzz_Value *zzz_ValueNew(struct zzz_Allocator *alloc)
 static inline struct zzz_Value *zzz_ValueInnerNew(struct zzz_Allocator *alloc, struct zzz_Node *n)
 {
     struct zzz_Value *v = (struct zzz_Value *)zzz_AllocatorAlloc(alloc, sizeof(struct zzz_Value));
+    if (zzz_UNLIKELY(v == 0))
+        return 0;
     v->A = alloc;
     v->N = n;
     return v;
@@ -1110,66 +1135,286 @@ static inline void zzz_UnEscapeStr(const char *str, zzz_SIZE len, char *s)
     return;
 }
 
-struct zzz_EscapeChar {
+struct zzz_EscapeChar
+{
     const char *Str;
     zzz_SIZE Len;
 };
 
 static const struct zzz_EscapeChar zzz_escapeChars[256] = {
-    {"\\u0000", 6},{"\\u0001", 6},{"\\u0002", 6},{"\\u0003", 6},{"\\u0004", 6},{"\\u0005", 6},{"\\u0006", 6},{"\\u0007", 6},
+    {"\\u0000", 6}, {"\\u0001", 6}, {"\\u0002", 6}, {"\\u0003", 6}, {"\\u0004", 6}, {"\\u0005", 6}, {"\\u0006", 6}, {"\\u0007", 6},
 
-    {"\\b", 2},{"\\t", 2},{"\\n", 2},{"\\u000b", 6},{"\\f", 2},{"\\r", 2},{"\\u000e", 6},{"\\u000f", 6},
+    {"\\b", 2},
+    {"\\t", 2},
+    {"\\n", 2},
+    {"\\u000b", 6},
+    {"\\f", 2},
+    {"\\r", 2},
+    {"\\u000e", 6},
+    {"\\u000f", 6},
 
-    {"\\u0010", 6},{"\\u0011", 6},{"\\u0012", 6},{"\\u0013", 6},{"\\u0014", 6},{"\\u0015", 6},{"\\u0016", 6},{"\\u0017", 6},
-    {"\\u0018", 6},{"\\u0019", 6},{"\\u001a", 6},{"\\u001b", 6},{"\\u001c", 6},{"\\u001d", 6},{"\\u001e", 6},{"\\u001f", 6},
+    {"\\u0010", 6},
+    {"\\u0011", 6},
+    {"\\u0012", 6},
+    {"\\u0013", 6},
+    {"\\u0014", 6},
+    {"\\u0015", 6},
+    {"\\u0016", 6},
+    {"\\u0017", 6},
+    {"\\u0018", 6},
+    {"\\u0019", 6},
+    {"\\u001a", 6},
+    {"\\u001b", 6},
+    {"\\u001c", 6},
+    {"\\u001d", 6},
+    {"\\u001e", 6},
+    {"\\u001f", 6},
 
-    {"\x20", 1},{"\x21", 1},{"\\\"", 2},{"\x23", 1},{"\x24", 1},{"\x25", 1},{"\x26", 1},{"\x27", 1},
+    {"\x20", 1},
+    {"\x21", 1},
+    {"\\\"", 2},
+    {"\x23", 1},
+    {"\x24", 1},
+    {"\x25", 1},
+    {"\x26", 1},
+    {"\x27", 1},
 
-    {"\x28", 1},{"\x29", 1},{"\x2a", 1},{"\x2b", 1},{"\x2c", 1},{"\x2d", 1},{"\x2e", 1},{"\x2f", 1},
-    {"\x30", 1},{"\x31", 1},{"\x32", 1},{"\x33", 1},{"\x34", 1},{"\x35", 1},{"\x36", 1},{"\x37", 1},
-    {"\x38", 1},{"\x39", 1},{"\x3a", 1},{"\x3b", 1},{"\x3c", 1},{"\x3d", 1},{"\x3e", 1},{"\x3f", 1},
-    {"\x40", 1},{"\x41", 1},{"\x42", 1},{"\x43", 1},{"\x44", 1},{"\x45", 1},{"\x46", 1},{"\x47", 1},
-    {"\x48", 1},{"\x49", 1},{"\x4a", 1},{"\x4b", 1},{"\x4c", 1},{"\x4d", 1},{"\x4e", 1},{"\x4f", 1},
-    {"\x50", 1},{"\x51", 1},{"\x52", 1},{"\x53", 1},{"\x54", 1},{"\x55", 1},{"\x56", 1},{"\x57", 1},
+    {"\x28", 1},
+    {"\x29", 1},
+    {"\x2a", 1},
+    {"\x2b", 1},
+    {"\x2c", 1},
+    {"\x2d", 1},
+    {"\x2e", 1},
+    {"\x2f", 1},
+    {"\x30", 1},
+    {"\x31", 1},
+    {"\x32", 1},
+    {"\x33", 1},
+    {"\x34", 1},
+    {"\x35", 1},
+    {"\x36", 1},
+    {"\x37", 1},
+    {"\x38", 1},
+    {"\x39", 1},
+    {"\x3a", 1},
+    {"\x3b", 1},
+    {"\x3c", 1},
+    {"\x3d", 1},
+    {"\x3e", 1},
+    {"\x3f", 1},
+    {"\x40", 1},
+    {"\x41", 1},
+    {"\x42", 1},
+    {"\x43", 1},
+    {"\x44", 1},
+    {"\x45", 1},
+    {"\x46", 1},
+    {"\x47", 1},
+    {"\x48", 1},
+    {"\x49", 1},
+    {"\x4a", 1},
+    {"\x4b", 1},
+    {"\x4c", 1},
+    {"\x4d", 1},
+    {"\x4e", 1},
+    {"\x4f", 1},
+    {"\x50", 1},
+    {"\x51", 1},
+    {"\x52", 1},
+    {"\x53", 1},
+    {"\x54", 1},
+    {"\x55", 1},
+    {"\x56", 1},
+    {"\x57", 1},
 
-    {"\x58", 1},{"\x59", 1},{"\x5a", 1},{"\x5b", 1},{"\\\\", 2},{"\x5d", 1},{"\x5e", 1},{"\x5f", 1},
+    {"\x58", 1},
+    {"\x59", 1},
+    {"\x5a", 1},
+    {"\x5b", 1},
+    {"\\\\", 2},
+    {"\x5d", 1},
+    {"\x5e", 1},
+    {"\x5f", 1},
 
-    {"\x60", 1},{"\x61", 1},{"\x62", 1},{"\x63", 1},{"\x64", 1},{"\x65", 1},{"\x66", 1},{"\x67", 1}, 
-    {"\x68", 1},{"\x69", 1},{"\x6a", 1},{"\x6b", 1},{"\x6c", 1},{"\x6d", 1},{"\x6e", 1},{"\x6f", 1}, 
-    {"\x70", 1},{"\x71", 1},{"\x72", 1},{"\x73", 1},{"\x74", 1},{"\x75", 1},{"\x76", 1},{"\x77", 1}, 
-    {"\x78", 1},{"\x79", 1},{"\x7a", 1},{"\x7b", 1},{"\x7c", 1},{"\x7d", 1},{"\x7e", 1},{"\x7f", 1}, 
-    {"\x80", 1},{"\x81", 1},{"\x82", 1},{"\x83", 1},{"\x84", 1},{"\x85", 1},{"\x86", 1},{"\x87", 1}, 
-    {"\x88", 1},{"\x89", 1},{"\x8a", 1},{"\x8b", 1},{"\x8c", 1},{"\x8d", 1},{"\x8e", 1},{"\x8f", 1}, 
-    {"\x90", 1},{"\x91", 1},{"\x92", 1},{"\x93", 1},{"\x94", 1},{"\x95", 1},{"\x96", 1},{"\x97", 1}, 
-    {"\x98", 1},{"\x99", 1},{"\x9a", 1},{"\x9b", 1},{"\x9c", 1},{"\x9d", 1},{"\x9e", 1},{"\x9f", 1}, 
-    {"\xa0", 1},{"\xa1", 1},{"\xa2", 1},{"\xa3", 1},{"\xa4", 1},{"\xa5", 1},{"\xa6", 1},{"\xa7", 1}, 
-    {"\xa8", 1},{"\xa9", 1},{"\xaa", 1},{"\xab", 1},{"\xac", 1},{"\xad", 1},{"\xae", 1},{"\xaf", 1}, 
-    {"\xb0", 1},{"\xb1", 1},{"\xb2", 1},{"\xb3", 1},{"\xb4", 1},{"\xb5", 1},{"\xb6", 1},{"\xb7", 1}, 
-    {"\xb8", 1},{"\xb9", 1},{"\xba", 1},{"\xbb", 1},{"\xbc", 1},{"\xbd", 1},{"\xbe", 1},{"\xbf", 1}, 
-    {"\xc0", 1},{"\xc1", 1},{"\xc2", 1},{"\xc3", 1},{"\xc4", 1},{"\xc5", 1},{"\xc6", 1},{"\xc7", 1}, 
-    {"\xc8", 1},{"\xc9", 1},{"\xca", 1},{"\xcb", 1},{"\xcc", 1},{"\xcd", 1},{"\xce", 1},{"\xcf", 1}, 
-    {"\xd0", 1},{"\xd1", 1},{"\xd2", 1},{"\xd3", 1},{"\xd4", 1},{"\xd5", 1},{"\xd6", 1},{"\xd7", 1}, 
-    {"\xd8", 1},{"\xd9", 1},{"\xda", 1},{"\xdb", 1},{"\xdc", 1},{"\xdd", 1},{"\xde", 1},{"\xdf", 1}, 
-    {"\xe0", 1},{"\xe1", 1},{"\xe2", 1},{"\xe3", 1},{"\xe4", 1},{"\xe5", 1},{"\xe6", 1},{"\xe7", 1}, 
-    {"\xe8", 1},{"\xe9", 1},{"\xea", 1},{"\xeb", 1},{"\xec", 1},{"\xed", 1},{"\xee", 1},{"\xef", 1}, 
-    {"\xf0", 1},{"\xf1", 1},{"\xf2", 1},{"\xf3", 1},{"\xf4", 1},{"\xf5", 1},{"\xf6", 1},{"\xf7", 1}, 
-    {"\xf8", 1},{"\xf9", 1},{"\xfa", 1},{"\xfb", 1},{"\xfc", 1},{"\xfd", 1},{"\xfe", 1},{"\xff", 1}
-};
-
+    {"\x60", 1},
+    {"\x61", 1},
+    {"\x62", 1},
+    {"\x63", 1},
+    {"\x64", 1},
+    {"\x65", 1},
+    {"\x66", 1},
+    {"\x67", 1},
+    {"\x68", 1},
+    {"\x69", 1},
+    {"\x6a", 1},
+    {"\x6b", 1},
+    {"\x6c", 1},
+    {"\x6d", 1},
+    {"\x6e", 1},
+    {"\x6f", 1},
+    {"\x70", 1},
+    {"\x71", 1},
+    {"\x72", 1},
+    {"\x73", 1},
+    {"\x74", 1},
+    {"\x75", 1},
+    {"\x76", 1},
+    {"\x77", 1},
+    {"\x78", 1},
+    {"\x79", 1},
+    {"\x7a", 1},
+    {"\x7b", 1},
+    {"\x7c", 1},
+    {"\x7d", 1},
+    {"\x7e", 1},
+    {"\x7f", 1},
+    {"\x80", 1},
+    {"\x81", 1},
+    {"\x82", 1},
+    {"\x83", 1},
+    {"\x84", 1},
+    {"\x85", 1},
+    {"\x86", 1},
+    {"\x87", 1},
+    {"\x88", 1},
+    {"\x89", 1},
+    {"\x8a", 1},
+    {"\x8b", 1},
+    {"\x8c", 1},
+    {"\x8d", 1},
+    {"\x8e", 1},
+    {"\x8f", 1},
+    {"\x90", 1},
+    {"\x91", 1},
+    {"\x92", 1},
+    {"\x93", 1},
+    {"\x94", 1},
+    {"\x95", 1},
+    {"\x96", 1},
+    {"\x97", 1},
+    {"\x98", 1},
+    {"\x99", 1},
+    {"\x9a", 1},
+    {"\x9b", 1},
+    {"\x9c", 1},
+    {"\x9d", 1},
+    {"\x9e", 1},
+    {"\x9f", 1},
+    {"\xa0", 1},
+    {"\xa1", 1},
+    {"\xa2", 1},
+    {"\xa3", 1},
+    {"\xa4", 1},
+    {"\xa5", 1},
+    {"\xa6", 1},
+    {"\xa7", 1},
+    {"\xa8", 1},
+    {"\xa9", 1},
+    {"\xaa", 1},
+    {"\xab", 1},
+    {"\xac", 1},
+    {"\xad", 1},
+    {"\xae", 1},
+    {"\xaf", 1},
+    {"\xb0", 1},
+    {"\xb1", 1},
+    {"\xb2", 1},
+    {"\xb3", 1},
+    {"\xb4", 1},
+    {"\xb5", 1},
+    {"\xb6", 1},
+    {"\xb7", 1},
+    {"\xb8", 1},
+    {"\xb9", 1},
+    {"\xba", 1},
+    {"\xbb", 1},
+    {"\xbc", 1},
+    {"\xbd", 1},
+    {"\xbe", 1},
+    {"\xbf", 1},
+    {"\xc0", 1},
+    {"\xc1", 1},
+    {"\xc2", 1},
+    {"\xc3", 1},
+    {"\xc4", 1},
+    {"\xc5", 1},
+    {"\xc6", 1},
+    {"\xc7", 1},
+    {"\xc8", 1},
+    {"\xc9", 1},
+    {"\xca", 1},
+    {"\xcb", 1},
+    {"\xcc", 1},
+    {"\xcd", 1},
+    {"\xce", 1},
+    {"\xcf", 1},
+    {"\xd0", 1},
+    {"\xd1", 1},
+    {"\xd2", 1},
+    {"\xd3", 1},
+    {"\xd4", 1},
+    {"\xd5", 1},
+    {"\xd6", 1},
+    {"\xd7", 1},
+    {"\xd8", 1},
+    {"\xd9", 1},
+    {"\xda", 1},
+    {"\xdb", 1},
+    {"\xdc", 1},
+    {"\xdd", 1},
+    {"\xde", 1},
+    {"\xdf", 1},
+    {"\xe0", 1},
+    {"\xe1", 1},
+    {"\xe2", 1},
+    {"\xe3", 1},
+    {"\xe4", 1},
+    {"\xe5", 1},
+    {"\xe6", 1},
+    {"\xe7", 1},
+    {"\xe8", 1},
+    {"\xe9", 1},
+    {"\xea", 1},
+    {"\xeb", 1},
+    {"\xec", 1},
+    {"\xed", 1},
+    {"\xee", 1},
+    {"\xef", 1},
+    {"\xf0", 1},
+    {"\xf1", 1},
+    {"\xf2", 1},
+    {"\xf3", 1},
+    {"\xf4", 1},
+    {"\xf5", 1},
+    {"\xf6", 1},
+    {"\xf7", 1},
+    {"\xf8", 1},
+    {"\xf9", 1},
+    {"\xfa", 1},
+    {"\xfb", 1},
+    {"\xfc", 1},
+    {"\xfd", 1},
+    {"\xfe", 1},
+    {"\xff", 1}};
 
 // str必定不为空，因此，一定会返回一个非空字符串
 static inline const char *zzz_EscapeStr(const char *str, struct zzz_Allocator *a)
 {
     zzz_SIZE len = 0;
-    const char * src = str;
-    while (zzz_LIKELY(*str != 0)) {
+    const char *src = str;
+    while (zzz_LIKELY(*str != 0))
+    {
         len += zzz_escapeChars[(unsigned char)(*str)].Len;
         ++str;
     }
-    char *s = zzz_AllocatorAlloc(a, len+1);
+    char *s = zzz_AllocatorAlloc(a, len + 1);
+    if (zzz_UNLIKELY(s == 0))
+        return 0;
     zzz_SIZE index = 0;
     str = src;
-    while (zzz_LIKELY(*str != 0)) {
+    while (zzz_LIKELY(*str != 0))
+    {
         zzz_AppendLen(s, &index, zzz_escapeChars[(unsigned char)(*str)].Str, zzz_escapeChars[(unsigned char)(*str)].Len);
         ++str;
     }
@@ -1181,18 +1426,22 @@ static inline const char *zzz_EscapeStr(const char *str, struct zzz_Allocator *a
 static inline const char *zzz_EscapeStrLen(const char *str, struct zzz_Allocator *a, zzz_SIZE len)
 {
     zzz_SIZE l = 0;
-    const char * src = str;
+    const char *src = str;
     zzz_SIZE srcLen = len;
-    while (zzz_LIKELY(len != 0)) {
+    while (zzz_LIKELY(len != 0))
+    {
         l += zzz_escapeChars[(unsigned char)(*str)].Len;
         ++str;
         --len;
     }
-    char *s = zzz_AllocatorAlloc(a, l+1);
+    char *s = zzz_AllocatorAlloc(a, l + 1);
+    if (zzz_UNLIKELY(s == 0))
+        return 0;
     zzz_SIZE index = 0;
     str = src;
     len = srcLen;
-    while (zzz_LIKELY(len != 0)) {
+    while (zzz_LIKELY(len != 0))
+    {
         zzz_AppendLen(s, &index, zzz_escapeChars[(unsigned char)(*str)].Str, zzz_escapeChars[(unsigned char)(*str)].Len);
         ++str;
         --len;
@@ -1354,12 +1603,15 @@ static inline zzz_BOOL zzz_CheckStrLen(struct zzz_Allocator *alloc, const char *
     if (zzz_UNLIKELY(zzz_StringCache == 0))
     {
         zzz_StringCache = zzz_StringNew(alloc, zzz_StringCacheInitMemSize);
+        if (zzz_UNLIKELY(zzz_StringCache == 0))
+            return zzz_False;
     }
     else
     {
         zzz_StringReset(zzz_StringCache);
     }
-    zzz_StringAppendStr(zzz_StringCache, s, len);
+    if (zzz_UNLIKELY(zzz_StringAppendStr(zzz_StringCache, s, len) == zzz_False))
+        return zzz_False;
     zzz_StringAppendEnd(zzz_StringCache);
     zzz_SIZE avail_len;
     if (zzz_UNLIKELY(zzz_CheckStr(zzz_StringStr(zzz_StringCache), &avail_len) == zzz_False))
@@ -1511,13 +1763,17 @@ static inline zzz_BOOL zzz_CheckNumLen(struct zzz_Allocator *alloc, const char *
     if (zzz_UNLIKELY(zzz_StringCache == 0))
     {
         zzz_StringCache = zzz_StringNew(alloc, zzz_StringCacheInitMemSize);
+        if (zzz_UNLIKELY(zzz_StringCache == 0))
+            return zzz_False;
     }
     else
     {
         zzz_StringReset(zzz_StringCache);
     }
-    zzz_StringAppendStr(zzz_StringCache, s, len);
-    zzz_StringAppendEnd(zzz_StringCache);
+    if (zzz_UNLIKELY(zzz_StringAppendStr(zzz_StringCache, s, len) == zzz_False))
+        return zzz_False;
+    if (zzz_UNLIKELY(zzz_StringAppendEnd(zzz_StringCache) == zzz_False))
+        return zzz_False;
     zzz_SIZE avail_len;
     if (zzz_UNLIKELY(zzz_CheckNum(zzz_StringStr(zzz_StringCache), &avail_len) == zzz_False))
     {
@@ -1535,6 +1791,8 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
     if (zzz_LIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0))
+            return zzz_False;
         v->N->Prev = 0;
         v->N->Next = 0;
         v->N->Father = 0;
@@ -1544,6 +1802,8 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
     else
     {
         src_node = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(src_node == 0))
+            return zzz_False;
         *src_node = *v->N;
     }
     zzz_SIZE index = 0;
@@ -1562,6 +1822,14 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
             break;
         }
         struct zzz_Node *n = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(n == 0))
+        {
+            if (zzz_LIKELY(src_node == 0))
+                v->N = src_node;
+            else
+                *v->N = *src_node;
+            return zzz_False;
+        }
         n->Father = node;
         n->Prev = 0;
 
@@ -1581,6 +1849,14 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
             break;
         }
         struct zzz_Node *n = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(n == 0))
+        {
+            if (zzz_LIKELY(src_node == 0))
+                v->N = src_node;
+            else
+                *v->N = *src_node;
+            return zzz_False;
+        }
         n->Father = node;
         n->Prev = 0;
         n->Next = 0;
@@ -1727,6 +2003,14 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
                 break;
             }
             struct zzz_Node *n = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+            if (zzz_UNLIKELY(n == 0))
+            {
+                if (zzz_LIKELY(src_node == 0))
+                    v->N = src_node;
+                else
+                    *v->N = *src_node;
+                return zzz_False;
+            }
             n->Father = node;
             n->Prev = 0;
 
@@ -1746,6 +2030,14 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
                 break;
             }
             struct zzz_Node *n = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+            if (zzz_UNLIKELY(n == 0))
+            {
+                if (zzz_LIKELY(src_node == 0))
+                    v->N = src_node;
+                else
+                    *v->N = *src_node;
+                return zzz_False;
+            }
             n->Father = node;
             n->Prev = 0;
             n->Next = 0;
@@ -1840,6 +2132,14 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
             if (zzz_LikelyPeekAndConsume(',', s, &index))
             {
                 struct zzz_Node *n = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+                if (zzz_UNLIKELY(n == 0))
+                {
+                    if (zzz_LIKELY(src_node == 0))
+                        v->N = src_node;
+                    else
+                        *v->N = *src_node;
+                    return zzz_False;
+                }
                 n->Father = node->Father;
                 n->Prev = node;
                 node->Father->End = n;
@@ -1883,6 +2183,7 @@ static inline zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s)
 static inline zzz_BOOL zzz_ValueParseLen(struct zzz_Value *v, const char *s, zzz_SIZE len)
 {
     char *str = zzz_AllocatorAlloc(v->A, len + 1);
+    if (zzz_UNLIKELY(str == 0)) return zzz_False;
     zzz_Copy(s, len, str);
     str[len] = 0;
     return zzz_ValueParseFast(v, s);
@@ -1900,39 +2201,50 @@ static inline const char *zzz_ValueStringify(const struct zzz_Value *v)
     if (zzz_UNLIKELY(v->N == 0))
         return "";
     struct zzz_String *str = zzz_StringNew(v->A, zzz_StringInitMemSize);
+    if (zzz_UNLIKELY(str == 0))
+        return 0;
+
     struct zzz_Node *node = v->N;
 
     switch (node->Type)
     {
     case zzz_JSONTYPEARRAY:
-        zzz_StringAppendChar(str, '[');
+        if (zzz_UNLIKELY(zzz_StringAppendChar(str, '[') == zzz_False))
+            return 0;
         if (node->Value.Node != 0)
         {
             node = node->Value.Node;
         }
         else
         {
-            zzz_StringAppendChar(str, ']');
+            if (zzz_UNLIKELY(zzz_StringAppendChar(str, ']') == zzz_False))
+                return 0;
         }
         break;
     case zzz_JSONTYPEOBJECT:
-        zzz_StringAppendChar(str, '{');
+        if (zzz_UNLIKELY(zzz_StringAppendChar(str, '{') == zzz_False))
+            return 0;
         if (node->Len != 0)
         {
             node = node->Value.Node;
         }
         else
         {
-            zzz_StringAppendChar(str, '}');
+            if (zzz_UNLIKELY(zzz_StringAppendChar(str, '}') == zzz_False))
+                return 0;
         }
         break;
     case zzz_JSONTYPESTRING:
-        zzz_StringAppendChar(str, '"');
-        zzz_StringAppendStr(str, node->Value.Str, node->Len);
-        zzz_StringAppendChar(str, '"');
+        if (zzz_UNLIKELY(zzz_StringAppendChar(str, '"') == zzz_False))
+            return 0;
+        if (zzz_UNLIKELY(zzz_StringAppendStr(str, node->Value.Str, node->Len) == zzz_False))
+            return 0;
+        if (zzz_UNLIKELY(zzz_StringAppendChar(str, '"') == zzz_False))
+            return 0;
         break;
     default:
-        zzz_StringAppendStr(str, node->Value.Str, node->Len);
+        if (zzz_UNLIKELY(zzz_StringAppendStr(str, node->Value.Str, node->Len) == zzz_False))
+            return 0;
         break;
     }
 
@@ -1940,14 +2252,18 @@ static inline const char *zzz_ValueStringify(const struct zzz_Value *v)
     {
         if (node->Key != 0)
         {
-            zzz_StringAppendChar(str, '"');
-            zzz_StringAppendStr(str, node->Key, node->KeyLen);
-            zzz_StringAppendStr(str, "\":", 2);
+            if (zzz_UNLIKELY(zzz_StringAppendChar(str, '"') == zzz_False))
+                return 0;
+            if (zzz_UNLIKELY(zzz_StringAppendStr(str, node->Key, node->KeyLen) == zzz_False))
+                return 0;
+            if (zzz_UNLIKELY(zzz_StringAppendStr(str, "\":", 2) == zzz_False))
+                return 0;
         }
         switch (node->Type)
         {
         case zzz_JSONTYPEARRAY:
-            zzz_StringAppendChar(str, '[');
+            if (zzz_UNLIKELY(zzz_StringAppendChar(str, '[') == zzz_False))
+                return 0;
             if (node->Value.Node != 0)
             {
                 node = node->Value.Node;
@@ -1955,11 +2271,13 @@ static inline const char *zzz_ValueStringify(const struct zzz_Value *v)
             }
             else
             {
-                zzz_StringAppendChar(str, ']');
+                if (zzz_UNLIKELY(zzz_StringAppendChar(str, ']') == zzz_False))
+                    return 0;
             }
             break;
         case zzz_JSONTYPEOBJECT:
-            zzz_StringAppendChar(str, '{');
+            if (zzz_UNLIKELY(zzz_StringAppendChar(str, '{') == zzz_False))
+                return 0;
             if (node->Len != 0)
             {
                 node = node->Value.Node;
@@ -1967,23 +2285,29 @@ static inline const char *zzz_ValueStringify(const struct zzz_Value *v)
             }
             else
             {
-                zzz_StringAppendChar(str, '}');
+                if (zzz_UNLIKELY(zzz_StringAppendChar(str, '}') == zzz_False))
+                    return 0;
             }
             break;
         case zzz_JSONTYPESTRING:
-            zzz_StringAppendChar(str, '"');
-            zzz_StringAppendStr(str, node->Value.Str, node->Len);
-            zzz_StringAppendChar(str, '"');
+            if (zzz_UNLIKELY(zzz_StringAppendChar(str, '"') == zzz_False))
+                return 0;
+            if (zzz_UNLIKELY(zzz_StringAppendStr(str, node->Value.Str, node->Len) == zzz_False))
+                return 0;
+            if (zzz_UNLIKELY(zzz_StringAppendChar(str, '"') == zzz_False))
+                return 0;
             break;
         default:
-            zzz_StringAppendStr(str, node->Value.Str, node->Len);
+            if (zzz_UNLIKELY(zzz_StringAppendStr(str, node->Value.Str, node->Len) == zzz_False))
+                return 0;
             break;
         }
         while (zzz_LIKELY(node != v->N))
         {
             if (zzz_LIKELY(node->Next != 0))
             {
-                zzz_StringAppendChar(str, ',');
+                if (zzz_UNLIKELY(zzz_StringAppendChar(str, ',') == zzz_False))
+                    return 0;
                 node = node->Next;
                 break;
             }
@@ -1992,16 +2316,19 @@ static inline const char *zzz_ValueStringify(const struct zzz_Value *v)
                 node = node->Father;
                 if (node->Type == zzz_JSONTYPEARRAY)
                 {
-                    zzz_StringAppendChar(str, ']');
+                    if (zzz_UNLIKELY(zzz_StringAppendChar(str, ']') == zzz_False))
+                        return 0;
                 }
                 else
                 {
-                    zzz_StringAppendChar(str, '}');
+                    if (zzz_UNLIKELY(zzz_StringAppendChar(str, '}') == zzz_False))
+                        return 0;
                 }
             }
         }
     }
-    zzz_StringAppendEnd(str);
+    if (zzz_UNLIKELY(zzz_StringAppendEnd(str) == zzz_False))
+        return 0;
     return zzz_StringStr(str);
 }
 
@@ -2024,6 +2351,7 @@ static inline const char *zzz_ValueGetStr(struct zzz_Value *v)
     if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPESTRING))
         return 0;
     char *str = zzz_AllocatorAlloc(v->A, v->N->Len + 1);
+    if (zzz_UNLIKELY(str == 0)) return 0;
     zzz_Copy(v->N->Value.Str, v->N->Len, str);
     str[v->N->Len] = 0;
     return str;
@@ -2039,6 +2367,7 @@ static inline const char *zzz_ValueGetUnEscapeStr(struct zzz_Value *v)
     // 因为值里面的字符串一定是合法的字符串，因此，可以简化
     // 因为解码后的字符串一定比解码前短，所以申请原字符串+1的长度即可
     char *ret_str = zzz_AllocatorAlloc(v->A, v->N->Len + 1);
+    if (zzz_UNLIKELY(ret_str == 0)) return 0;
     zzz_UnEscapeStr(v->N->Value.Str, v->N->Len, ret_str);
     return ret_str;
 }
@@ -2062,6 +2391,7 @@ static inline const char *zzz_ValueGetNumStr(struct zzz_Value *v)
     if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPENUMBER))
         return 0;
     char *str = zzz_AllocatorAlloc(v->A, v->N->Len + 1);
+    if (zzz_UNLIKELY(str == 0)) return 0;
     zzz_Copy(v->N->Value.Str, v->N->Len, str);
     str[v->N->Len] = 0;
     return str;
@@ -2079,7 +2409,8 @@ static inline const double *zzz_ValueGetDouble(struct zzz_Value *v)
         return 0;
     if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPENUMBER))
         return 0;
-    double *d = (double *)zzz_AllocatorAlloc(v->A, sizeof(double)); 
+    double *d = (double *)zzz_AllocatorAlloc(v->A, sizeof(double));
+    if (zzz_UNLIKELY(d == 0)) return 0;
     *d = zzz_StrToDouble(v->N->Value.Str);
     return d;
 }
@@ -2090,7 +2421,8 @@ static inline const int *zzz_ValueGetInt(struct zzz_Value *v)
         return 0;
     if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPENUMBER))
         return 0;
-    int *i = (int *)zzz_AllocatorAlloc(v->A, sizeof(int)); 
+    int *i = (int *)zzz_AllocatorAlloc(v->A, sizeof(int));
+    if (zzz_UNLIKELY(i == 0)) return 0;
     *i = zzz_StrToInt(v->N->Value.Str);
     return i;
 }
@@ -2101,7 +2433,8 @@ static inline const long *zzz_ValueGetLong(struct zzz_Value *v)
         return 0;
     if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPENUMBER))
         return 0;
-    long *l = (long *)zzz_AllocatorAlloc(v->A, sizeof(long)); 
+    long *l = (long *)zzz_AllocatorAlloc(v->A, sizeof(long));
+    if (zzz_UNLIKELY(l == 0)) return 0;
     *l = zzz_StrToLong(v->N->Value.Str);
     return l;
 }
@@ -2112,7 +2445,8 @@ static inline const long long *zzz_ValueGetLongLong(struct zzz_Value *v)
         return 0;
     if (zzz_UNLIKELY(v->N->Type != zzz_JSONTYPENUMBER))
         return 0;
-    long long *ll = (long long *)zzz_AllocatorAlloc(v->A, sizeof(long long)); 
+    long long *ll = (long long *)zzz_AllocatorAlloc(v->A, sizeof(long long));
+    if (zzz_UNLIKELY(ll == 0)) return 0;
     *ll = zzz_StrToLongLong(v->N->Value.Str);
     return ll;
 }
@@ -2147,6 +2481,7 @@ static inline const char *zzz_ValueGetKey(struct zzz_Value *v)
     if (zzz_UNLIKELY(v->N->Key == 0))
         return 0;
     char *str = zzz_AllocatorAlloc(v->A, v->N->KeyLen + 1);
+    if (zzz_UNLIKELY(str == 0)) return 0;
     zzz_Copy(v->N->Key, v->N->KeyLen, str);
     str[v->N->KeyLen] = 0;
     return str;
@@ -2159,6 +2494,7 @@ static inline const char *zzz_ValueGetUnEscapeKey(struct zzz_Value *v)
     if (zzz_UNLIKELY(v->N->Key == 0))
         return 0;
     char *str = zzz_AllocatorAlloc(v->A, v->N->KeyLen + 1);
+    if (zzz_UNLIKELY(str == 0)) return 0;
     zzz_UnEscapeStr(v->N->Key, v->N->KeyLen, str);
     return str;
 }
@@ -2304,6 +2640,7 @@ static inline zzz_BOOL zzz_ValueCopyFrom(struct zzz_Value *v, const struct zzz_V
         return zzz_False;
     struct zzz_Allocator *const A = v->A;
     v->N = (struct zzz_Node *)zzz_AllocatorAlloc(A, sizeof(struct zzz_Node));
+    if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
     v->N->Prev = 0;
     v->N->Next = 0;
     v->N->Father = 0;
@@ -2317,6 +2654,7 @@ static inline zzz_BOOL zzz_ValueCopyFrom(struct zzz_Value *v, const struct zzz_V
         if (node->Key != 0)
         {
             char *k = zzz_AllocatorAlloc(A, node->KeyLen);
+            if (zzz_UNLIKELY(k == 0)) return zzz_False;
             zzz_Copy(node->Key, node->KeyLen, k);
             des_node->Key = k;
             des_node->KeyLen = node->KeyLen;
@@ -2334,6 +2672,7 @@ static inline zzz_BOOL zzz_ValueCopyFrom(struct zzz_Value *v, const struct zzz_V
             {
                 node = node->Value.Node;
                 struct zzz_Node *n = (struct zzz_Node *)zzz_AllocatorAlloc(A, sizeof(struct zzz_Node));
+                if (zzz_UNLIKELY(n == 0)) return zzz_False;
                 n->Father = des_node;
                 n->Prev = 0;
                 des_node->Value.Node = n;
@@ -2353,6 +2692,7 @@ static inline zzz_BOOL zzz_ValueCopyFrom(struct zzz_Value *v, const struct zzz_V
         case zzz_JSONTYPESTRING:
         {
             char *s = zzz_AllocatorAlloc(A, node->Len);
+            if (zzz_UNLIKELY(s == 0)) return zzz_False;
             zzz_Copy(node->Value.Str, node->Len, s);
             des_node->Value.Str = s;
             des_node->Len = node->Len;
@@ -2365,6 +2705,7 @@ static inline zzz_BOOL zzz_ValueCopyFrom(struct zzz_Value *v, const struct zzz_V
             {
                 node = node->Next;
                 struct zzz_Node *n = (struct zzz_Node *)zzz_AllocatorAlloc(A, sizeof(struct zzz_Node));
+                if (zzz_UNLIKELY(n == 0)) return zzz_False;
                 n->Father = des_node->Father;
                 n->Prev = des_node;
                 n->Father->End = n;
@@ -2388,7 +2729,8 @@ static inline zzz_BOOL zzz_ValueCopyFrom(struct zzz_Value *v, const struct zzz_V
 static inline struct zzz_Value *zzz_ValueCopy(const struct zzz_Value *v)
 {
     struct zzz_Value *ret_val = zzz_ValueNew(v->A);
-    if (zzz_UNLIKELY(zzz_ValueCopyFrom(ret_val, v) == zzz_False)) return 0;
+    if (zzz_UNLIKELY(zzz_ValueCopyFrom(ret_val, v) == zzz_False))
+        return 0;
     return ret_val;
 }
 
@@ -2424,11 +2766,12 @@ static inline zzz_BOOL zzz_ValueMove(struct zzz_Value *v)
 }
 
 // 函数说明详见《API》
-static inline void zzz_ValueSetNull(struct zzz_Value *v)
+static inline zzz_BOOL zzz_ValueSetNull(struct zzz_Value *v)
 {
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2437,14 +2780,16 @@ static inline void zzz_ValueSetNull(struct zzz_Value *v)
     v->N->Type = zzz_JSONTYPENULL;
     v->N->Value.Str = zzz_StrNull;
     v->N->Len = 4;
+    return zzz_True;
 }
 
 // 函数说明详见《API》
-static inline void zzz_ValueSetBool(struct zzz_Value *v, zzz_BOOL b)
+static inline zzz_BOOL zzz_ValueSetBool(struct zzz_Value *v, zzz_BOOL b)
 {
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2455,10 +2800,11 @@ static inline void zzz_ValueSetBool(struct zzz_Value *v, zzz_BOOL b)
     {
         v->N->Value.Str = zzz_StrFalse;
         v->N->Len = 5;
-        return;
+        return zzz_True;
     }
     v->N->Value.Str = zzz_StrTrue;
     v->N->Len = 4;
+    return zzz_True;
 }
 
 // 函数说明详见《API》
@@ -2470,6 +2816,7 @@ static inline zzz_BOOL zzz_ValueSetNumStrFast(struct zzz_Value *v, const char *n
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2489,6 +2836,7 @@ static inline zzz_BOOL zzz_ValueSetNumStrLenFast(struct zzz_Value *v, const char
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2507,10 +2855,12 @@ static inline zzz_BOOL zzz_ValueSetNumStr(struct zzz_Value *v, const char *num)
     if (zzz_UNLIKELY(zzz_CheckNum(num, &len) == zzz_False))
         return zzz_False;
     char *s = zzz_AllocatorAlloc(v->A, len);
+    if (zzz_UNLIKELY(s == 0)) return zzz_False;
     zzz_Copy(num, len, s);
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2528,10 +2878,12 @@ static inline zzz_BOOL zzz_ValueSetNumStrLen(struct zzz_Value *v, const char *nu
     if (zzz_UNLIKELY(zzz_CheckNumLen(v->A, num, len) == zzz_False))
         return zzz_False;
     char *s = zzz_AllocatorAlloc(v->A, len);
+    if (zzz_UNLIKELY(s == 0)) return zzz_False;
     zzz_Copy(num, len, s);
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2549,12 +2901,15 @@ static inline zzz_BOOL zzz_ValueSetNum(struct zzz_Value *v, const double d)
     return zzz_ValueSetDouble(v, d);
 }
 
-static inline zzz_BOOL zzz_ValueSetDouble(struct zzz_Value *v, const double d) {
+static inline zzz_BOOL zzz_ValueSetDouble(struct zzz_Value *v, const double d)
+{
     char *num = zzz_AllocatorAlloc(v->A, 32);
+    if (zzz_UNLIKELY(num == 0)) return zzz_False;
     zzz_SIZE len = zzz_DoubleToStr(d, num);
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2566,12 +2921,15 @@ static inline zzz_BOOL zzz_ValueSetDouble(struct zzz_Value *v, const double d) {
     return zzz_True;
 }
 
-static inline zzz_BOOL zzz_ValueSetInt(struct zzz_Value *v, const int n) {
+static inline zzz_BOOL zzz_ValueSetInt(struct zzz_Value *v, const int n)
+{
     char *num = zzz_AllocatorAlloc(v->A, 16);
+    if (zzz_UNLIKELY(num == 0)) return zzz_False;
     zzz_SIZE len = zzz_IntToStr(n, num);
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2583,12 +2941,15 @@ static inline zzz_BOOL zzz_ValueSetInt(struct zzz_Value *v, const int n) {
     return zzz_True;
 }
 
-static inline zzz_BOOL zzz_ValueSetLong(struct zzz_Value *v, const long n) {
+static inline zzz_BOOL zzz_ValueSetLong(struct zzz_Value *v, const long n)
+{
     char *num = zzz_AllocatorAlloc(v->A, 24);
+    if (zzz_UNLIKELY(num == 0)) return zzz_False;
     zzz_SIZE len = zzz_LongToStr(n, num);
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2600,12 +2961,15 @@ static inline zzz_BOOL zzz_ValueSetLong(struct zzz_Value *v, const long n) {
     return zzz_True;
 }
 
-static inline zzz_BOOL zzz_ValueSetLongLong(struct zzz_Value *v, const long long n) {
+static inline zzz_BOOL zzz_ValueSetLongLong(struct zzz_Value *v, const long long n)
+{
     char *num = zzz_AllocatorAlloc(v->A, 24);
+    if (zzz_UNLIKELY(num == 0)) return zzz_False;
     zzz_SIZE len = zzz_LongLongToStr(n, num);
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2620,12 +2984,16 @@ static inline zzz_BOOL zzz_ValueSetLongLong(struct zzz_Value *v, const long long
 static inline zzz_BOOL zzz_ValueSetStrEscape(struct zzz_Value *v, const char *str)
 {
     const char *es = zzz_EscapeStr(str, v->A);
+    if (zzz_UNLIKELY(es == 0))
+        return zzz_False;
     return zzz_ValueSetStrFast(v, es);
 }
 
 static inline zzz_BOOL zzz_ValueSetStrLenEscape(struct zzz_Value *v, const char *str, zzz_SIZE len)
 {
     const char *es = zzz_EscapeStrLen(str, v->A, len);
+    if (zzz_UNLIKELY(es == 0))
+        return zzz_False;
     return zzz_ValueSetStrFast(v, es);
 }
 
@@ -2640,6 +3008,7 @@ static inline zzz_BOOL zzz_ValueSetStrFast(struct zzz_Value *v, const char *str)
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2661,6 +3030,7 @@ static inline zzz_BOOL zzz_ValueSetStrLenFast(struct zzz_Value *v, const char *s
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2681,10 +3051,12 @@ static inline zzz_BOOL zzz_ValueSetStr(struct zzz_Value *v, const char *str)
         return zzz_False;
     }
     char *s = zzz_AllocatorAlloc(v->A, len);
+    if (zzz_UNLIKELY(s == 0)) return zzz_False;
     zzz_Copy(str, len, s);
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2704,10 +3076,12 @@ static inline zzz_BOOL zzz_ValueSetStrLen(struct zzz_Value *v, const char *str, 
         return zzz_False;
     }
     char *s = zzz_AllocatorAlloc(v->A, len);
+    if (zzz_UNLIKELY(s == 0)) return zzz_False;
     zzz_Copy(str, len, s);
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2722,12 +3096,16 @@ static inline zzz_BOOL zzz_ValueSetStrLen(struct zzz_Value *v, const char *str, 
 static inline zzz_BOOL zzz_ValueSetKeyEscape(struct zzz_Value *v, const char *key)
 {
     const char *es = zzz_EscapeStr(key, v->A);
+    if (zzz_UNLIKELY(es == 0))
+        return zzz_False;
     return zzz_ValueSetKeyFast(v, es);
 }
 
 static inline zzz_BOOL zzz_ValueSetKeyLenEscape(struct zzz_Value *v, const char *key, zzz_SIZE len)
 {
     const char *es = zzz_EscapeStrLen(key, v->A, len);
+    if (zzz_UNLIKELY(es == 0))
+        return zzz_False;
     return zzz_ValueSetKeyFast(v, es);
 }
 
@@ -2742,6 +3120,7 @@ static inline zzz_BOOL zzz_ValueSetKeyFast(struct zzz_Value *v, const char *key)
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Prev = 0;
         v->N->Father = 0;
         v->N->Next = 0;
@@ -2768,6 +3147,7 @@ static inline zzz_BOOL zzz_ValueSetKeyLenFast(struct zzz_Value *v, const char *k
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Prev = 0;
         v->N->Father = 0;
         v->N->Next = 0;
@@ -2795,6 +3175,7 @@ static inline zzz_BOOL zzz_ValueSetKey(struct zzz_Value *v, const char *key)
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Prev = 0;
         v->N->Father = 0;
         v->N->Next = 0;
@@ -2807,6 +3188,7 @@ static inline zzz_BOOL zzz_ValueSetKey(struct zzz_Value *v, const char *key)
         return zzz_False;
     }
     char *s = zzz_AllocatorAlloc(v->A, len);
+    if (zzz_UNLIKELY(s == 0)) return zzz_False;
     zzz_Copy(key, len, s);
     v->N->Key = s;
     v->N->KeyLen = len;
@@ -2823,6 +3205,7 @@ static inline zzz_BOOL zzz_ValueSetKeyLen(struct zzz_Value *v, const char *key, 
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Prev = 0;
         v->N->Father = 0;
         v->N->Next = 0;
@@ -2835,6 +3218,7 @@ static inline zzz_BOOL zzz_ValueSetKeyLen(struct zzz_Value *v, const char *key, 
         return zzz_False;
     }
     char *s = zzz_AllocatorAlloc(v->A, len);
+    if (zzz_UNLIKELY(s == 0)) return zzz_False;
     zzz_Copy(key, len, s);
     v->N->Key = s;
     v->N->KeyLen = len;
@@ -2842,11 +3226,12 @@ static inline zzz_BOOL zzz_ValueSetKeyLen(struct zzz_Value *v, const char *key, 
 }
 
 // 函数说明详见《API》
-static inline void zzz_ValueSetArray(struct zzz_Value *v)
+static inline zzz_BOOL zzz_ValueSetArray(struct zzz_Value *v)
 {
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2855,15 +3240,16 @@ static inline void zzz_ValueSetArray(struct zzz_Value *v)
     v->N->Type = zzz_JSONTYPEARRAY;
     v->N->Value.Node = 0;
     v->N->Len = 0;
-    return;
+    return zzz_True;
 }
 
 // 函数说明详见《API》
-static inline void zzz_ValueSetObj(struct zzz_Value *v)
+static inline zzz_BOOL zzz_ValueSetObj(struct zzz_Value *v)
 {
     if (zzz_UNLIKELY(v->N == 0))
     {
         v->N = (struct zzz_Node *)zzz_AllocatorAlloc(v->A, sizeof(struct zzz_Node));
+        if (zzz_UNLIKELY(v->N == 0)) return zzz_False;
         v->N->Key = 0;
         v->N->Prev = 0;
         v->N->Father = 0;
@@ -2872,7 +3258,7 @@ static inline void zzz_ValueSetObj(struct zzz_Value *v)
     v->N->Type = zzz_JSONTYPEOBJECT;
     v->N->Value.Node = 0;
     v->N->Len = 0;
-    return;
+    return zzz_True;
 }
 
 // 函数说明详见《API》

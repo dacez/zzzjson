@@ -84,6 +84,22 @@ class Value
     {
         return zzz_ValueGetNum(val);
     }
+    const double *GetDouble()
+    {
+        return zzz_ValueGetDouble(val);
+    }
+    const int *GetInt()
+    {
+        return zzz_ValueGetInt(val);
+    }
+    const long *GetLong()
+    {
+        return zzz_ValueGetLong(val);
+    }
+    const long long *GetLongLong()
+    {
+        return zzz_ValueGetLongLong(val);
+    }
     const bool *GetBool()
     {
         return (const bool *)zzz_ValueGetBool(val);
@@ -146,18 +162,20 @@ class Value
     {
         return zzz_ValueMove(val);
     }
-    void SetNull()
+    bool SetNull()
     {
-        zzz_ValueSetNull(val);
+        return zzz_ValueSetNull(val);
     }
-    void SetBool(bool b)
+    bool SetBool(bool b)
     {
-        zzz_ValueSetBool(val, b);
+        return zzz_ValueSetBool(val, b);
     }
-    bool SetNumStr(const char *num) {
+    bool SetNumStr(const char *num)
+    {
         return zzz_ValueSetNumStr(val, num);
     }
-    bool SetNumStrLen(const char *num, SIZE len) {
+    bool SetNumStrLen(const char *num, SIZE len)
+    {
         return zzz_ValueSetNumStrLen(val, num, len);
     }
     bool SetNumStrFast(const char *num)
@@ -171,6 +189,22 @@ class Value
     bool SetNum(const double d)
     {
         return zzz_ValueSetNum(val, d);
+    }
+    bool SetDouble(const double d)
+    {
+        return zzz_ValueSetDouble(val, d);
+    }
+    bool SetInt(int i)
+    {
+        return zzz_ValueSetInt(val, i);
+    }
+    bool SetLong(long l)
+    {
+        return zzz_ValueSetLong(val, l);
+    }
+    bool SetLongLong(long long ll)
+    {
+        return zzz_ValueSetLongLong(val, ll);
     }
     bool SetStrEscape(const char *str)
     {
@@ -220,11 +254,11 @@ class Value
     {
         return zzz_ValueSetKeyLen(val, key, len);
     }
-    void SetArray()
+    bool SetArray()
     {
         return zzz_ValueSetArray(val);
     }
-    void SetObj()
+    bool SetObj()
     {
         return zzz_ValueSetObj(val);
     }
