@@ -30,7 +30,7 @@ class Allocator
 
   private:
     Allocator(const Allocator &a) {}
-    const Allocator &operator=(const Allocator &a) {}
+    const Allocator &operator=(const Allocator &a) {return *this;}
 
   private:
     zzz_Allocator *alloc;
