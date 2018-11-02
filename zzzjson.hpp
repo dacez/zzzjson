@@ -44,6 +44,12 @@ class Value
         zzz_Value *v = zzz_ValueNew(alloc->getAllocator());
         return innerNew(v);
     }
+    Value *NewValue() {
+        zzz_Value *v = zzz_ValueNew(val->A);
+        Value *ret = (Value *)zzz_AllocatorAlloc(val->A, sizeof(Value));
+        ret->val = v;
+        return ret;
+    }
     bool ParseFast(const char *s)
     {
         return zzz_ValueParseFast(val, s);
@@ -294,7 +300,6 @@ class Value
     {
         return zzz_ValueObjDel(val, key);
     }
-
   private:
     Value() {}
     static Value *innerNew(zzz_Value *v)
