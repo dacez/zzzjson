@@ -4073,3 +4073,6 @@ CC=clang++
 - [ ] Python封装
 - [ ] Java封装
 - [ ] Python/Java性能测试
+
+## 九、其它文献
+[性能优化的艺术与实践（一）——高性能JSON解析器](https://zhuanlan.zhihu.com/p/44383377 "性能优化的艺术与实践（一）——高性能JSON解析器")
