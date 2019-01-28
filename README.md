@@ -286,7 +286,7 @@ int main()
 
 ## Short APIs
 
-```C
+```c
 Allocator *NewAllocator()
 void ReleaseAllocator(Allocator *root_alloc)
 
@@ -370,7 +370,7 @@ BOOL ObjDel(Value *v, const char *key)
 >
 > \#include "zzzjson.h"
 
-```C
+```c
 struct zzz_Allocator *zzz_AllocatorNew();
 void zzz_AllocatorRelease(struct zzz_Allocator *root_alloc);
 
