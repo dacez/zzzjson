@@ -287,75 +287,75 @@ int main()
 ## Short APIs
 
 ```c
-Allocator *NewAllocator()
-void ReleaseAllocator(Allocator *root_alloc)
+Allocator *NewAllocator();
+void ReleaseAllocator(Allocator *root_alloc);
 
-Value *NewValue(Allocator *alloc)
-BOOL ParseFast(Value *v, const char *s)
-BOOL ParseLen(Value *v, const char *s, SIZE len)
-BOOL Parse(Value *v, const char *s)
-const char *Stringify(const Value *v)
+Value *NewValue(Allocator *alloc);
+BOOL ParseFast(Value *v, const char *s);
+BOOL ParseLen(Value *v, const char *s, SIZE len);
+BOOL Parse(Value *v, const char *s);
+const char *Stringify(const Value *v);
 
-const char *GetStrFast(const Value *v, SIZE *len)
-const char *GetUnEscapeStr(Value *v)
-const char *GetStr(Value *v)
-const char *GetNumFast(const Value *v, zzz_SIZE *len)
-const char *GetNumStr(Value *v)
-const double *GetNum(Value *v)
-const double *GetDouble(struct zzz_Value *v)
-const int *GetInt(struct zzz_Value *v)
-const long *GetLong(struct zzz_Value *v)
-const long long *GetLongLong(struct zzz_Value *v)
-const BOOL *GetBool(const Value *v)
-BOOL IsNull(const Value *v)
-const char *GetKey(Value *v)
-const char *GetUnEscapeKey(Value *v)
-const char *GetKeyFast(const Value *v, SIZE *len)
-Value *ObjGet(const Value *v, const char *key)
-Value *ObjGetLen(const Value *v, const char *key, SIZE len)
-const JSONType *Type(const Value *v)
-SIZE Size(const Value *v)
-Value *ArrayGet(const Value *v, SIZE index)
-Value *Begin(const Value *v)
-Value *Next(const Value *v)
+const char *GetStrFast(const Value *v, SIZE *len);
+const char *GetUnEscapeStr(Value *v);
+const char *GetStr(Value *v);
+const char *GetNumFast(const Value *v, zzz_SIZE *len);
+const char *GetNumStr(Value *v);
+const double *GetNum(Value *v);
+const double *GetDouble(struct zzz_Value *v);
+const int *GetInt(struct zzz_Value *v);
+const long *GetLong(struct zzz_Value *v);
+const long long *GetLongLong(struct zzz_Value *v);
+const BOOL *GetBool(const Value *v);
+BOOL IsNull(const Value *v);
+const char *GetKey(Value *v);
+const char *GetUnEscapeKey(Value *v);
+const char *GetKeyFast(const Value *v, SIZE *len);
+Value *ObjGet(const Value *v, const char *key);
+Value *ObjGetLen(const Value *v, const char *key, SIZE len);
+const JSONType *Type(const Value *v);
+SIZE Size(const Value *v);
+Value *ArrayGet(const Value *v, SIZE index);
+Value *Begin(const Value *v);
+Value *Next(const Value *v);
 
-Value *Copy(const Value *v)
-BOOL Move(Value *v)
+Value *Copy(const Value *v);
+BOOL Move(Value *v);
 
-BOOL SetNull(Value *v)
-BOOL SetBool(Value *v, BOOL b)
-BOOL SetNumStrFast(Value *v, const char *num)
-BOOL SetNumStrLenFast(Value *v, const char *num, SIZE len)
-BOOL SetNumStr(Value *v, const char *num)
-BOOL SetNumStrLen(Value *v, const char *num, SIZE len)
-BOOL SetNum(Value *v, const double d)
-BOOL SetDouble(Value *v, const double d)
-BOOL SetInt(Value *v, const int d)
-BOOL SetLong(Value *v, const long d)
-BOOL SetLongLong(Value *v, const long long d)
-BOOL SetStrFast(Value *v, const char *str)
-BOOL SetStrLenFast(Value *v, const char *str, SIZE len)
-BOOL SetStr(Value *v, const char *str)
-BOOL SetStrLen(Value *v, const char *str, SIZE len)
-BOOL SetStrEscape(Value *v, const char *str)
-BOOL SetStrLenEscape(Value *v, const char *str, SIZE len)
-BOOL SetKeyFast(Value *v, const char *key)
-BOOL SetKeyLenFast(Value *v, const char *key, SIZE len)
-BOOL SetKey(Value *v, const char *key)
-BOOL SetKeyLen(Value *v, const char *key, SIZE len)
-BOOL SetKeyEscape(Value *v, const char *key)
-BOOL SetKeyLenEscape(Value *v, const char *key, SIZE len)
-BOOL SetArray(Value *v)
-BOOL SetObj(Value *v)
-BOOL SetFast(Value *v, Value *vv)
-BOOL Set(Value *v, const Value *vv)
-BOOL ObjAddFast(Value *v, Value *vv)
-BOOL ObjAdd(Value *v, const Value *vv)
-BOOL ArrayAddFast(Value *v, Value *vv)
-BOOL ArrayAdd(Value *v, const Value *vv)
+BOOL SetNull(Value *v);
+BOOL SetBool(Value *v, BOOL b);
+BOOL SetNumStrFast(Value *v, const char *num);
+BOOL SetNumStrLenFast(Value *v, const char *num, SIZE len);
+BOOL SetNumStr(Value *v, const char *num);
+BOOL SetNumStrLen(Value *v, const char *num, SIZE len);
+BOOL SetNum(Value *v, const double d);
+BOOL SetDouble(Value *v, const double d);
+BOOL SetInt(Value *v, const int d);
+BOOL SetLong(Value *v, const long d);
+BOOL SetLongLong(Value *v, const long long d);
+BOOL SetStrFast(Value *v, const char *str);
+BOOL SetStrLenFast(Value *v, const char *str, SIZE len);
+BOOL SetStr(Value *v, const char *str);
+BOOL SetStrLen(Value *v, const char *str, SIZE len);
+BOOL SetStrEscape(Value *v, const char *str);
+BOOL SetStrLenEscape(Value *v, const char *str, SIZE len);
+BOOL SetKeyFast(Value *v, const char *key);
+BOOL SetKeyLenFast(Value *v, const char *key, SIZE len);
+BOOL SetKey(Value *v, const char *key);
+BOOL SetKeyLen(Value *v, const char *key, SIZE len);
+BOOL SetKeyEscape(Value *v, const char *key);
+BOOL SetKeyLenEscape(Value *v, const char *key, SIZE len);
+BOOL SetArray(Value *v);
+BOOL SetObj(Value *v);
+BOOL SetFast(Value *v, Value *vv);
+BOOL Set(Value *v, const Value *vv);
+BOOL ObjAddFast(Value *v, Value *vv);
+BOOL ObjAdd(Value *v, const Value *vv);
+BOOL ArrayAddFast(Value *v, Value *vv);
+BOOL ArrayAdd(Value *v, const Value *vv);
 
-BOOL ArrayDel(Value *v, SIZE index)
-BOOL ObjDel(Value *v, const char *key)
+BOOL ArrayDel(Value *v, SIZE index);
+BOOL ObjDel(Value *v, const char *key);
 ```
 
 
