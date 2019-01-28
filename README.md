@@ -39,7 +39,7 @@
 + zzzJSON only judge whether it is a correct number string when parsing  JSON string into tree structure.
 
 # Benchmarks and Measurements
-> Refer to nativejson-benchmark
+> Simulate nativejson-benchmark
 
 ## Conformance
 
