@@ -25,11 +25,11 @@
 
 # Abstract
 
-zzzJSON has the fastest parsing and serialization speed in the world.
++ Fastest parsing and serialization speed.
 
-It wrote by pure C, no ambiguous grammar, easy to understand, compile, used and modify.
++ Wrote by pure C, no ambiguous grammar, easy to understand, compile, use and modify.
 
-Tencent is used on a large scale.
++ Tencent is used on a large scale.
 
 # Parse on use
 
