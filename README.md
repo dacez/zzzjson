@@ -33,8 +33,8 @@
 
 # Parse on use
 
-Like copy on write, zzzJSON only parse numbers when using get APIs. 
-zzzJSON only judge whether it is a correct number string when parsing  JSON string into tree structure.
++ Like copy on write, zzzJSON only parse numbers when using get APIs. 
++ zzzJSON only judge whether it is a correct number string when parsing  JSON string into tree structure.
 
 # Benchmarks and Measurements
 > Reference by nativejson-benchmark
@@ -289,11 +289,13 @@ int main()
 ```C
 Allocator *NewAllocator()
 void ReleaseAllocator(Allocator *root_alloc)
+
 Value *NewValue(Allocator *alloc)
 BOOL ParseFast(Value *v, const char *s)
 BOOL ParseLen(Value *v, const char *s, SIZE len)
 BOOL Parse(Value *v, const char *s)
 const char *Stringify(const Value *v)
+
 const char *GetStrFast(const Value *v, SIZE *len)
 const char *GetUnEscapeStr(Value *v)
 const char *GetStr(Value *v)
@@ -316,8 +318,10 @@ SIZE Size(const Value *v)
 Value *ArrayGet(const Value *v, SIZE index)
 Value *Begin(const Value *v)
 Value *Next(const Value *v)
+
 Value *Copy(const Value *v)
 BOOL Move(Value *v)
+
 BOOL SetNull(Value *v)
 BOOL SetBool(Value *v, BOOL b)
 BOOL SetNumStrFast(Value *v, const char *num)
@@ -349,6 +353,7 @@ BOOL ObjAddFast(Value *v, Value *vv)
 BOOL ObjAdd(Value *v, const Value *vv)
 BOOL ArrayAddFast(Value *v, Value *vv)
 BOOL ArrayAdd(Value *v, const Value *vv)
+
 BOOL ArrayDel(Value *v, SIZE index)
 BOOL ObjDel(Value *v, const char *key)
 ```
@@ -368,11 +373,13 @@ BOOL ObjDel(Value *v, const char *key)
 ```C
 struct zzz_Allocator *zzz_AllocatorNew();
 void zzz_AllocatorRelease(struct zzz_Allocator *root_alloc);
+
 struct zzz_Value *zzz_ValueNew(struct zzz_Allocator *alloc);
 zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s);
 zzz_BOOL zzz_ValueParseLen(struct zzz_Value *v, const char *s, zzz_SIZE len);
 zzz_BOOL zzz_ValueParse(struct zzz_Value *v, const char *s);
 const char *zzz_ValueStringify(const struct zzz_Value *v);
+
 const char *zzz_ValueGetStrFast(const struct zzz_Value *v, zzz_SIZE *len);
 const char *zzz_ValueGetUnEscapeStr(struct zzz_Value *v);
 const char *zzz_ValueGetStr(struct zzz_Value *v);
@@ -395,8 +402,10 @@ zzz_SIZE zzz_ValueSize(const struct zzz_Value *v);
 struct zzz_Value *zzz_ValueArrayGet(const struct zzz_Value *v, zzz_SIZE index);
 struct zzz_Value *zzz_ValueBegin(const struct zzz_Value *v);
 struct zzz_Value *zzz_ValueNext(const struct zzz_Value *v);
+
 struct zzz_Value *zzz_ValueCopy(const struct zzz_Value *v);
 zzz_BOOL zzz_ValueMove(struct zzz_Value *v);
+
 zzz_BOOL zzz_ValueSetNull(struct zzz_Value *v);
 zzz_BOOL zzz_ValueSetBool(struct zzz_Value *v, zzz_BOOL b);
 zzz_BOOL zzz_ValueSetNumStrFast(struct zzz_Value *v, const char *num);
@@ -428,6 +437,7 @@ zzz_BOOL zzz_ValueObjAddFast(struct zzz_Value *v, struct zzz_Value *vv);
 zzz_BOOL zzz_ValueObjAdd(struct zzz_Value *v, const struct zzz_Value *vv);
 zzz_BOOL zzz_ValueArrayAddFast(struct zzz_Value *v, struct zzz_Value *vv);
 zzz_BOOL zzz_ValueArrayAdd(struct zzz_Value *v, const struct zzz_Value *vv);
+
 zzz_BOOL zzz_ValueArrayDel(struct zzz_Value *v, zzz_SIZE index);
 zzz_BOOL zzz_ValueObjDel(struct zzz_Value *v, const char *key);
 ```
