@@ -1,2 +1,7 @@
-*.h linguist-language=C
-*.cpp linguist-language=C
+test/* linguist-vendored
+sample/* linguist-vendored
+beta/* linguist-vendored
+resource/* linguist-vendored
+build.sh linguist-vendored
+zzzjson.go linguist-vendored
+zzzjson.hpp linguist-vendored
