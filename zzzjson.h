@@ -9,7 +9,8 @@
 
 // API模式
 // 0 经典模式（ C语言 ），所有API为 zj_ 开头
-// 1 短API模式（ C语言 ），所有API没有 zj_ 开头，有可能会跟其它头文件冲突，因为 C语言 没有命名空间
+// 1 短API模式（ C语言 ），所有API没有 zj_ 开头，有可能会跟其它头文件冲突，因为
+// C语言 没有命名空间
 #ifndef zj_API_MODE
 #define zj_API_MODE 1
 #endif
@@ -84,7 +85,9 @@ static inline void zj_free(void *pointer) { free(pointer); }
 // 通过观察，可以得出较好zj_DELTA和zj_ALLOCATORINITMEMSIZE。
 
 static zj_Size AllocMemorySize = 0, AllocMemoryCount = 0, FreeMemoryCount = 0;
-static inline void *zj_new(zj_Size size) { return AllocMemorySize += size, AllocMemoryCount += 1, malloc(size); }
+static inline void *zj_new(zj_Size size) {
+  return AllocMemorySize += size, AllocMemoryCount += 1, malloc(size);
+}
 static inline void zj_free(void *ptr) { FreeMemoryCount += 1, free(ptr); }
 
 #elif zj_MEMORY_MODE == 3
@@ -140,7 +143,8 @@ static inline const char *zj_GetKey(zj_Value *v);
 static inline const char *zj_GetUnEscapeKey(zj_Value *v);
 static inline const char *zj_GetKeyFast(const zj_Value *v, zj_Size *len);
 static inline zj_Value *zj_ObjGet(const zj_Value *v, const char *key);
-static inline zj_Value *zj_ObjGetLen(const zj_Value *v, const char *key, zj_Size len);
+static inline zj_Value *zj_ObjGetLen(const zj_Value *v, const char *key,
+                                     zj_Size len);
 static inline const zj_JSONType *zj_Type(const zj_Value *v);
 static inline zj_Size zj_SizeOf(const zj_Value *v);
 static inline zj_Value *zj_ArrayGet(const zj_Value *v, zj_Size index);
@@ -151,7 +155,8 @@ static inline bool zj_Move(zj_Value *v);
 static inline void zj_SetNull(zj_Value *v);
 static inline void zj_SetBool(zj_Value *v, bool b);
 static inline bool zj_SetNumStrFast(zj_Value *v, const char *num);
-static inline bool zj_SetNumStrLenFast(zj_Value *v, const char *num, zj_Size len);
+static inline bool zj_SetNumStrLenFast(zj_Value *v, const char *num,
+                                       zj_Size len);
 static inline bool zj_SetNumStr(zj_Value *v, const char *num);
 static inline bool zj_SetNumStrLen(zj_Value *v, const char *num, zj_Size len);
 static inline bool zj_SetNum(zj_Value *v, const double d);
@@ -164,13 +169,15 @@ static inline bool zj_SetStrLenFast(zj_Value *v, const char *str, zj_Size len);
 static inline bool zj_SetStr(zj_Value *v, const char *str);
 static inline bool zj_SetStrLen(zj_Value *v, const char *str, zj_Size len);
 static inline bool zj_SetStrEscape(zj_Value *v, const char *str);
-static inline bool zj_SetStrLenEscape(zj_Value *v, const char *str, zj_Size len);
+static inline bool zj_SetStrLenEscape(zj_Value *v, const char *str,
+                                      zj_Size len);
 static inline bool zj_SetKeyFast(zj_Value *v, const char *key);
 static inline bool zj_SetKeyLenFast(zj_Value *v, const char *key, zj_Size len);
 static inline bool zj_SetKey(zj_Value *v, const char *key);
 static inline bool zj_SetKeyLen(zj_Value *v, const char *key, zj_Size len);
 static inline bool zj_SetKeyEscape(zj_Value *v, const char *key);
-static inline bool zj_SetKeyLenEscape(zj_Value *v, const char *key, zj_Size len);
+static inline bool zj_SetKeyLenEscape(zj_Value *v, const char *key,
+                                      zj_Size len);
 static inline void zj_SetArray(zj_Value *v);
 static inline void zj_SetObj(zj_Value *v);
 static inline bool zj_SetFast(zj_Value *v, zj_Value *vv);
@@ -201,69 +208,143 @@ typedef enum JSONType {
 
 // 短命名API，详见《API》
 static inline Allocator *NewAllocator() { return zj_NewAllocator(); }
-static inline void ReleaseAllocator(Allocator *root_alloc) { zj_ReleaseAllocator(root_alloc); }
+static inline void ReleaseAllocator(Allocator *root_alloc) {
+  zj_ReleaseAllocator(root_alloc);
+}
 static inline Value *NewValue(Allocator *alloc) { return zj_NewValue(alloc); }
-static inline bool ParseFast(Value *v, const char *s) { return zj_ParseFast(v, s); }
-static inline bool ParseLen(Value *v, const char *s, Size len) { return zj_ParseLen(v, s, len); }
+static inline bool ParseFast(Value *v, const char *s) {
+  return zj_ParseFast(v, s);
+}
+static inline bool ParseLen(Value *v, const char *s, Size len) {
+  return zj_ParseLen(v, s, len);
+}
 static inline bool Parse(Value *v, const char *s) { return zj_Parse(v, s); }
 static inline const char *Stringify(const Value *v) { return zj_Stringify(v); }
-static inline const char *GetStrFast(const Value *v, Size *len) { return zj_GetStrFast(v, len); }
-static inline const char *GetUnEscapeStr(Value *v) { return zj_GetUnEscapeStr(v); }
+static inline const char *GetStrFast(const Value *v, Size *len) {
+  return zj_GetStrFast(v, len);
+}
+static inline const char *GetUnEscapeStr(Value *v) {
+  return zj_GetUnEscapeStr(v);
+}
 static inline const char *GetStr(Value *v) { return zj_GetStr(v); }
-static inline const char *GetNumFast(const Value *v, zj_Size *len) { return zj_GetNumFast(v, len); }
+static inline const char *GetNumFast(const Value *v, zj_Size *len) {
+  return zj_GetNumFast(v, len);
+}
 static inline const char *GetNumStr(Value *v) { return zj_GetNumStr(v); }
 static inline const double *GetNum(Value *v) { return zj_GetNum(v); }
 static inline const double *GetDouble(Value *v) { return zj_GetDouble(v); }
 static inline const int *GetInt(Value *v) { return zj_GetInt(v); }
 static inline const long *GetLong(Value *v) { return zj_GetLong(v); }
-static inline const long long *GetLongLong(Value *v) { return zj_GetLongLong(v); }
+static inline const long long *GetLongLong(Value *v) {
+  return zj_GetLongLong(v);
+}
 static inline const bool *GetBool(const Value *v) { return zj_GetBool(v); }
 static inline bool IsNull(const Value *v) { return zj_IsNull(v); }
 static inline const char *GetKey(Value *v) { return zj_GetKey(v); }
-static inline const char *GetUnEscapeKey(Value *v) { return zj_GetUnEscapeKey(v); }
-static inline const char *GetKeyFast(const Value *v, Size *len) { return zj_GetKeyFast(v, len); }
-static inline Value *ObjGet(const Value *v, const char *key) { return zj_ObjGet(v, key); }
-static inline Value *ObjGetLen(const Value *v, const char *key, Size len) { return zj_ObjGetLen(v, key, len); }
-static inline const JSONType *Type(const Value *v) { return (const JSONType *)zj_Type(v); }
+static inline const char *GetUnEscapeKey(Value *v) {
+  return zj_GetUnEscapeKey(v);
+}
+static inline const char *GetKeyFast(const Value *v, Size *len) {
+  return zj_GetKeyFast(v, len);
+}
+static inline Value *ObjGet(const Value *v, const char *key) {
+  return zj_ObjGet(v, key);
+}
+static inline Value *ObjGetLen(const Value *v, const char *key, Size len) {
+  return zj_ObjGetLen(v, key, len);
+}
+static inline const JSONType *Type(const Value *v) {
+  return (const JSONType *)zj_Type(v);
+}
 static inline Size SizeOf(const Value *v) { return zj_SizeOf(v); }
-static inline Value *ArrayGet(const Value *v, Size index) { return zj_ArrayGet(v, index); }
+static inline Value *ArrayGet(const Value *v, Size index) {
+  return zj_ArrayGet(v, index);
+}
 static inline Value *Begin(const Value *v) { return zj_Begin(v); }
 static inline Value *Next(const Value *v) { return zj_Next(v); }
 static inline Value *Copy(const Value *v) { return zj_Copy(v); }
 static inline bool Move(Value *v) { return zj_Move(v); }
 static inline void SetNull(Value *v) { zj_SetNull(v); }
 static inline void SetBool(Value *v, bool b) { zj_SetBool(v, b); }
-static inline bool SetNumStrFast(Value *v, const char *num) { return zj_SetNumStrFast(v, num); }
-static inline bool SetNumStrLenFast(Value *v, const char *num, Size len) { return zj_SetNumStrLenFast(v, num, len); }
-static inline bool SetNumStr(Value *v, const char *num) { return zj_SetNumStr(v, num); }
-static inline bool SetNumStrLen(Value *v, const char *num, Size len) { return zj_SetNumStrLen(v, num, len); }
+static inline bool SetNumStrFast(Value *v, const char *num) {
+  return zj_SetNumStrFast(v, num);
+}
+static inline bool SetNumStrLenFast(Value *v, const char *num, Size len) {
+  return zj_SetNumStrLenFast(v, num, len);
+}
+static inline bool SetNumStr(Value *v, const char *num) {
+  return zj_SetNumStr(v, num);
+}
+static inline bool SetNumStrLen(Value *v, const char *num, Size len) {
+  return zj_SetNumStrLen(v, num, len);
+}
 static inline bool SetNum(Value *v, const double d) { return zj_SetNum(v, d); }
-static inline bool SetDouble(Value *v, const double d) { return zj_SetDouble(v, d); }
+static inline bool SetDouble(Value *v, const double d) {
+  return zj_SetDouble(v, d);
+}
 static inline bool SetInt(Value *v, const int d) { return zj_SetInt(v, d); }
 static inline bool SetLong(Value *v, const long d) { return zj_SetLong(v, d); }
-static inline bool SetLongLong(Value *v, const long long d) { return zj_SetLongLong(v, d); }
-static inline bool SetStrFast(Value *v, const char *str) { return zj_SetStrFast(v, str); }
-static inline bool SetStrLenFast(Value *v, const char *str, Size len) { return zj_SetStrLenFast(v, str, len); }
-static inline bool SetStr(Value *v, const char *str) { return zj_SetStr(v, str); }
-static inline bool SetStrLen(Value *v, const char *str, Size len) { return zj_SetStrLen(v, str, len); }
-static inline bool SetStrEscape(Value *v, const char *str) { return zj_SetStrEscape(v, str); }
-static inline bool SetStrLenEscape(Value *v, const char *str, Size len) { return zj_SetStrLenEscape(v, str, len); }
-static inline bool SetKeyFast(Value *v, const char *key) { return zj_SetKeyFast(v, key); }
-static inline bool SetKeyLenFast(Value *v, const char *key, Size len) { return zj_SetKeyLenFast(v, key, len); }
-static inline bool SetKey(Value *v, const char *key) { return zj_SetKey(v, key); }
-static inline bool SetKeyLen(Value *v, const char *key, Size len) { return zj_SetKeyLen(v, key, len); }
-static inline bool SetKeyEscape(Value *v, const char *key) { return zj_SetKeyEscape(v, key); }
-static inline bool SetKeyLenEscape(Value *v, const char *key, Size len) { return zj_SetKeyLenEscape(v, key, len); }
+static inline bool SetLongLong(Value *v, const long long d) {
+  return zj_SetLongLong(v, d);
+}
+static inline bool SetStrFast(Value *v, const char *str) {
+  return zj_SetStrFast(v, str);
+}
+static inline bool SetStrLenFast(Value *v, const char *str, Size len) {
+  return zj_SetStrLenFast(v, str, len);
+}
+static inline bool SetStr(Value *v, const char *str) {
+  return zj_SetStr(v, str);
+}
+static inline bool SetStrLen(Value *v, const char *str, Size len) {
+  return zj_SetStrLen(v, str, len);
+}
+static inline bool SetStrEscape(Value *v, const char *str) {
+  return zj_SetStrEscape(v, str);
+}
+static inline bool SetStrLenEscape(Value *v, const char *str, Size len) {
+  return zj_SetStrLenEscape(v, str, len);
+}
+static inline bool SetKeyFast(Value *v, const char *key) {
+  return zj_SetKeyFast(v, key);
+}
+static inline bool SetKeyLenFast(Value *v, const char *key, Size len) {
+  return zj_SetKeyLenFast(v, key, len);
+}
+static inline bool SetKey(Value *v, const char *key) {
+  return zj_SetKey(v, key);
+}
+static inline bool SetKeyLen(Value *v, const char *key, Size len) {
+  return zj_SetKeyLen(v, key, len);
+}
+static inline bool SetKeyEscape(Value *v, const char *key) {
+  return zj_SetKeyEscape(v, key);
+}
+static inline bool SetKeyLenEscape(Value *v, const char *key, Size len) {
+  return zj_SetKeyLenEscape(v, key, len);
+}
 static inline void SetArray(Value *v) { zj_SetArray(v); }
 static inline void SetObj(Value *v) { zj_SetObj(v); }
 static inline bool SetFast(Value *v, Value *vv) { return zj_SetFast(v, vv); }
 static inline bool Set(Value *v, const Value *vv) { return zj_Set(v, vv); }
-static inline bool ObjAddFast(Value *v, Value *vv) { return zj_ObjAddFast(v, vv); }
-static inline bool ObjAdd(Value *v, const Value *vv) { return zj_ObjAdd(v, vv); }
-static inline bool ArrayAddFast(Value *v, Value *vv) { return zj_ArrayAddFast(v, vv); }
-static inline bool ArrayAdd(Value *v, const Value *vv) { return zj_ArrayAdd(v, vv); }
-static inline bool ArrayDel(Value *v, Size index) { return zj_ArrayDel(v, index); }
-static inline bool ObjDel(Value *v, const char *key) { return zj_ObjDel(v, key); }
+static inline bool ObjAddFast(Value *v, Value *vv) {
+  return zj_ObjAddFast(v, vv);
+}
+static inline bool ObjAdd(Value *v, const Value *vv) {
+  return zj_ObjAdd(v, vv);
+}
+static inline bool ArrayAddFast(Value *v, Value *vv) {
+  return zj_ArrayAddFast(v, vv);
+}
+static inline bool ArrayAdd(Value *v, const Value *vv) {
+  return zj_ArrayAdd(v, vv);
+}
+static inline bool ArrayDel(Value *v, Size index) {
+  return zj_ArrayDel(v, index);
+}
+static inline bool ObjDel(Value *v, const char *key) {
+  return zj_ObjDel(v, key);
+}
 #endif
 
 // 长命名的固字符串，详见《数据结构》
@@ -279,15 +360,35 @@ static const zj_JSONType zj_jsontype_null = zj_JSONTypeNull;
 static const zj_JSONType zj_jsontype_number = zj_JSONTypeNumber;
 
 // 内存拷贝函数
-static inline void zj_memCopy(const char *src, zj_Size len, char *des) { memcpy(des, src, len); }
+static inline void zj_memCopy(const char *src, zj_Size len, char *des) {
+  memcpy(des, src, len);
+}
 
 // 字符串长度计算函数
-static inline zj_Size zj_strLen(const char *str) { return (zj_Size)strlen(str); }
+static inline zj_Size zj_strLen(const char *str) {
+  return (zj_Size)strlen(str);
+}
 
-static inline int zj_strToInt(const char *str) { return atoi(str); }
-static inline long zj_strToLong(const char *str) { return atol(str); }
-static inline long long zj_strToLongLong(const char *str) { return atoll(str); }
-static inline double zj_strToDouble(const char *str) { return atof(str); }
+static inline int zj_strToInt(const char *str, zj_Size len) {
+  char s[128] = {0};
+  memcpy(s, str, len);
+  return atoi(s);
+}
+static inline long zj_strToLong(const char *str, zj_Size len) {
+  char s[128] = {0};
+  memcpy(s, str, len);
+  return atol(str);
+}
+static inline long long zj_strToLongLong(const char *str, zj_Size len) {
+  char s[128] = {0};
+  memcpy(s, str, len);
+  return atoll(str);
+}
+static inline double zj_strToDouble(const char *str, zj_Size len) {
+  char s[128] = {0};
+  memcpy(s, str, len);
+  return atof(str);
+}
 
 static inline zj_Size zj_intToStr(int n, char *buff) {
   // int 最大长度不超过12
@@ -320,7 +421,8 @@ static inline bool zj_strIsEqual(const char *a, const char *b, zj_Size len) {
 }
 
 // 字符串比较，len为b的长度。
-static inline bool zj_strIsEqualLen(const char *a, zj_Size a_len, const char *b, zj_Size b_len) {
+static inline bool zj_strIsEqualLen(const char *a, zj_Size a_len, const char *b,
+                                    zj_Size b_len) {
   if (zj_LIKELY(a_len != b_len)) {
     return false;
   }
@@ -377,13 +479,15 @@ struct zj_Allocator {
 // 函数说明详见《API》
 static inline zj_Allocator *zj_NewAllocator() {
   // 分配大块内存
-  void *ptr = zj_new(sizeof(zj_Allocator) + sizeof(struct zj_aNode) + zj_AllocatorInitMemSize);
+  void *ptr = zj_new(sizeof(zj_Allocator) + sizeof(struct zj_aNode) +
+                     zj_AllocatorInitMemSize);
   zj_Allocator *alloc = (zj_Allocator *)ptr;
   alloc->Root = (struct zj_aNode *)((char *)ptr + sizeof(zj_Allocator));
   alloc->End = alloc->Root;
 
   alloc->Root->SizeOf = zj_AllocatorInitMemSize;
-  alloc->Root->Data = (char *)ptr + sizeof(zj_Allocator) + sizeof(struct zj_aNode);
+  alloc->Root->Data =
+      (char *)ptr + sizeof(zj_Allocator) + sizeof(struct zj_aNode);
   alloc->Root->Pos = 0;
   alloc->Root->Next = 0;
   return alloc;
@@ -403,7 +507,8 @@ static inline void zj_ReleaseAllocator(zj_Allocator *alloc) {
 }
 
 // 追加一个大小为 init_size 的节点。
-static inline void zj_allocatorAppendChild(zj_Allocator *alloc, zj_Size init_size) {
+static inline void zj_allocatorAppendChild(zj_Allocator *alloc,
+                                           zj_Size init_size) {
   // 每次分配一大块内存，避免多次分配
   void *ptr = zj_new(sizeof(struct zj_aNode) + init_size);
   struct zj_aNode *node = (struct zj_aNode *)ptr;
@@ -425,7 +530,8 @@ static inline char *zj_allocatorAlloc(zj_Allocator *alloc, zj_Size size) {
     s *= zj_Delta;
     // 通过循环计算最终需要的空间大小
     // 这里应该有更好的方法，就是直接通过计算所得
-    while (zj_UNLIKELY(size > s)) s *= zj_Delta;  // 每次分配内存的大小是上次的zj_Delta倍
+    while (zj_UNLIKELY(size > s))
+      s *= zj_Delta;  // 每次分配内存的大小是上次的zj_Delta倍
     zj_allocatorAppendChild(alloc, s);
     cur_node = alloc->End;
   }
@@ -451,8 +557,10 @@ struct zj_string {
 static struct zj_string *zj_stringCache = 0;
 
 // 新建一个字符串
-static inline struct zj_string *zj_newString(zj_Allocator *alloc, zj_Size init_size) {
-  struct zj_string *str = (struct zj_string *)zj_allocatorAlloc(alloc, sizeof(struct zj_string) + init_size);
+static inline struct zj_string *zj_newString(zj_Allocator *alloc,
+                                             zj_Size init_size) {
+  struct zj_string *str = (struct zj_string *)zj_allocatorAlloc(
+      alloc, sizeof(struct zj_string) + init_size);
   str->SizeOf = init_size;
   str->Data = (char *)str + sizeof(struct zj_string);
   str->Pos = 0;
@@ -464,7 +572,8 @@ static inline struct zj_string *zj_newString(zj_Allocator *alloc, zj_Size init_s
 static inline void zj_reset(struct zj_string *str) { str->Pos = 0; }
 
 // 追加字符串
-static inline void zj_appendStr(struct zj_string *str, const char *s, zj_Size size) {
+static inline void zj_appendStr(struct zj_string *str, const char *s,
+                                zj_Size size) {
   zj_Size src_s = str->SizeOf;
   if (zj_UNLIKELY(str->Pos + size > src_s)) {
     src_s *= zj_Delta;
@@ -493,7 +602,9 @@ static inline void zj_appendChar(struct zj_string *str, const char c) {
 }
 
 // 追加结束符
-static inline void zj_appendEnd(struct zj_string *str) { zj_appendChar(str, 0); }
+static inline void zj_appendEnd(struct zj_string *str) {
+  zj_appendChar(str, 0);
+}
 
 // 获得字符串
 static inline const char *zj_str(struct zj_string *str) { return str->Data; }
@@ -535,15 +646,20 @@ struct zj_Value {
   zj_Value() {}
 
  public:
-  static Value *NewValue(zj_Allocator *alloc) { return zj_NewValue(alloc); }
+  static Value *NewValue(Allocator *alloc) { return zj_NewValue(alloc); }
+  zj_Allocator *Allocator() {return A;}
   inline bool ParseFast(const char *s) { return zj_ParseFast(this, s); }
-  inline bool ParseLen(const char *s, Size len) { return zj_ParseLen(this, s, len); }
+  inline bool ParseLen(const char *s, Size len) {
+    return zj_ParseLen(this, s, len);
+  }
   inline bool Parse(const char *s) { return zj_Parse(this, s); }
   inline const char *Stringify() { return zj_Stringify(this); }
   inline const char *GetStrFast(Size *len) { return zj_GetStrFast(this, len); }
   inline const char *GetUnEscapeStr() { return zj_GetUnEscapeStr(this); }
   inline const char *GetStr() { return zj_GetStr(this); }
-  inline const char *GetNumFast(zj_Size *len) { return zj_GetNumFast(this, len); }
+  inline const char *GetNumFast(zj_Size *len) {
+    return zj_GetNumFast(this, len);
+  }
   inline const char *GetNumStr() { return zj_GetNumStr(this); }
   inline const double *GetNum() { return zj_GetNum(this); }
   inline const double *GetDouble() { return zj_GetDouble(this); }
@@ -556,7 +672,9 @@ struct zj_Value {
   inline const char *GetUnEscapeKey() { return zj_GetUnEscapeKey(this); }
   inline const char *GetKeyFast(Size *len) { return zj_GetKeyFast(this, len); }
   inline Value *ObjGet(const char *key) { return zj_ObjGet(this, key); }
-  inline Value *ObjGetLen(const char *key, Size len) { return zj_ObjGetLen(this, key, len); }
+  inline Value *ObjGetLen(const char *key, Size len) {
+    return zj_ObjGetLen(this, key, len);
+  }
   inline const JSONType *Type() { return (const JSONType *)zj_Type(this); }
   inline Size SizeOf() { return zj_SizeOf(this); }
   inline Value *ArrayGet(Size index) { return zj_ArrayGet(this, index); }
@@ -566,27 +684,49 @@ struct zj_Value {
   inline bool Move() { return zj_Move(this); }
   inline void SetNull() { zj_SetNull(this); }
   inline void SetBool(bool b) { zj_SetBool(this, b); }
-  inline bool SetNumStrFast(const char *num) { return zj_SetNumStrFast(this, num); }
-  inline bool SetNumStrLenFast(const char *num, Size len) { return zj_SetNumStrLenFast(this, num, len); }
+  inline bool SetNumStrFast(const char *num) {
+    return zj_SetNumStrFast(this, num);
+  }
+  inline bool SetNumStrLenFast(const char *num, Size len) {
+    return zj_SetNumStrLenFast(this, num, len);
+  }
   inline bool SetNumStr(const char *num) { return zj_SetNumStr(this, num); }
-  inline bool SetNumStrLen(const char *num, Size len) { return zj_SetNumStrLen(this, num, len); }
+  inline bool SetNumStrLen(const char *num, Size len) {
+    return zj_SetNumStrLen(this, num, len);
+  }
   inline bool SetNum(const double d) { return zj_SetNum(this, d); }
   inline bool SetDouble(const double d) { return zj_SetDouble(this, d); }
   inline bool SetInt(const int d) { return zj_SetInt(this, d); }
   inline bool SetLong(const long d) { return zj_SetLong(this, d); }
   inline bool SetLongLong(const long long d) { return zj_SetLongLong(this, d); }
   inline bool SetStrFast(const char *str) { return zj_SetStrFast(this, str); }
-  inline bool SetStrLenFast(const char *str, Size len) { return zj_SetStrLenFast(this, str, len); }
+  inline bool SetStrLenFast(const char *str, Size len) {
+    return zj_SetStrLenFast(this, str, len);
+  }
   inline bool SetStr(const char *str) { return zj_SetStr(this, str); }
-  inline bool SetStrLen(const char *str, Size len) { return zj_SetStrLen(this, str, len); }
-  inline bool SetStrEscape(const char *str) { return zj_SetStrEscape(this, str); }
-  inline bool SetStrLenEscape(const char *str, Size len) { return zj_SetStrLenEscape(this, str, len); }
+  inline bool SetStrLen(const char *str, Size len) {
+    return zj_SetStrLen(this, str, len);
+  }
+  inline bool SetStrEscape(const char *str) {
+    return zj_SetStrEscape(this, str);
+  }
+  inline bool SetStrLenEscape(const char *str, Size len) {
+    return zj_SetStrLenEscape(this, str, len);
+  }
   inline bool SetKeyFast(const char *key) { return zj_SetKeyFast(this, key); }
-  inline bool SetKeyLenFast(const char *key, Size len) { return zj_SetKeyLenFast(this, key, len); }
+  inline bool SetKeyLenFast(const char *key, Size len) {
+    return zj_SetKeyLenFast(this, key, len);
+  }
   inline bool SetKey(const char *key) { return zj_SetKey(this, key); }
-  inline bool SetKeyLen(const char *key, Size len) { return zj_SetKeyLen(this, key, len); }
-  inline bool SetKeyEscape(const char *key) { return zj_SetKeyEscape(this, key); }
-  inline bool SetKeyLenEscape(const char *key, Size len) { return zj_SetKeyLenEscape(this, key, len); }
+  inline bool SetKeyLen(const char *key, Size len) {
+    return zj_SetKeyLen(this, key, len);
+  }
+  inline bool SetKeyEscape(const char *key) {
+    return zj_SetKeyEscape(this, key);
+  }
+  inline bool SetKeyLenEscape(const char *key, Size len) {
+    return zj_SetKeyLenEscape(this, key, len);
+  }
   inline void SetArray() { zj_SetArray(this); }
   inline void SetObj() { zj_SetObj(this); }
   inline bool SetFast(Value *vv) { return zj_SetFast(this, vv); }
@@ -611,7 +751,8 @@ static inline zj_Value *zj_NewValue(zj_Allocator *alloc) {
 }
 
 // 创建一个值，并赋值
-static inline zj_Value *zj_innerNewValue(zj_Allocator *alloc, struct zj_node *n) {
+static inline zj_Value *zj_innerNewValue(zj_Allocator *alloc,
+                                         struct zj_node *n) {
   zj_Value *v = (zj_Value *)zj_allocatorAlloc(alloc, sizeof(zj_Value));
   v->A = alloc;
   v->N = n;
@@ -620,8 +761,8 @@ static inline zj_Value *zj_innerNewValue(zj_Allocator *alloc, struct zj_node *n)
 
 // 跳过空格、tab、换行符
 static inline bool zj_skin(const char c) {
-  if (zj_UNLIKELY(zj_UNLIKELY(c == ' ') || zj_UNLIKELY(c == '\t') || zj_UNLIKELY(c == '\n') ||
-                  zj_UNLIKELY(c == '\r'))) {
+  if (zj_UNLIKELY(zj_UNLIKELY(c == ' ') || zj_UNLIKELY(c == '\t') ||
+                  zj_UNLIKELY(c == '\n') || zj_UNLIKELY(c == '\r'))) {
     return true;
   }
   return false;
@@ -643,7 +784,8 @@ static inline bool zj_consume(const char c, const char *s, zj_Size *index) {
 }
 
 // 预期消费一个字符成功
-static inline bool zj_likelyConsume(const char c, const char *s, zj_Size *index) {
+static inline bool zj_likelyConsume(const char c, const char *s,
+                                    zj_Size *index) {
   if (zj_LIKELY(s[*index] == c)) {
     ++(*index);
     return true;
@@ -652,7 +794,8 @@ static inline bool zj_likelyConsume(const char c, const char *s, zj_Size *index)
 }
 
 // 预期消费一个字符失败
-static inline bool zj_unLikelyConsume(const char c, const char *s, zj_Size *index) {
+static inline bool zj_unLikelyConsume(const char c, const char *s,
+                                      zj_Size *index) {
   if (zj_UNLIKELY(s[*index] == c)) {
     ++(*index);
     return true;
@@ -661,7 +804,8 @@ static inline bool zj_unLikelyConsume(const char c, const char *s, zj_Size *inde
 }
 
 // 预期消费下一个有效字符成功
-static inline bool zj_likelyPeekAndConsume(const char c, const char *s, zj_Size *index) {
+static inline bool zj_likelyPeekAndConsume(const char c, const char *s,
+                                           zj_Size *index) {
   while (zj_UNLIKELY(zj_skin(s[*index]))) ++(*index);
   if (zj_LIKELY(s[*index] == c)) {
     ++(*index);
@@ -671,7 +815,8 @@ static inline bool zj_likelyPeekAndConsume(const char c, const char *s, zj_Size 
 }
 
 // 预期消费下一个有效字符失败
-static inline bool zj_unLikelyPeekAndConsume(const char c, const char *s, zj_Size *index) {
+static inline bool zj_unLikelyPeekAndConsume(const char c, const char *s,
+                                             zj_Size *index) {
   while (zj_UNLIKELY(zj_skin(s[*index]))) ++(*index);
   if (zj_UNLIKELY(s[*index] == c)) {
     ++(*index);
@@ -728,7 +873,8 @@ static inline zj_Size zj_hexCodePointForUnEscape(const char c) {
 }
 
 // 消费一个十六进制字符
-static inline bool zj_consumeHexOne(const char *s, zj_Size *index, zj_Size *cp) {
+static inline bool zj_consumeHexOne(const char *s, zj_Size *index,
+                                    zj_Size *cp) {
   zj_Size tcp = zj_hexCodePoint(s[*index]);
   if (zj_LIKELY(tcp < 16)) {
     *cp = *cp << 4;
@@ -740,7 +886,8 @@ static inline bool zj_consumeHexOne(const char *s, zj_Size *index, zj_Size *cp) 
 }
 
 // 专为 zj_GetUnEscapeStr 使用
-static inline void zj_consumeHexOneForUnEscape(const char *s, zj_Size *index, zj_Size *cp) {
+static inline void zj_consumeHexOneForUnEscape(const char *s, zj_Size *index,
+                                               zj_Size *cp) {
   *cp = *cp << 4;
   *cp += zj_hexCodePointForUnEscape(s[*index]);
   ++(*index);
@@ -749,15 +896,18 @@ static inline void zj_consumeHexOneForUnEscape(const char *s, zj_Size *index, zj
 
 // 消费4个十六进制字符
 static inline bool zj_consumeHex(const char *s, zj_Size *index, zj_Size *cp) {
-  if (zj_LIKELY(zj_LIKELY(zj_consumeHexOne(s, index, cp)) && zj_LIKELY(zj_consumeHexOne(s, index, cp)) &&
-                zj_LIKELY(zj_consumeHexOne(s, index, cp)) && zj_LIKELY(zj_consumeHexOne(s, index, cp)))) {
+  if (zj_LIKELY(zj_LIKELY(zj_consumeHexOne(s, index, cp)) &&
+                zj_LIKELY(zj_consumeHexOne(s, index, cp)) &&
+                zj_LIKELY(zj_consumeHexOne(s, index, cp)) &&
+                zj_LIKELY(zj_consumeHexOne(s, index, cp)))) {
     return true;
   }
   return false;
 }
 
 // 专为 zj_GetUnEscapeStr 使用
-static inline void zj_consumeHexForUnEscape(const char *s, zj_Size *index, zj_Size *cp) {
+static inline void zj_consumeHexForUnEscape(const char *s, zj_Size *index,
+                                            zj_Size *cp) {
   zj_consumeHexOneForUnEscape(s, index, cp);
   zj_consumeHexOneForUnEscape(s, index, cp);
   zj_consumeHexOneForUnEscape(s, index, cp);
@@ -766,9 +916,12 @@ static inline void zj_consumeHexForUnEscape(const char *s, zj_Size *index, zj_Si
 }
 
 // 专为 zj_GetUnEscapeStr 使用，追加一个字符
-static inline void zj_add(char *s, zj_Size *index, char c) { s[(*index)++] = c; }
+static inline void zj_add(char *s, zj_Size *index, char c) {
+  s[(*index)++] = c;
+}
 
-static inline void zj_addLen(char *s, zj_Size *index, const char *str, zj_Size len) {
+static inline void zj_addLen(char *s, zj_Size *index, const char *str,
+                             zj_Size len) {
   zj_memCopy(str, len, s + (*index));
   *index += len;
 }
@@ -876,53 +1029,76 @@ struct zj_escapeChar {
 };
 
 static const struct zj_escapeChar zj_escapeChars[256] = {
-    {"\\u0000", 6}, {"\\u0001", 6}, {"\\u0002", 6}, {"\\u0003", 6}, {"\\u0004", 6}, {"\\u0005", 6}, {"\\u0006", 6},
-    {"\\u0007", 6},
+    {"\\u0000", 6}, {"\\u0001", 6}, {"\\u0002", 6}, {"\\u0003", 6},
+    {"\\u0004", 6}, {"\\u0005", 6}, {"\\u0006", 6}, {"\\u0007", 6},
 
-    {"\\b", 2},     {"\\t", 2},     {"\\n", 2},     {"\\u000b", 6}, {"\\f", 2},     {"\\r", 2},     {"\\u000e", 6},
-    {"\\u000f", 6},
+    {"\\b", 2},     {"\\t", 2},     {"\\n", 2},     {"\\u000b", 6},
+    {"\\f", 2},     {"\\r", 2},     {"\\u000e", 6}, {"\\u000f", 6},
 
-    {"\\u0010", 6}, {"\\u0011", 6}, {"\\u0012", 6}, {"\\u0013", 6}, {"\\u0014", 6}, {"\\u0015", 6}, {"\\u0016", 6},
-    {"\\u0017", 6}, {"\\u0018", 6}, {"\\u0019", 6}, {"\\u001a", 6}, {"\\u001b", 6}, {"\\u001c", 6}, {"\\u001d", 6},
-    {"\\u001e", 6}, {"\\u001f", 6},
+    {"\\u0010", 6}, {"\\u0011", 6}, {"\\u0012", 6}, {"\\u0013", 6},
+    {"\\u0014", 6}, {"\\u0015", 6}, {"\\u0016", 6}, {"\\u0017", 6},
+    {"\\u0018", 6}, {"\\u0019", 6}, {"\\u001a", 6}, {"\\u001b", 6},
+    {"\\u001c", 6}, {"\\u001d", 6}, {"\\u001e", 6}, {"\\u001f", 6},
 
-    {"\x20", 1},    {"\x21", 1},    {"\\\"", 2},    {"\x23", 1},    {"\x24", 1},    {"\x25", 1},    {"\x26", 1},
-    {"\x27", 1},
+    {"\x20", 1},    {"\x21", 1},    {"\\\"", 2},    {"\x23", 1},
+    {"\x24", 1},    {"\x25", 1},    {"\x26", 1},    {"\x27", 1},
 
-    {"\x28", 1},    {"\x29", 1},    {"\x2a", 1},    {"\x2b", 1},    {"\x2c", 1},    {"\x2d", 1},    {"\x2e", 1},
-    {"\x2f", 1},    {"\x30", 1},    {"\x31", 1},    {"\x32", 1},    {"\x33", 1},    {"\x34", 1},    {"\x35", 1},
-    {"\x36", 1},    {"\x37", 1},    {"\x38", 1},    {"\x39", 1},    {"\x3a", 1},    {"\x3b", 1},    {"\x3c", 1},
-    {"\x3d", 1},    {"\x3e", 1},    {"\x3f", 1},    {"\x40", 1},    {"\x41", 1},    {"\x42", 1},    {"\x43", 1},
-    {"\x44", 1},    {"\x45", 1},    {"\x46", 1},    {"\x47", 1},    {"\x48", 1},    {"\x49", 1},    {"\x4a", 1},
-    {"\x4b", 1},    {"\x4c", 1},    {"\x4d", 1},    {"\x4e", 1},    {"\x4f", 1},    {"\x50", 1},    {"\x51", 1},
-    {"\x52", 1},    {"\x53", 1},    {"\x54", 1},    {"\x55", 1},    {"\x56", 1},    {"\x57", 1},
+    {"\x28", 1},    {"\x29", 1},    {"\x2a", 1},    {"\x2b", 1},
+    {"\x2c", 1},    {"\x2d", 1},    {"\x2e", 1},    {"\x2f", 1},
+    {"\x30", 1},    {"\x31", 1},    {"\x32", 1},    {"\x33", 1},
+    {"\x34", 1},    {"\x35", 1},    {"\x36", 1},    {"\x37", 1},
+    {"\x38", 1},    {"\x39", 1},    {"\x3a", 1},    {"\x3b", 1},
+    {"\x3c", 1},    {"\x3d", 1},    {"\x3e", 1},    {"\x3f", 1},
+    {"\x40", 1},    {"\x41", 1},    {"\x42", 1},    {"\x43", 1},
+    {"\x44", 1},    {"\x45", 1},    {"\x46", 1},    {"\x47", 1},
+    {"\x48", 1},    {"\x49", 1},    {"\x4a", 1},    {"\x4b", 1},
+    {"\x4c", 1},    {"\x4d", 1},    {"\x4e", 1},    {"\x4f", 1},
+    {"\x50", 1},    {"\x51", 1},    {"\x52", 1},    {"\x53", 1},
+    {"\x54", 1},    {"\x55", 1},    {"\x56", 1},    {"\x57", 1},
 
-    {"\x58", 1},    {"\x59", 1},    {"\x5a", 1},    {"\x5b", 1},    {"\\\\", 2},    {"\x5d", 1},    {"\x5e", 1},
-    {"\x5f", 1},
+    {"\x58", 1},    {"\x59", 1},    {"\x5a", 1},    {"\x5b", 1},
+    {"\\\\", 2},    {"\x5d", 1},    {"\x5e", 1},    {"\x5f", 1},
 
-    {"\x60", 1},    {"\x61", 1},    {"\x62", 1},    {"\x63", 1},    {"\x64", 1},    {"\x65", 1},    {"\x66", 1},
-    {"\x67", 1},    {"\x68", 1},    {"\x69", 1},    {"\x6a", 1},    {"\x6b", 1},    {"\x6c", 1},    {"\x6d", 1},
-    {"\x6e", 1},    {"\x6f", 1},    {"\x70", 1},    {"\x71", 1},    {"\x72", 1},    {"\x73", 1},    {"\x74", 1},
-    {"\x75", 1},    {"\x76", 1},    {"\x77", 1},    {"\x78", 1},    {"\x79", 1},    {"\x7a", 1},    {"\x7b", 1},
-    {"\x7c", 1},    {"\x7d", 1},    {"\x7e", 1},    {"\x7f", 1},    {"\x80", 1},    {"\x81", 1},    {"\x82", 1},
-    {"\x83", 1},    {"\x84", 1},    {"\x85", 1},    {"\x86", 1},    {"\x87", 1},    {"\x88", 1},    {"\x89", 1},
-    {"\x8a", 1},    {"\x8b", 1},    {"\x8c", 1},    {"\x8d", 1},    {"\x8e", 1},    {"\x8f", 1},    {"\x90", 1},
-    {"\x91", 1},    {"\x92", 1},    {"\x93", 1},    {"\x94", 1},    {"\x95", 1},    {"\x96", 1},    {"\x97", 1},
-    {"\x98", 1},    {"\x99", 1},    {"\x9a", 1},    {"\x9b", 1},    {"\x9c", 1},    {"\x9d", 1},    {"\x9e", 1},
-    {"\x9f", 1},    {"\xa0", 1},    {"\xa1", 1},    {"\xa2", 1},    {"\xa3", 1},    {"\xa4", 1},    {"\xa5", 1},
-    {"\xa6", 1},    {"\xa7", 1},    {"\xa8", 1},    {"\xa9", 1},    {"\xaa", 1},    {"\xab", 1},    {"\xac", 1},
-    {"\xad", 1},    {"\xae", 1},    {"\xaf", 1},    {"\xb0", 1},    {"\xb1", 1},    {"\xb2", 1},    {"\xb3", 1},
-    {"\xb4", 1},    {"\xb5", 1},    {"\xb6", 1},    {"\xb7", 1},    {"\xb8", 1},    {"\xb9", 1},    {"\xba", 1},
-    {"\xbb", 1},    {"\xbc", 1},    {"\xbd", 1},    {"\xbe", 1},    {"\xbf", 1},    {"\xc0", 1},    {"\xc1", 1},
-    {"\xc2", 1},    {"\xc3", 1},    {"\xc4", 1},    {"\xc5", 1},    {"\xc6", 1},    {"\xc7", 1},    {"\xc8", 1},
-    {"\xc9", 1},    {"\xca", 1},    {"\xcb", 1},    {"\xcc", 1},    {"\xcd", 1},    {"\xce", 1},    {"\xcf", 1},
-    {"\xd0", 1},    {"\xd1", 1},    {"\xd2", 1},    {"\xd3", 1},    {"\xd4", 1},    {"\xd5", 1},    {"\xd6", 1},
-    {"\xd7", 1},    {"\xd8", 1},    {"\xd9", 1},    {"\xda", 1},    {"\xdb", 1},    {"\xdc", 1},    {"\xdd", 1},
-    {"\xde", 1},    {"\xdf", 1},    {"\xe0", 1},    {"\xe1", 1},    {"\xe2", 1},    {"\xe3", 1},    {"\xe4", 1},
-    {"\xe5", 1},    {"\xe6", 1},    {"\xe7", 1},    {"\xe8", 1},    {"\xe9", 1},    {"\xea", 1},    {"\xeb", 1},
-    {"\xec", 1},    {"\xed", 1},    {"\xee", 1},    {"\xef", 1},    {"\xf0", 1},    {"\xf1", 1},    {"\xf2", 1},
-    {"\xf3", 1},    {"\xf4", 1},    {"\xf5", 1},    {"\xf6", 1},    {"\xf7", 1},    {"\xf8", 1},    {"\xf9", 1},
-    {"\xfa", 1},    {"\xfb", 1},    {"\xfc", 1},    {"\xfd", 1},    {"\xfe", 1},    {"\xff", 1}};
+    {"\x60", 1},    {"\x61", 1},    {"\x62", 1},    {"\x63", 1},
+    {"\x64", 1},    {"\x65", 1},    {"\x66", 1},    {"\x67", 1},
+    {"\x68", 1},    {"\x69", 1},    {"\x6a", 1},    {"\x6b", 1},
+    {"\x6c", 1},    {"\x6d", 1},    {"\x6e", 1},    {"\x6f", 1},
+    {"\x70", 1},    {"\x71", 1},    {"\x72", 1},    {"\x73", 1},
+    {"\x74", 1},    {"\x75", 1},    {"\x76", 1},    {"\x77", 1},
+    {"\x78", 1},    {"\x79", 1},    {"\x7a", 1},    {"\x7b", 1},
+    {"\x7c", 1},    {"\x7d", 1},    {"\x7e", 1},    {"\x7f", 1},
+    {"\x80", 1},    {"\x81", 1},    {"\x82", 1},    {"\x83", 1},
+    {"\x84", 1},    {"\x85", 1},    {"\x86", 1},    {"\x87", 1},
+    {"\x88", 1},    {"\x89", 1},    {"\x8a", 1},    {"\x8b", 1},
+    {"\x8c", 1},    {"\x8d", 1},    {"\x8e", 1},    {"\x8f", 1},
+    {"\x90", 1},    {"\x91", 1},    {"\x92", 1},    {"\x93", 1},
+    {"\x94", 1},    {"\x95", 1},    {"\x96", 1},    {"\x97", 1},
+    {"\x98", 1},    {"\x99", 1},    {"\x9a", 1},    {"\x9b", 1},
+    {"\x9c", 1},    {"\x9d", 1},    {"\x9e", 1},    {"\x9f", 1},
+    {"\xa0", 1},    {"\xa1", 1},    {"\xa2", 1},    {"\xa3", 1},
+    {"\xa4", 1},    {"\xa5", 1},    {"\xa6", 1},    {"\xa7", 1},
+    {"\xa8", 1},    {"\xa9", 1},    {"\xaa", 1},    {"\xab", 1},
+    {"\xac", 1},    {"\xad", 1},    {"\xae", 1},    {"\xaf", 1},
+    {"\xb0", 1},    {"\xb1", 1},    {"\xb2", 1},    {"\xb3", 1},
+    {"\xb4", 1},    {"\xb5", 1},    {"\xb6", 1},    {"\xb7", 1},
+    {"\xb8", 1},    {"\xb9", 1},    {"\xba", 1},    {"\xbb", 1},
+    {"\xbc", 1},    {"\xbd", 1},    {"\xbe", 1},    {"\xbf", 1},
+    {"\xc0", 1},    {"\xc1", 1},    {"\xc2", 1},    {"\xc3", 1},
+    {"\xc4", 1},    {"\xc5", 1},    {"\xc6", 1},    {"\xc7", 1},
+    {"\xc8", 1},    {"\xc9", 1},    {"\xca", 1},    {"\xcb", 1},
+    {"\xcc", 1},    {"\xcd", 1},    {"\xce", 1},    {"\xcf", 1},
+    {"\xd0", 1},    {"\xd1", 1},    {"\xd2", 1},    {"\xd3", 1},
+    {"\xd4", 1},    {"\xd5", 1},    {"\xd6", 1},    {"\xd7", 1},
+    {"\xd8", 1},    {"\xd9", 1},    {"\xda", 1},    {"\xdb", 1},
+    {"\xdc", 1},    {"\xdd", 1},    {"\xde", 1},    {"\xdf", 1},
+    {"\xe0", 1},    {"\xe1", 1},    {"\xe2", 1},    {"\xe3", 1},
+    {"\xe4", 1},    {"\xe5", 1},    {"\xe6", 1},    {"\xe7", 1},
+    {"\xe8", 1},    {"\xe9", 1},    {"\xea", 1},    {"\xeb", 1},
+    {"\xec", 1},    {"\xed", 1},    {"\xee", 1},    {"\xef", 1},
+    {"\xf0", 1},    {"\xf1", 1},    {"\xf2", 1},    {"\xf3", 1},
+    {"\xf4", 1},    {"\xf5", 1},    {"\xf6", 1},    {"\xf7", 1},
+    {"\xf8", 1},    {"\xf9", 1},    {"\xfa", 1},    {"\xfb", 1},
+    {"\xfc", 1},    {"\xfd", 1},    {"\xfe", 1},    {"\xff", 1}};
 
 // str必定不为空，因此，一定会返回一个非空字符串
 static inline const char *zj_escapeStr(const char *str, zj_Allocator *a) {
@@ -936,7 +1112,8 @@ static inline const char *zj_escapeStr(const char *str, zj_Allocator *a) {
   zj_Size index = 0;
   str = src;
   while (zj_LIKELY(*str != 0)) {
-    zj_addLen(s, &index, zj_escapeChars[(unsigned char)(*str)].Str, zj_escapeChars[(unsigned char)(*str)].Len);
+    zj_addLen(s, &index, zj_escapeChars[(unsigned char)(*str)].Str,
+              zj_escapeChars[(unsigned char)(*str)].Len);
     ++str;
   }
   zj_addEnd(s, &index);
@@ -944,7 +1121,8 @@ static inline const char *zj_escapeStr(const char *str, zj_Allocator *a) {
 }
 
 // str必定不为空，因此，一定会返回一个非空字符串
-static inline const char *zj_escapeStrLen(const char *str, zj_Allocator *a, zj_Size len) {
+static inline const char *zj_escapeStrLen(const char *str, zj_Allocator *a,
+                                          zj_Size len) {
   zj_Size l = 0;
   const char *src = str;
   zj_Size srcLen = len;
@@ -958,7 +1136,8 @@ static inline const char *zj_escapeStrLen(const char *str, zj_Allocator *a, zj_S
   str = src;
   len = srcLen;
   while (zj_LIKELY(len != 0)) {
-    zj_addLen(s, &index, zj_escapeChars[(unsigned char)(*str)].Str, zj_escapeChars[(unsigned char)(*str)].Len);
+    zj_addLen(s, &index, zj_escapeChars[(unsigned char)(*str)].Str,
+              zj_escapeChars[(unsigned char)(*str)].Len);
     ++str;
     --len;
   }
@@ -992,7 +1171,8 @@ static inline bool zj_consumeStr(const char *s, zj_Size *index) {
             // 搜索关键字 UNICODE
             if (zj_UNLIKELY(cp >= 0xDC00 && cp <= 0xDFFF)) return false;
             if (zj_UNLIKELY(cp >= 0xD800 && cp <= 0xDBFF)) {
-              if (zj_LIKELY(zj_likelyConsume('\\', s, index) && zj_likelyConsume('u', s, index))) {
+              if (zj_LIKELY(zj_likelyConsume('\\', s, index) &&
+                            zj_likelyConsume('u', s, index))) {
                 zj_Size cp2 = 0;
                 if (zj_LIKELY(zj_consumeHex(s, index, &cp2))) {
                   if (zj_UNLIKELY(cp2 < 0xDC00 || cp2 > 0xDFFF)) return false;
@@ -1027,7 +1207,8 @@ static inline bool zj_checkStr(const char *s, zj_Size *len) {
   char c;
   c = s[index++];
   while (zj_LIKELY(c != 0)) {
-    if (zj_UNLIKELY(zj_UNLIKELY((unsigned char)c <= 0x1f) || zj_UNLIKELY(c == '"'))) {
+    if (zj_UNLIKELY(zj_UNLIKELY((unsigned char)c <= 0x1f) ||
+                    zj_UNLIKELY(c == '"'))) {
       return false;
     }
     if (zj_UNLIKELY(c == '\\')) {
@@ -1050,7 +1231,8 @@ static inline bool zj_checkStr(const char *s, zj_Size *len) {
             // 搜索关键字 UNICODE
             if (zj_UNLIKELY(cp >= 0xDC00 && cp <= 0xDFFFF)) return false;
             if (zj_UNLIKELY(cp >= 0xD800 && cp <= 0xDBFF)) {
-              if (zj_LIKELY(zj_likelyConsume('\\', s, &index) && zj_likelyConsume('u', s, &index))) {
+              if (zj_LIKELY(zj_likelyConsume('\\', s, &index) &&
+                            zj_likelyConsume('u', s, &index))) {
                 zj_Size cp2 = 0;
                 if (zj_LIKELY(zj_consumeHex(s, &index, &cp2))) {
                   if (zj_UNLIKELY(cp2 < 0xDC00 || cp2 > 0xDFFF)) return false;
@@ -1077,7 +1259,8 @@ static inline bool zj_checkStr(const char *s, zj_Size *len) {
   return true;
 }
 // 较为省事的一种实现方法，后面会实现更高效的算法
-static inline bool zj_checkStrLen(zj_Allocator *alloc, const char *s, zj_Size len) {
+static inline bool zj_checkStrLen(zj_Allocator *alloc, const char *s,
+                                  zj_Size len) {
   if (zj_UNLIKELY(zj_stringCache == 0)) {
     zj_stringCache = zj_newString(alloc, zj_StringCacheInitMemSize);
   } else {
@@ -1100,7 +1283,8 @@ static inline bool zj_consumeNum(const char *s, zj_Size *index) {
   if (s[*index] == '-') ++(*index);
 
   if (zj_unLikelyConsume('0', s, index)) {
-  } else if (zj_LIKELY(zj_LIKELY(s[*index] >= '1') && zj_LIKELY(s[*index] <= '9'))) {
+  } else if (zj_LIKELY(zj_LIKELY(s[*index] >= '1') &&
+                       zj_LIKELY(s[*index] <= '9'))) {
     char c = s[++(*index)];
     while (zj_LIKELY(zj_LIKELY(c >= '0') && zj_LIKELY(c <= '9'))) {
       c = s[++(*index)];
@@ -1147,7 +1331,8 @@ static inline bool zj_checkNum(const char *s, zj_Size *len) {
   if (s[index] == '-') ++(index);
 
   if (zj_unLikelyConsume('0', s, &index)) {
-  } else if (zj_LIKELY(zj_LIKELY(s[index] >= '1') && zj_LIKELY(s[index] <= '9'))) {
+  } else if (zj_LIKELY(zj_LIKELY(s[index] >= '1') &&
+                       zj_LIKELY(s[index] <= '9'))) {
     char c = s[++index];
     while (zj_LIKELY(zj_LIKELY(c >= '0') && zj_LIKELY(c <= '9'))) {
       c = s[++index];
@@ -1188,7 +1373,8 @@ static inline bool zj_checkNum(const char *s, zj_Size *len) {
   *len = index;
   return zj_likelyConsume(0, s, &index);
 }
-static inline bool zj_checkNumLen(zj_Allocator *alloc, const char *s, zj_Size len) {
+static inline bool zj_checkNumLen(zj_Allocator *alloc, const char *s,
+                                  zj_Size len) {
   if (zj_UNLIKELY(zj_stringCache == 0)) {
     zj_stringCache = zj_newString(alloc, zj_StringCacheInitMemSize);
   } else {
@@ -1215,7 +1401,8 @@ static inline bool zj_ParseFast(zj_Value *v, const char *s) {
     v->N->Key = 0;
     src_node = 0;
   } else {
-    src_node = (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
+    src_node =
+        (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
     *src_node = *v->N;
   }
   zj_Size index = 0;
@@ -1230,9 +1417,11 @@ static inline bool zj_ParseFast(zj_Value *v, const char *s) {
         node->Len = 0;
         break;
       }
-      struct zj_node *n = (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
+      struct zj_node *n =
+          (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
       n->Father = node;
       n->Prev = 0;
+      // n->Next = 0;
 
       node->Value.Node = n;
       node->End = n;
@@ -1247,10 +1436,11 @@ static inline bool zj_ParseFast(zj_Value *v, const char *s) {
         node->Len = 0;
         break;
       }
-      struct zj_node *n = (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
+      struct zj_node *n =
+          (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
       n->Father = node;
       n->Prev = 0;
-      n->Next = 0;
+      // n->Next = 0;
 
       node->Value.Node = n;
       node->End = n;
@@ -1372,9 +1562,11 @@ static inline bool zj_ParseFast(zj_Value *v, const char *s) {
           node->Len = 0;
           break;
         }
-        struct zj_node *n = (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
+        struct zj_node *n =
+            (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
         n->Father = node;
         n->Prev = 0;
+        // n->Next = 0;
 
         node->Value.Node = n;
         node->End = n;
@@ -1389,10 +1581,11 @@ static inline bool zj_ParseFast(zj_Value *v, const char *s) {
           node->Len = 0;
           break;
         }
-        struct zj_node *n = (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
+        struct zj_node *n =
+            (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
         n->Father = node;
         n->Prev = 0;
-        n->Next = 0;
+        // n->Next = 0;
 
         node->Value.Node = n;
         node->End = n;
@@ -1473,7 +1666,8 @@ static inline bool zj_ParseFast(zj_Value *v, const char *s) {
     }
     while (zj_LIKELY(node != v->N)) {
       if (zj_likelyPeekAndConsume(',', s, &index)) {
-        struct zj_node *n = (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
+        struct zj_node *n =
+            (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
         n->Father = node->Father;
         n->Prev = node;
         node->Father->End = n;
@@ -1483,8 +1677,11 @@ static inline bool zj_ParseFast(zj_Value *v, const char *s) {
         break;
       } else {
         char c = zj_peek(s, &index);
-        if (zj_LIKELY((c == '}' && zj_LIKELY(node->Father->Type == zj_JSONTypeObject)) ||
-                      zj_LIKELY(zj_LIKELY(c == ']') && zj_LIKELY(node->Father->Type == zj_JSONTypeArray)))) {
+        if (zj_LIKELY(
+                (c == '}' &&
+                 zj_LIKELY(node->Father->Type == zj_JSONTypeObject)) ||
+                zj_LIKELY(zj_LIKELY(c == ']') &&
+                          zj_LIKELY(node->Father->Type == zj_JSONTypeArray)))) {
           node->Next = 0;
           node = node->Father;
         } else {
@@ -1516,7 +1713,9 @@ static inline bool zj_ParseLen(zj_Value *v, const char *s, zj_Size len) {
 }
 
 // 函数说明详见《API》
-static inline bool zj_Parse(zj_Value *v, const char *s) { return zj_ParseLen(v, s, zj_strLen(s)); }
+static inline bool zj_Parse(zj_Value *v, const char *s) {
+  return zj_ParseLen(v, s, zj_strLen(s));
+}
 
 // 函数说明详见《API》
 static inline const char *zj_Stringify(const zj_Value *v) {
@@ -1658,7 +1857,7 @@ static inline const double *zj_GetDouble(zj_Value *v) {
   if (zj_UNLIKELY(v->N == 0)) return 0;
   if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber)) return 0;
   double *d = (double *)zj_allocatorAlloc(v->A, sizeof(double));
-  *d = zj_strToDouble(v->N->Value.Str);
+  *d = zj_strToDouble(v->N->Value.Str, v->N->Len);
   return d;
 }
 
@@ -1666,7 +1865,7 @@ static inline const int *zj_GetInt(zj_Value *v) {
   if (zj_UNLIKELY(v->N == 0)) return 0;
   if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber)) return 0;
   int *i = (int *)zj_allocatorAlloc(v->A, sizeof(int));
-  *i = zj_strToInt(v->N->Value.Str);
+  *i = zj_strToInt(v->N->Value.Str, v->N->Len);
   return i;
 }
 
@@ -1674,7 +1873,7 @@ static inline const long *zj_GetLong(zj_Value *v) {
   if (zj_UNLIKELY(v->N == 0)) return 0;
   if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber)) return 0;
   long *l = (long *)zj_allocatorAlloc(v->A, sizeof(long));
-  *l = zj_strToLong(v->N->Value.Str);
+  *l = zj_strToLong(v->N->Value.Str, v->N->Len);
   return l;
 }
 
@@ -1682,7 +1881,7 @@ static inline const long long *zj_GetLongLong(zj_Value *v) {
   if (zj_UNLIKELY(v->N == 0)) return 0;
   if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber)) return 0;
   long long *ll = (long long *)zj_allocatorAlloc(v->A, sizeof(long long));
-  *ll = zj_strToLongLong(v->N->Value.Str);
+  *ll = zj_strToLongLong(v->N->Value.Str, v->N->Len);
   return ll;
 }
 
@@ -1745,12 +1944,14 @@ static inline zj_Value *zj_ObjGet(const zj_Value *v, const char *key) {
 }
 
 // 函数说明详见《API》
-static inline zj_Value *zj_ObjGetLen(const zj_Value *v, const char *key, zj_Size len) {
+static inline zj_Value *zj_ObjGetLen(const zj_Value *v, const char *key,
+                                     zj_Size len) {
   if (zj_UNLIKELY(v->N == 0)) return 0;
   if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject)) return 0;
   struct zj_node *next = v->N->Value.Node;
   while (zj_LIKELY(next != 0)) {
-    if (zj_UNLIKELY(zj_strIsEqualLen(key, len, next->Key, next->KeyLen) == true)) {
+    if (zj_UNLIKELY(zj_strIsEqualLen(key, len, next->Key, next->KeyLen) ==
+                    true)) {
       zj_Value *ret_val = zj_innerNewValue(v->A, next);
       return ret_val;
     }
@@ -1782,7 +1983,9 @@ static inline const zj_JSONType *zj_Type(const zj_Value *v) {
 // 函数说明详见《API》
 static inline zj_Size zj_SizeOf(const zj_Value *v) {
   if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject && v->N->Type != zj_JSONTypeArray)) return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject &&
+                  v->N->Type != zj_JSONTypeArray))
+    return 0;
   return v->N->Len;
 }
 
@@ -1806,7 +2009,9 @@ static inline zj_Value *zj_ArrayGet(const zj_Value *v, zj_Size index) {
 // 函数说明详见《API》
 static inline zj_Value *zj_Begin(const zj_Value *v) {
   if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject && v->N->Type != zj_JSONTypeArray)) return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject &&
+                  v->N->Type != zj_JSONTypeArray))
+    return 0;
   if (zj_LIKELY(v->N->Value.Node != 0)) {
     zj_Value *ret_val = zj_innerNewValue(v->A, v->N->Value.Node);
     return ret_val;
@@ -1852,7 +2057,8 @@ static inline bool zj_ValueCopyFrom(zj_Value *v, const zj_Value *vv) {
         des_node->Len = node->Len;
         if (zj_LIKELY(node->Value.Node != 0)) {
           node = node->Value.Node;
-          struct zj_node *n = (struct zj_node *)zj_allocatorAlloc(A, sizeof(struct zj_node));
+          struct zj_node *n =
+              (struct zj_node *)zj_allocatorAlloc(A, sizeof(struct zj_node));
           n->Father = des_node;
           n->Prev = 0;
           des_node->Value.Node = n;
@@ -1879,7 +2085,8 @@ static inline bool zj_ValueCopyFrom(zj_Value *v, const zj_Value *vv) {
     while (zj_LIKELY(node != vv->N)) {
       if (zj_LIKELY(node->Next != 0)) {
         node = node->Next;
-        struct zj_node *n = (struct zj_node *)zj_allocatorAlloc(A, sizeof(struct zj_node));
+        struct zj_node *n =
+            (struct zj_node *)zj_allocatorAlloc(A, sizeof(struct zj_node));
         n->Father = des_node->Father;
         n->Prev = des_node;
         n->Father->End = n;
@@ -1977,7 +2184,8 @@ static inline bool zj_SetNumStrFast(zj_Value *v, const char *num) {
 }
 
 // 函数说明详见《API》
-static inline bool zj_SetNumStrLenFast(zj_Value *v, const char *num, zj_Size len) {
+static inline bool zj_SetNumStrLenFast(zj_Value *v, const char *num,
+                                       zj_Size len) {
   if (zj_UNLIKELY(zj_checkNumLen(v->A, num, len) == false)) return false;
   if (zj_UNLIKELY(v->N == 0)) {
     v->N = (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
@@ -2030,7 +2238,9 @@ static inline bool zj_SetNumStrLen(zj_Value *v, const char *num, zj_Size len) {
 }
 
 // 函数说明详见《API》
-static inline bool zj_SetNum(zj_Value *v, const double d) { return zj_SetDouble(v, d); }
+static inline bool zj_SetNum(zj_Value *v, const double d) {
+  return zj_SetDouble(v, d);
+}
 
 static inline bool zj_SetDouble(zj_Value *v, const double d) {
   char *num = zj_allocatorAlloc(v->A, 32);
@@ -2101,7 +2311,8 @@ static inline bool zj_SetStrEscape(zj_Value *v, const char *str) {
   return zj_SetStrFast(v, es);
 }
 
-static inline bool zj_SetStrLenEscape(zj_Value *v, const char *str, zj_Size len) {
+static inline bool zj_SetStrLenEscape(zj_Value *v, const char *str,
+                                      zj_Size len) {
   const char *es = zj_escapeStrLen(str, v->A, len);
   return zj_SetStrFast(v, es);
 }
@@ -2189,7 +2400,8 @@ static inline bool zj_SetKeyEscape(zj_Value *v, const char *key) {
   return zj_SetKeyFast(v, es);
 }
 
-static inline bool zj_SetKeyLenEscape(zj_Value *v, const char *key, zj_Size len) {
+static inline bool zj_SetKeyLenEscape(zj_Value *v, const char *key,
+                                      zj_Size len) {
   const char *es = zj_escapeStrLen(key, v->A, len);
   return zj_SetKeyFast(v, es);
 }
@@ -2208,7 +2420,8 @@ static inline bool zj_SetKeyFast(zj_Value *v, const char *key) {
     v->N->Type = zj_JSONTypeNull;
     v->N->Value.Str = zj_strNull;
     v->N->Len = 4;
-  } else if (v->N->Father != 0 && zj_UNLIKELY(v->N->Father->Type != zj_JSONTypeObject)) {
+  } else if (v->N->Father != 0 &&
+             zj_UNLIKELY(v->N->Father->Type != zj_JSONTypeObject)) {
     return false;
   }
   v->N->Key = key;
@@ -2229,7 +2442,8 @@ static inline bool zj_SetKeyLenFast(zj_Value *v, const char *key, zj_Size len) {
     v->N->Type = zj_JSONTypeNull;
     v->N->Value.Str = zj_strNull;
     v->N->Len = 4;
-  } else if (v->N->Father != 0 && zj_UNLIKELY(v->N->Father->Type != zj_JSONTypeObject)) {
+  } else if (v->N->Father != 0 &&
+             zj_UNLIKELY(v->N->Father->Type != zj_JSONTypeObject)) {
     return false;
   }
   v->N->Key = key;
@@ -2251,7 +2465,8 @@ static inline bool zj_SetKey(zj_Value *v, const char *key) {
     v->N->Type = zj_JSONTypeNull;
     v->N->Value.Str = zj_strNull;
     v->N->Len = 4;
-  } else if (v->N->Father != 0 && zj_UNLIKELY(v->N->Father->Type != zj_JSONTypeObject)) {
+  } else if (v->N->Father != 0 &&
+             zj_UNLIKELY(v->N->Father->Type != zj_JSONTypeObject)) {
     return false;
   }
   char *s = zj_allocatorAlloc(v->A, len);
@@ -2274,7 +2489,8 @@ static inline bool zj_SetKeyLen(zj_Value *v, const char *key, zj_Size len) {
     v->N->Type = zj_JSONTypeNull;
     v->N->Value.Str = zj_strNull;
     v->N->Len = 4;
-  } else if (v->N->Father != 0 && zj_UNLIKELY(v->N->Father->Type != zj_JSONTypeObject)) {
+  } else if (v->N->Father != 0 &&
+             zj_UNLIKELY(v->N->Father->Type != zj_JSONTypeObject)) {
     return false;
   }
   char *s = zj_allocatorAlloc(v->A, len);
@@ -2323,10 +2539,6 @@ static inline bool zj_SetFast(zj_Value *v, zj_Value *vv) {
     return true;
   }
   v->N->Type = vv->N->Type;
-  if (v->N->Key != 0 && vv->N->Key != 0) {
-    v->N->Key = vv->N->Key;
-    v->N->KeyLen = vv->N->KeyLen;
-  }
   v->N->Value = vv->N->Value;
   v->N->Len = vv->N->Len;
   if (v->N->Type == zj_JSONTypeArray || v->N->Type == zj_JSONTypeObject) {
@@ -2350,10 +2562,6 @@ static inline bool zj_Set(zj_Value *v, const zj_Value *vv) {
     return true;
   }
   v->N->Type = cp->N->Type;
-  if (v->N->Key != 0 && vv->N->Key != 0) {
-    v->N->Key = cp->N->Key;
-    v->N->KeyLen = cp->N->KeyLen;
-  }
   v->N->Value = cp->N->Value;
   v->N->Len = cp->N->Len;
   if (v->N->Type == zj_JSONTypeArray || v->N->Type == zj_JSONTypeObject) {
