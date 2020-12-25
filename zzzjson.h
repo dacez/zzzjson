@@ -1,11 +1,11 @@
 #ifndef zj_JSON_H
 #define zj_JSON_H
 
-#include <stdbool.h>  // 使用其 bool
-#include <stdint.h>   // 使用其 uint32_t
-#include <stdio.h>    // 使用其 sprintf 函数
-#include <stdlib.h>   // 使用其 atof malloc free 函数
-#include <string.h>   // 使用其 memcpy 函数
+#include <stdbool.h> // 使用其 bool
+#include <stdint.h>  // 使用其 uint32_t
+#include <stdio.h>   // 使用其 sprintf 函数
+#include <stdlib.h>  // 使用其 atof malloc free 函数
+#include <string.h>  // 使用其 memcpy 函数
 
 // API模式
 // 0 经典模式（ C语言 ），所有API为 zj_ 开头
@@ -416,7 +416,8 @@ static inline bool zj_strIsEqual(const char *a, const char *b, zj_Size len) {
     }
   }
   // a字符串必须结束才能算相等
-  if (zj_LIKELY(a[i] == 0)) return true;
+  if (zj_LIKELY(a[i] == 0))
+    return true;
   return false;
 }
 
@@ -451,7 +452,7 @@ struct zj_aNode {
 // 内存分配器为由内存分配器节点组成的链表，Root为根节点，End总是指向最后一个节点
 struct zj_Allocator {
 #if zj_CPLUSPLUS == 1
- public:
+public:
   zj_Allocator() {
     void *ptr = zj_new(sizeof(struct zj_aNode) + zj_AllocatorInitMemSize);
     Root = (struct zj_aNode *)ptr;
@@ -531,7 +532,7 @@ static inline char *zj_allocatorAlloc(zj_Allocator *alloc, zj_Size size) {
     // 通过循环计算最终需要的空间大小
     // 这里应该有更好的方法，就是直接通过计算所得
     while (zj_UNLIKELY(size > s))
-      s *= zj_Delta;  // 每次分配内存的大小是上次的zj_Delta倍
+      s *= zj_Delta; // 每次分配内存的大小是上次的zj_Delta倍
     zj_allocatorAppendChild(alloc, s);
     cur_node = alloc->End;
   }
@@ -577,7 +578,8 @@ static inline void zj_appendStr(struct zj_string *str, const char *s,
   zj_Size src_s = str->SizeOf;
   if (zj_UNLIKELY(str->Pos + size > src_s)) {
     src_s *= zj_Delta;
-    while (zj_UNLIKELY(str->Pos + size > src_s)) src_s *= zj_Delta;
+    while (zj_UNLIKELY(str->Pos + size > src_s))
+      src_s *= zj_Delta;
     const char *src_d = str->Data;
     str->Data = (char *)zj_allocatorAlloc(str->A, src_s);
     str->SizeOf = src_s;
@@ -642,12 +644,12 @@ struct zj_node {
 // zzzJSON的基本单位：值，包含一个节点和一个内存分配器
 struct zj_Value {
 #if zj_CPLUSPLUS == 1
- private:
+private:
   zj_Value() {}
 
- public:
+public:
   static Value *NewValue(Allocator *alloc) { return zj_NewValue(alloc); }
-  zj_Allocator *Allocator() {return A;}
+  zj_Allocator *Allocator() { return A; }
   inline bool ParseFast(const char *s) { return zj_ParseFast(this, s); }
   inline bool ParseLen(const char *s, Size len) {
     return zj_ParseLen(this, s, len);
@@ -770,7 +772,8 @@ static inline bool zj_skin(const char c) {
 
 // 下一个有效字符
 static inline char zj_peek(const char *s, zj_Size *index) {
-  while (zj_UNLIKELY(zj_skin(s[*index]))) ++(*index);
+  while (zj_UNLIKELY(zj_skin(s[*index])))
+    ++(*index);
   return s[(*index)++];
 }
 
@@ -806,7 +809,8 @@ static inline bool zj_unLikelyConsume(const char c, const char *s,
 // 预期消费下一个有效字符成功
 static inline bool zj_likelyPeekAndConsume(const char c, const char *s,
                                            zj_Size *index) {
-  while (zj_UNLIKELY(zj_skin(s[*index]))) ++(*index);
+  while (zj_UNLIKELY(zj_skin(s[*index])))
+    ++(*index);
   if (zj_LIKELY(s[*index] == c)) {
     ++(*index);
     return true;
@@ -817,7 +821,8 @@ static inline bool zj_likelyPeekAndConsume(const char c, const char *s,
 // 预期消费下一个有效字符失败
 static inline bool zj_unLikelyPeekAndConsume(const char c, const char *s,
                                              zj_Size *index) {
-  while (zj_UNLIKELY(zj_skin(s[*index]))) ++(*index);
+  while (zj_UNLIKELY(zj_skin(s[*index])))
+    ++(*index);
   if (zj_UNLIKELY(s[*index] == c)) {
     ++(*index);
     return true;
@@ -959,60 +964,60 @@ static inline void zj_unEscapeStr(const char *str, zj_Size len, char *s) {
     if (zj_UNLIKELY(c == '\\')) {
       c = str[index + 1];
       switch (c) {
-        case '"': {
-          zj_add(s, &s_index, '\"');
-          index += 2;
-          break;
-        }
-        case '\\': {
-          zj_add(s, &s_index, '\\');
-          index += 2;
-          break;
-        }
-        case 'b': {
-          zj_add(s, &s_index, '\b');
-          index += 2;
-          break;
-        }
-        case 'f': {
-          zj_add(s, &s_index, '\f');
-          index += 2;
-          break;
-        }
-        case 'n': {
-          zj_add(s, &s_index, '\n');
-          index += 2;
-          break;
-        }
-        case 'r': {
-          zj_add(s, &s_index, '\r');
-          index += 2;
-          break;
-        }
-        case 't': {
-          zj_add(s, &s_index, '\t');
-          index += 2;
-          break;
-        }
-        case '/': {
-          zj_add(s, &s_index, '/');
-          index += 2;
-          break;
-        }
-        case 'u': {
-          index += 2;
-          zj_Size cp = 0;
-          zj_consumeHexForUnEscape(str, &index, &cp);
+      case '"': {
+        zj_add(s, &s_index, '\"');
+        index += 2;
+        break;
+      }
+      case '\\': {
+        zj_add(s, &s_index, '\\');
+        index += 2;
+        break;
+      }
+      case 'b': {
+        zj_add(s, &s_index, '\b');
+        index += 2;
+        break;
+      }
+      case 'f': {
+        zj_add(s, &s_index, '\f');
+        index += 2;
+        break;
+      }
+      case 'n': {
+        zj_add(s, &s_index, '\n');
+        index += 2;
+        break;
+      }
+      case 'r': {
+        zj_add(s, &s_index, '\r');
+        index += 2;
+        break;
+      }
+      case 't': {
+        zj_add(s, &s_index, '\t');
+        index += 2;
+        break;
+      }
+      case '/': {
+        zj_add(s, &s_index, '/');
+        index += 2;
+        break;
+      }
+      case 'u': {
+        index += 2;
+        zj_Size cp = 0;
+        zj_consumeHexForUnEscape(str, &index, &cp);
 
-          if (zj_UNLIKELY(cp >= 0xD800 && cp <= 0xDBFF)) {
-            zj_Size cp1 = 0;
-            index += 2;
-            zj_consumeHexForUnEscape(str, &index, &cp1);
-            cp = (((cp - 0xD800) << 10) | (cp1 - 0xDC00)) + 0x10000;
-          }
-          zj_addUTF8(s, &s_index, cp);
-          break;
+        if (zj_UNLIKELY(cp >= 0xD800 && cp <= 0xDBFF)) {
+          zj_Size cp1 = 0;
+          index += 2;
+          zj_consumeHexForUnEscape(str, &index, &cp1);
+          cp = (((cp - 0xD800) << 10) | (cp1 - 0xDC00)) + 0x10000;
         }
+        zj_addUTF8(s, &s_index, cp);
+        break;
+      }
       }
     } else {
       zj_add(s, &s_index, c);
@@ -1150,47 +1155,50 @@ static inline bool zj_consumeStr(const char *s, zj_Size *index) {
   char c;
   c = s[(*index)++];
   while (zj_LIKELY(c != 0)) {
-    if (zj_UNLIKELY((unsigned char)c <= 0x1f)) return false;
+    if (zj_UNLIKELY((unsigned char)c <= 0x1f))
+      return false;
     if (zj_UNLIKELY(c == '\\')) {
       c = s[(*index)++];
       switch (c) {
-        case '"':
-        case '\\':
-        case 'b':
-        case 'f':
-        case 'n':
-        case 'r':
-        case 't':
-        case '/':
-          c = s[(*index)++];
-          continue;
-        case 'u': {
-          zj_Size cp = 0;
-          if (zj_LIKELY(zj_consumeHex(s, index, &cp))) {
-            // 这里是UTF16标准，可以参考网上相关资料
-            // 搜索关键字 UNICODE
-            if (zj_UNLIKELY(cp >= 0xDC00 && cp <= 0xDFFF)) return false;
-            if (zj_UNLIKELY(cp >= 0xD800 && cp <= 0xDBFF)) {
-              if (zj_LIKELY(zj_likelyConsume('\\', s, index) &&
-                            zj_likelyConsume('u', s, index))) {
-                zj_Size cp2 = 0;
-                if (zj_LIKELY(zj_consumeHex(s, index, &cp2))) {
-                  if (zj_UNLIKELY(cp2 < 0xDC00 || cp2 > 0xDFFF)) return false;
-                } else {
+      case '"':
+      case '\\':
+      case 'b':
+      case 'f':
+      case 'n':
+      case 'r':
+      case 't':
+      case '/':
+        c = s[(*index)++];
+        continue;
+      case 'u': {
+        zj_Size cp = 0;
+        if (zj_LIKELY(zj_consumeHex(s, index, &cp))) {
+          // 这里是UTF16标准，可以参考网上相关资料
+          // 搜索关键字 UNICODE
+          if (zj_UNLIKELY(cp >= 0xDC00 && cp <= 0xDFFF))
+            return false;
+          if (zj_UNLIKELY(cp >= 0xD800 && cp <= 0xDBFF)) {
+            if (zj_LIKELY(zj_likelyConsume('\\', s, index) &&
+                          zj_likelyConsume('u', s, index))) {
+              zj_Size cp2 = 0;
+              if (zj_LIKELY(zj_consumeHex(s, index, &cp2))) {
+                if (zj_UNLIKELY(cp2 < 0xDC00 || cp2 > 0xDFFF))
                   return false;
-                }
               } else {
                 return false;
               }
+            } else {
+              return false;
             }
-            c = s[(*index)++];
-          } else {
-            return false;
           }
-          continue;
-        }
-        default:
+          c = s[(*index)++];
+        } else {
           return false;
+        }
+        continue;
+      }
+      default:
+        return false;
       }
     }
     if (zj_UNLIKELY(c == '"')) {
@@ -1214,43 +1222,45 @@ static inline bool zj_checkStr(const char *s, zj_Size *len) {
     if (zj_UNLIKELY(c == '\\')) {
       c = s[index++];
       switch (c) {
-        case '"':
-        case '\\':
-        case 'b':
-        case 'f':
-        case 'n':
-        case 'r':
-        case 't':
-        case '/':
-          c = s[index++];
-          continue;
-        case 'u': {
-          zj_Size cp = 0;
-          if (zj_LIKELY(zj_consumeHex(s, &index, &cp))) {
-            // 这里是UTF16标准，可以参考网上相关资料
-            // 搜索关键字 UNICODE
-            if (zj_UNLIKELY(cp >= 0xDC00 && cp <= 0xDFFFF)) return false;
-            if (zj_UNLIKELY(cp >= 0xD800 && cp <= 0xDBFF)) {
-              if (zj_LIKELY(zj_likelyConsume('\\', s, &index) &&
-                            zj_likelyConsume('u', s, &index))) {
-                zj_Size cp2 = 0;
-                if (zj_LIKELY(zj_consumeHex(s, &index, &cp2))) {
-                  if (zj_UNLIKELY(cp2 < 0xDC00 || cp2 > 0xDFFF)) return false;
-                } else {
+      case '"':
+      case '\\':
+      case 'b':
+      case 'f':
+      case 'n':
+      case 'r':
+      case 't':
+      case '/':
+        c = s[index++];
+        continue;
+      case 'u': {
+        zj_Size cp = 0;
+        if (zj_LIKELY(zj_consumeHex(s, &index, &cp))) {
+          // 这里是UTF16标准，可以参考网上相关资料
+          // 搜索关键字 UNICODE
+          if (zj_UNLIKELY(cp >= 0xDC00 && cp <= 0xDFFFF))
+            return false;
+          if (zj_UNLIKELY(cp >= 0xD800 && cp <= 0xDBFF)) {
+            if (zj_LIKELY(zj_likelyConsume('\\', s, &index) &&
+                          zj_likelyConsume('u', s, &index))) {
+              zj_Size cp2 = 0;
+              if (zj_LIKELY(zj_consumeHex(s, &index, &cp2))) {
+                if (zj_UNLIKELY(cp2 < 0xDC00 || cp2 > 0xDFFF))
                   return false;
-                }
               } else {
                 return false;
               }
+            } else {
+              return false;
             }
-            c = s[index++];
-          } else {
-            return false;
           }
-          continue;
-        }
-        default:
+          c = s[index++];
+        } else {
           return false;
+        }
+        continue;
+      }
+      default:
+        return false;
       }
     }
     c = s[index++];
@@ -1272,7 +1282,8 @@ static inline bool zj_checkStrLen(zj_Allocator *alloc, const char *s,
   if (zj_UNLIKELY(zj_checkStr(zj_str(zj_stringCache), &avail_len) == false)) {
     return false;
   }
-  if (zj_UNLIKELY(avail_len != len)) return false;
+  if (zj_UNLIKELY(avail_len != len))
+    return false;
   return true;
 }
 
@@ -1280,7 +1291,8 @@ static inline bool zj_checkStrLen(zj_Allocator *alloc, const char *s,
 static inline bool zj_consumeNum(const char *s, zj_Size *index) {
   --(*index);
 
-  if (s[*index] == '-') ++(*index);
+  if (s[*index] == '-')
+    ++(*index);
 
   if (zj_unLikelyConsume('0', s, index)) {
   } else if (zj_LIKELY(zj_LIKELY(s[*index] >= '1') &&
@@ -1328,7 +1340,8 @@ static inline bool zj_consumeNum(const char *s, zj_Size *index) {
 static inline bool zj_checkNum(const char *s, zj_Size *len) {
   zj_Size index = 0;
 
-  if (s[index] == '-') ++(index);
+  if (s[index] == '-')
+    ++(index);
 
   if (zj_unLikelyConsume('0', s, &index)) {
   } else if (zj_LIKELY(zj_LIKELY(s[index] >= '1') &&
@@ -1386,7 +1399,8 @@ static inline bool zj_checkNumLen(zj_Allocator *alloc, const char *s,
   if (zj_UNLIKELY(zj_checkNum(zj_str(zj_stringCache), &avail_len) == false)) {
     return false;
   }
-  if (zj_UNLIKELY(avail_len != len)) return false;
+  if (zj_UNLIKELY(avail_len != len))
+    return false;
   return true;
 }
 
@@ -1410,6 +1424,151 @@ static inline bool zj_ParseFast(zj_Value *v, const char *s) {
 
   char c = zj_peek(s, &index);
   switch (c) {
+  case '[': {
+    node->Type = zj_JSONTypeArray;
+    if (zj_unLikelyPeekAndConsume(']', s, &index)) {
+      node->Value.Node = 0;
+      node->Len = 0;
+      break;
+    }
+    struct zj_node *n =
+        (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
+    n->Father = node;
+    n->Prev = 0;
+    // n->Next = 0;
+
+    node->Value.Node = n;
+    node->End = n;
+    node->Len = 1;
+    node = n;
+    break;
+  }
+  case '{': {
+    node->Type = zj_JSONTypeObject;
+    if (zj_unLikelyPeekAndConsume('}', s, &index)) {
+      node->Value.Node = 0;
+      node->Len = 0;
+      break;
+    }
+    struct zj_node *n =
+        (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
+    n->Father = node;
+    n->Prev = 0;
+    // n->Next = 0;
+
+    node->Value.Node = n;
+    node->End = n;
+    node->Len = 1;
+    node = n;
+    break;
+  }
+  case 'n':
+    if (zj_LIKELY(zj_consumeNull(s, &index))) {
+      node->Type = zj_JSONTypeNull;
+      node->Value.Str = zj_strNull;
+      node->Len = 4;
+      break;
+    }
+    if (zj_LIKELY(src_node == 0))
+      v->N = src_node;
+    else
+      *v->N = *src_node;
+    return false;
+  case 'f':
+    if (zj_LIKELY(zj_consumeFalse(s, &index))) {
+      node->Type = zj_JSONTypeBool;
+      node->Value.Str = zj_strFalse;
+      node->Len = 5;
+      break;
+    }
+    if (zj_LIKELY(src_node == 0))
+      v->N = src_node;
+    else
+      *v->N = *src_node;
+    return false;
+  case 't':
+    if (zj_LIKELY(zj_consumeTrue(s, &index))) {
+      node->Type = zj_JSONTypeBool;
+      node->Value.Str = zj_strTrue;
+      node->Len = 4;
+      break;
+    }
+    if (zj_LIKELY(src_node == 0))
+      v->N = src_node;
+    else
+      *v->N = *src_node;
+    return false;
+  case '"': {
+    zj_Size start = index;
+    if (zj_UNLIKELY(zj_unLikelyConsume('"', s, &index))) {
+      node->Type = zj_JSONTypeString;
+      node->Value.Str = s + index;
+      node->Len = 0;
+      break;
+    }
+    if (zj_LIKELY(zj_consumeStr(s, &index))) {
+      node->Type = zj_JSONTypeString;
+      node->Value.Str = s + start;
+      node->Len = index - start - 1;
+      break;
+    }
+    if (zj_LIKELY(src_node == 0))
+      v->N = src_node;
+    else
+      *v->N = *src_node;
+    return false;
+  }
+  default: {
+    zj_Size start = index - 1;
+    if (zj_LIKELY(zj_consumeNum(s, &index))) {
+      node->Type = zj_JSONTypeNumber;
+      node->Value.Str = s + start;
+      node->Len = index - start;
+      break;
+    }
+    if (zj_LIKELY(src_node == 0))
+      v->N = src_node;
+    else
+      *v->N = *src_node;
+    return false;
+  }
+  }
+  while (zj_LIKELY(node != v->N)) {
+    if (node->Father->Type == zj_JSONTypeObject) {
+      if (zj_UNLIKELY(zj_likelyPeekAndConsume('"', s, &index) == false)) {
+        if (zj_LIKELY(src_node == 0))
+          v->N = src_node;
+        else
+          *v->N = *src_node;
+        return false;
+      }
+      zj_Size start = index;
+      if (zj_UNLIKELY(zj_unLikelyConsume('"', s, &index))) {
+        node->Key = s + start;
+        node->KeyLen = 0;
+      } else {
+        if (zj_UNLIKELY(zj_consumeStr(s, &index) == false)) {
+          if (zj_LIKELY(src_node == 0))
+            v->N = src_node;
+          else
+            *v->N = *src_node;
+          return false;
+        }
+        node->Key = s + start;
+        node->KeyLen = index - start - 1;
+      }
+      if (zj_UNLIKELY(zj_likelyPeekAndConsume(':', s, &index) == false)) {
+        if (zj_LIKELY(src_node == 0))
+          v->N = src_node;
+        else
+          *v->N = *src_node;
+        return false;
+      }
+    } else {
+      node->Key = 0;
+    }
+    c = zj_peek(s, &index);
+    switch (c) {
     case '[': {
       node->Type = zj_JSONTypeArray;
       if (zj_unLikelyPeekAndConsume(']', s, &index)) {
@@ -1427,7 +1586,7 @@ static inline bool zj_ParseFast(zj_Value *v, const char *s) {
       node->End = n;
       node->Len = 1;
       node = n;
-      break;
+      continue;
     }
     case '{': {
       node->Type = zj_JSONTypeObject;
@@ -1446,7 +1605,7 @@ static inline bool zj_ParseFast(zj_Value *v, const char *s) {
       node->End = n;
       node->Len = 1;
       node = n;
-      break;
+      continue;
     }
     case 'n':
       if (zj_LIKELY(zj_consumeNull(s, &index))) {
@@ -1518,151 +1677,6 @@ static inline bool zj_ParseFast(zj_Value *v, const char *s) {
         *v->N = *src_node;
       return false;
     }
-  }
-  while (zj_LIKELY(node != v->N)) {
-    if (node->Father->Type == zj_JSONTypeObject) {
-      if (zj_UNLIKELY(zj_likelyPeekAndConsume('"', s, &index) == false)) {
-        if (zj_LIKELY(src_node == 0))
-          v->N = src_node;
-        else
-          *v->N = *src_node;
-        return false;
-      }
-      zj_Size start = index;
-      if (zj_UNLIKELY(zj_unLikelyConsume('"', s, &index))) {
-        node->Key = s + start;
-        node->KeyLen = 0;
-      } else {
-        if (zj_UNLIKELY(zj_consumeStr(s, &index) == false)) {
-          if (zj_LIKELY(src_node == 0))
-            v->N = src_node;
-          else
-            *v->N = *src_node;
-          return false;
-        }
-        node->Key = s + start;
-        node->KeyLen = index - start - 1;
-      }
-      if (zj_UNLIKELY(zj_likelyPeekAndConsume(':', s, &index) == false)) {
-        if (zj_LIKELY(src_node == 0))
-          v->N = src_node;
-        else
-          *v->N = *src_node;
-        return false;
-      }
-    } else {
-      node->Key = 0;
-    }
-    c = zj_peek(s, &index);
-    switch (c) {
-      case '[': {
-        node->Type = zj_JSONTypeArray;
-        if (zj_unLikelyPeekAndConsume(']', s, &index)) {
-          node->Value.Node = 0;
-          node->Len = 0;
-          break;
-        }
-        struct zj_node *n =
-            (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
-        n->Father = node;
-        n->Prev = 0;
-        // n->Next = 0;
-
-        node->Value.Node = n;
-        node->End = n;
-        node->Len = 1;
-        node = n;
-        continue;
-      }
-      case '{': {
-        node->Type = zj_JSONTypeObject;
-        if (zj_unLikelyPeekAndConsume('}', s, &index)) {
-          node->Value.Node = 0;
-          node->Len = 0;
-          break;
-        }
-        struct zj_node *n =
-            (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
-        n->Father = node;
-        n->Prev = 0;
-        // n->Next = 0;
-
-        node->Value.Node = n;
-        node->End = n;
-        node->Len = 1;
-        node = n;
-        continue;
-      }
-      case 'n':
-        if (zj_LIKELY(zj_consumeNull(s, &index))) {
-          node->Type = zj_JSONTypeNull;
-          node->Value.Str = zj_strNull;
-          node->Len = 4;
-          break;
-        }
-        if (zj_LIKELY(src_node == 0))
-          v->N = src_node;
-        else
-          *v->N = *src_node;
-        return false;
-      case 'f':
-        if (zj_LIKELY(zj_consumeFalse(s, &index))) {
-          node->Type = zj_JSONTypeBool;
-          node->Value.Str = zj_strFalse;
-          node->Len = 5;
-          break;
-        }
-        if (zj_LIKELY(src_node == 0))
-          v->N = src_node;
-        else
-          *v->N = *src_node;
-        return false;
-      case 't':
-        if (zj_LIKELY(zj_consumeTrue(s, &index))) {
-          node->Type = zj_JSONTypeBool;
-          node->Value.Str = zj_strTrue;
-          node->Len = 4;
-          break;
-        }
-        if (zj_LIKELY(src_node == 0))
-          v->N = src_node;
-        else
-          *v->N = *src_node;
-        return false;
-      case '"': {
-        zj_Size start = index;
-        if (zj_UNLIKELY(zj_unLikelyConsume('"', s, &index))) {
-          node->Type = zj_JSONTypeString;
-          node->Value.Str = s + index;
-          node->Len = 0;
-          break;
-        }
-        if (zj_LIKELY(zj_consumeStr(s, &index))) {
-          node->Type = zj_JSONTypeString;
-          node->Value.Str = s + start;
-          node->Len = index - start - 1;
-          break;
-        }
-        if (zj_LIKELY(src_node == 0))
-          v->N = src_node;
-        else
-          *v->N = *src_node;
-        return false;
-      }
-      default: {
-        zj_Size start = index - 1;
-        if (zj_LIKELY(zj_consumeNum(s, &index))) {
-          node->Type = zj_JSONTypeNumber;
-          node->Value.Str = s + start;
-          node->Len = index - start;
-          break;
-        }
-        if (zj_LIKELY(src_node == 0))
-          v->N = src_node;
-        else
-          *v->N = *src_node;
-        return false;
-      }
     }
     while (zj_LIKELY(node != v->N)) {
       if (zj_likelyPeekAndConsume(',', s, &index)) {
@@ -1719,15 +1733,50 @@ static inline bool zj_Parse(zj_Value *v, const char *s) {
 
 // 函数说明详见《API》
 static inline const char *zj_Stringify(const zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return "";
+  if (zj_UNLIKELY(v->N == 0))
+    return "";
   struct zj_string *str = zj_newString(v->A, zj_StringInitMemSize);
   struct zj_node *node = v->N;
 
   switch (node->Type) {
+  case zj_JSONTypeArray:
+    zj_appendChar(str, '[');
+    if (node->Value.Node != 0) {
+      node = node->Value.Node;
+    } else {
+      zj_appendChar(str, ']');
+    }
+    break;
+  case zj_JSONTypeObject:
+    zj_appendChar(str, '{');
+    if (node->Len != 0) {
+      node = node->Value.Node;
+    } else {
+      zj_appendChar(str, '}');
+    }
+    break;
+  case zj_JSONTypeString:
+    zj_appendChar(str, '"');
+    zj_appendStr(str, node->Value.Str, node->Len);
+    zj_appendChar(str, '"');
+    break;
+  default:
+    zj_appendStr(str, node->Value.Str, node->Len);
+    break;
+  }
+
+  while (zj_LIKELY(node != v->N)) {
+    if (node->Key != 0) {
+      zj_appendChar(str, '"');
+      zj_appendStr(str, node->Key, node->KeyLen);
+      zj_appendStr(str, "\":", 2);
+    }
+    switch (node->Type) {
     case zj_JSONTypeArray:
       zj_appendChar(str, '[');
       if (node->Value.Node != 0) {
         node = node->Value.Node;
+        continue;
       } else {
         zj_appendChar(str, ']');
       }
@@ -1736,6 +1785,7 @@ static inline const char *zj_Stringify(const zj_Value *v) {
       zj_appendChar(str, '{');
       if (node->Len != 0) {
         node = node->Value.Node;
+        continue;
       } else {
         zj_appendChar(str, '}');
       }
@@ -1748,41 +1798,6 @@ static inline const char *zj_Stringify(const zj_Value *v) {
     default:
       zj_appendStr(str, node->Value.Str, node->Len);
       break;
-  }
-
-  while (zj_LIKELY(node != v->N)) {
-    if (node->Key != 0) {
-      zj_appendChar(str, '"');
-      zj_appendStr(str, node->Key, node->KeyLen);
-      zj_appendStr(str, "\":", 2);
-    }
-    switch (node->Type) {
-      case zj_JSONTypeArray:
-        zj_appendChar(str, '[');
-        if (node->Value.Node != 0) {
-          node = node->Value.Node;
-          continue;
-        } else {
-          zj_appendChar(str, ']');
-        }
-        break;
-      case zj_JSONTypeObject:
-        zj_appendChar(str, '{');
-        if (node->Len != 0) {
-          node = node->Value.Node;
-          continue;
-        } else {
-          zj_appendChar(str, '}');
-        }
-        break;
-      case zj_JSONTypeString:
-        zj_appendChar(str, '"');
-        zj_appendStr(str, node->Value.Str, node->Len);
-        zj_appendChar(str, '"');
-        break;
-      default:
-        zj_appendStr(str, node->Value.Str, node->Len);
-        break;
     }
     while (zj_LIKELY(node != v->N)) {
       if (zj_LIKELY(node->Next != 0)) {
@@ -1805,16 +1820,20 @@ static inline const char *zj_Stringify(const zj_Value *v) {
 
 // 函数说明详见《API》
 static inline const char *zj_GetStrFast(const zj_Value *v, zj_Size *len) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeString)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeString))
+    return 0;
   *len = v->N->Len;
   return v->N->Value.Str;
 }
 
 // 函数说明详见《API》
 static inline const char *zj_GetStr(zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeString)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeString))
+    return 0;
   char *str = zj_allocatorAlloc(v->A, v->N->Len + 1);
   zj_memCopy(v->N->Value.Str, v->N->Len, str);
   str[v->N->Len] = 0;
@@ -1823,8 +1842,10 @@ static inline const char *zj_GetStr(zj_Value *v) {
 
 // 函数说明详见《API》
 static inline const char *zj_GetUnEscapeStr(zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeString)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeString))
+    return 0;
   // 因为值里面的字符串一定是合法的字符串，因此，可以简化
   // 因为解码后的字符串一定比解码前短，所以申请原字符串+1的长度即可
   char *ret_str = zj_allocatorAlloc(v->A, v->N->Len + 1);
@@ -1834,16 +1855,20 @@ static inline const char *zj_GetUnEscapeStr(zj_Value *v) {
 
 // 函数说明详见《API》
 static inline const char *zj_GetNumFast(const zj_Value *v, zj_Size *len) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber))
+    return 0;
   *len = v->N->Len;
   return v->N->Value.Str;
 }
 
 // 函数说明详见《API》
 static inline const char *zj_GetNumStr(zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber))
+    return 0;
   char *str = zj_allocatorAlloc(v->A, v->N->Len + 1);
   zj_memCopy(v->N->Value.Str, v->N->Len, str);
   str[v->N->Len] = 0;
@@ -1854,32 +1879,40 @@ static inline const char *zj_GetNumStr(zj_Value *v) {
 static inline const double *zj_GetNum(zj_Value *v) { return zj_GetDouble(v); }
 
 static inline const double *zj_GetDouble(zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber))
+    return 0;
   double *d = (double *)zj_allocatorAlloc(v->A, sizeof(double));
   *d = zj_strToDouble(v->N->Value.Str, v->N->Len);
   return d;
 }
 
 static inline const int *zj_GetInt(zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber))
+    return 0;
   int *i = (int *)zj_allocatorAlloc(v->A, sizeof(int));
   *i = zj_strToInt(v->N->Value.Str, v->N->Len);
   return i;
 }
 
 static inline const long *zj_GetLong(zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber))
+    return 0;
   long *l = (long *)zj_allocatorAlloc(v->A, sizeof(long));
   *l = zj_strToLong(v->N->Value.Str, v->N->Len);
   return l;
 }
 
 static inline const long long *zj_GetLongLong(zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNumber))
+    return 0;
   long long *ll = (long long *)zj_allocatorAlloc(v->A, sizeof(long long));
   *ll = zj_strToLongLong(v->N->Value.Str, v->N->Len);
   return ll;
@@ -1887,25 +1920,32 @@ static inline const long long *zj_GetLongLong(zj_Value *v) {
 
 // 函数说明详见《API》
 static inline const bool *zj_GetBool(const zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeBool)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeBool))
+    return 0;
   static bool t = true;
   static bool f = false;
-  if (*(v->N->Value.Str) == 't') return &t;
+  if (*(v->N->Value.Str) == 't')
+    return &t;
   return &f;
 }
 
 // 函数说明详见《API》
 static inline bool zj_IsNull(const zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return false;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNull)) return false;
+  if (zj_UNLIKELY(v->N == 0))
+    return false;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeNull))
+    return false;
   return true;
 }
 
 // 函数说明详见《API》
 static inline const char *zj_GetKey(zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Key == 0)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Key == 0))
+    return 0;
   char *str = zj_allocatorAlloc(v->A, v->N->KeyLen + 1);
   zj_memCopy(v->N->Key, v->N->KeyLen, str);
   str[v->N->KeyLen] = 0;
@@ -1913,8 +1953,10 @@ static inline const char *zj_GetKey(zj_Value *v) {
 }
 
 static inline const char *zj_GetUnEscapeKey(zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Key == 0)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Key == 0))
+    return 0;
   char *str = zj_allocatorAlloc(v->A, v->N->KeyLen + 1);
   zj_unEscapeStr(v->N->Key, v->N->KeyLen, str);
   return str;
@@ -1922,16 +1964,20 @@ static inline const char *zj_GetUnEscapeKey(zj_Value *v) {
 
 // 函数说明详见《API》
 static inline const char *zj_GetKeyFast(const zj_Value *v, zj_Size *len) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Key == 0)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Key == 0))
+    return 0;
   *len = v->N->KeyLen;
   return v->N->Key;
 }
 
 // 函数说明详见《API》
 static inline zj_Value *zj_ObjGet(const zj_Value *v, const char *key) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject))
+    return 0;
   struct zj_node *next = v->N->Value.Node;
   while (zj_LIKELY(next != 0)) {
     if (zj_UNLIKELY(zj_strIsEqual(key, next->Key, next->KeyLen) == true)) {
@@ -1946,8 +1992,10 @@ static inline zj_Value *zj_ObjGet(const zj_Value *v, const char *key) {
 // 函数说明详见《API》
 static inline zj_Value *zj_ObjGetLen(const zj_Value *v, const char *key,
                                      zj_Size len) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject))
+    return 0;
   struct zj_node *next = v->N->Value.Node;
   while (zj_LIKELY(next != 0)) {
     if (zj_UNLIKELY(zj_strIsEqualLen(key, len, next->Key, next->KeyLen) ==
@@ -1962,27 +2010,29 @@ static inline zj_Value *zj_ObjGetLen(const zj_Value *v, const char *key,
 
 // 函数说明详见《API》
 static inline const zj_JSONType *zj_Type(const zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
   switch (v->N->Type) {
-    case zj_JSONTypeArray:
-      return &zj_jsontype_array;
-    case zj_JSONTypeObject:
-      return &zj_jsontype_object;
-    case zj_JSONTypeString:
-      return &zj_jsontype_string;
-    case zj_JSONTypeNumber:
-      return &zj_jsontype_number;
-    case zj_JSONTypeBool:
-      return &zj_jsontype_bool;
-    case zj_JSONTypeNull:
-      return &zj_jsontype_null;
+  case zj_JSONTypeArray:
+    return &zj_jsontype_array;
+  case zj_JSONTypeObject:
+    return &zj_jsontype_object;
+  case zj_JSONTypeString:
+    return &zj_jsontype_string;
+  case zj_JSONTypeNumber:
+    return &zj_jsontype_number;
+  case zj_JSONTypeBool:
+    return &zj_jsontype_bool;
+  case zj_JSONTypeNull:
+    return &zj_jsontype_null;
   }
   return 0;
 }
 
 // 函数说明详见《API》
 static inline zj_Size zj_SizeOf(const zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
   if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject &&
                   v->N->Type != zj_JSONTypeArray))
     return 0;
@@ -1991,8 +2041,10 @@ static inline zj_Size zj_SizeOf(const zj_Value *v) {
 
 // 函数说明详见《API》
 static inline zj_Value *zj_ArrayGet(const zj_Value *v, zj_Size index) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeArray)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeArray))
+    return 0;
   struct zj_node *next = v->N->Value.Node;
   zj_Size i = 0;
   while (zj_LIKELY(next != 0)) {
@@ -2008,7 +2060,8 @@ static inline zj_Value *zj_ArrayGet(const zj_Value *v, zj_Size index) {
 
 // 函数说明详见《API》
 static inline zj_Value *zj_Begin(const zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
   if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject &&
                   v->N->Type != zj_JSONTypeArray))
     return 0;
@@ -2021,7 +2074,8 @@ static inline zj_Value *zj_Begin(const zj_Value *v) {
 
 // 函数说明详见《API》
 static inline zj_Value *zj_Next(const zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return 0;
+  if (zj_UNLIKELY(v->N == 0))
+    return 0;
   if (zj_LIKELY(v->N->Next != 0)) {
     zj_Value *ret_val = zj_innerNewValue(v->A, v->N->Next);
     return ret_val;
@@ -2031,7 +2085,8 @@ static inline zj_Value *zj_Next(const zj_Value *v) {
 
 // 把vv拷贝到v，非对外API
 static inline bool zj_ValueCopyFrom(zj_Value *v, const zj_Value *vv) {
-  if (zj_UNLIKELY(vv->N == 0)) return false;
+  if (zj_UNLIKELY(vv->N == 0))
+    return false;
   zj_Allocator *const A = v->A;
   v->N = (struct zj_node *)zj_allocatorAlloc(A, sizeof(struct zj_node));
   v->N->Prev = 0;
@@ -2052,35 +2107,35 @@ static inline bool zj_ValueCopyFrom(zj_Value *v, const zj_Value *vv) {
       des_node->Key = 0;
     }
     switch (node->Type) {
-      case zj_JSONTypeObject:
-      case zj_JSONTypeArray:
-        des_node->Len = node->Len;
-        if (zj_LIKELY(node->Value.Node != 0)) {
-          node = node->Value.Node;
-          struct zj_node *n =
-              (struct zj_node *)zj_allocatorAlloc(A, sizeof(struct zj_node));
-          n->Father = des_node;
-          n->Prev = 0;
-          des_node->Value.Node = n;
-          des_node->End = n;
-          des_node = n;
-          continue;
-        }
-        des_node->Value.Node = 0;
-        des_node->End = 0;
-        break;
-      case zj_JSONTypeBool:
-      case zj_JSONTypeNull:
-        des_node->Value.Str = node->Value.Str;
-        des_node->Len = node->Len;
-        break;
-      case zj_JSONTypeNumber:
-      case zj_JSONTypeString: {
-        char *s = zj_allocatorAlloc(A, node->Len);
-        zj_memCopy(node->Value.Str, node->Len, s);
-        des_node->Value.Str = s;
-        des_node->Len = node->Len;
-      } break;
+    case zj_JSONTypeObject:
+    case zj_JSONTypeArray:
+      des_node->Len = node->Len;
+      if (zj_LIKELY(node->Value.Node != 0)) {
+        node = node->Value.Node;
+        struct zj_node *n =
+            (struct zj_node *)zj_allocatorAlloc(A, sizeof(struct zj_node));
+        n->Father = des_node;
+        n->Prev = 0;
+        des_node->Value.Node = n;
+        des_node->End = n;
+        des_node = n;
+        continue;
+      }
+      des_node->Value.Node = 0;
+      des_node->End = 0;
+      break;
+    case zj_JSONTypeBool:
+    case zj_JSONTypeNull:
+      des_node->Value.Str = node->Value.Str;
+      des_node->Len = node->Len;
+      break;
+    case zj_JSONTypeNumber:
+    case zj_JSONTypeString: {
+      char *s = zj_allocatorAlloc(A, node->Len);
+      zj_memCopy(node->Value.Str, node->Len, s);
+      des_node->Value.Str = s;
+      des_node->Len = node->Len;
+    } break;
     }
     while (zj_LIKELY(node != vv->N)) {
       if (zj_LIKELY(node->Next != 0)) {
@@ -2107,13 +2162,15 @@ static inline bool zj_ValueCopyFrom(zj_Value *v, const zj_Value *vv) {
 // 函数说明详见《API》
 static inline zj_Value *zj_Copy(const zj_Value *v) {
   zj_Value *ret_val = zj_NewValue(v->A);
-  if (zj_UNLIKELY(zj_ValueCopyFrom(ret_val, v) == false)) return 0;
+  if (zj_UNLIKELY(zj_ValueCopyFrom(ret_val, v) == false))
+    return 0;
   return ret_val;
 }
 
 // 函数说明详见《API》
 static inline bool zj_Move(zj_Value *v) {
-  if (zj_UNLIKELY(v->N == 0)) return false;
+  if (zj_UNLIKELY(v->N == 0))
+    return false;
   if (v->N->Father != 0) {
     if (v->N->Prev == 0) {
       v->N->Father->Value.Node = v->N->Next;
@@ -2169,7 +2226,8 @@ static inline void zj_SetBool(zj_Value *v, bool b) {
 // 函数说明详见《API》
 static inline bool zj_SetNumStrFast(zj_Value *v, const char *num) {
   zj_Size len = 0;
-  if (zj_UNLIKELY(zj_checkNum(num, &len) == false)) return false;
+  if (zj_UNLIKELY(zj_checkNum(num, &len) == false))
+    return false;
   if (zj_UNLIKELY(v->N == 0)) {
     v->N = (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
     v->N->Key = 0;
@@ -2186,7 +2244,8 @@ static inline bool zj_SetNumStrFast(zj_Value *v, const char *num) {
 // 函数说明详见《API》
 static inline bool zj_SetNumStrLenFast(zj_Value *v, const char *num,
                                        zj_Size len) {
-  if (zj_UNLIKELY(zj_checkNumLen(v->A, num, len) == false)) return false;
+  if (zj_UNLIKELY(zj_checkNumLen(v->A, num, len) == false))
+    return false;
   if (zj_UNLIKELY(v->N == 0)) {
     v->N = (struct zj_node *)zj_allocatorAlloc(v->A, sizeof(struct zj_node));
     v->N->Key = 0;
@@ -2203,7 +2262,8 @@ static inline bool zj_SetNumStrLenFast(zj_Value *v, const char *num,
 // 函数说明详见《API》
 static inline bool zj_SetNumStr(zj_Value *v, const char *num) {
   zj_Size len = 0;
-  if (zj_UNLIKELY(zj_checkNum(num, &len) == false)) return false;
+  if (zj_UNLIKELY(zj_checkNum(num, &len) == false))
+    return false;
   char *s = zj_allocatorAlloc(v->A, len);
   zj_memCopy(num, len, s);
   if (zj_UNLIKELY(v->N == 0)) {
@@ -2221,7 +2281,8 @@ static inline bool zj_SetNumStr(zj_Value *v, const char *num) {
 
 // 函数说明详见《API》
 static inline bool zj_SetNumStrLen(zj_Value *v, const char *num, zj_Size len) {
-  if (zj_UNLIKELY(zj_checkNumLen(v->A, num, len) == false)) return false;
+  if (zj_UNLIKELY(zj_checkNumLen(v->A, num, len) == false))
+    return false;
   char *s = zj_allocatorAlloc(v->A, len);
   zj_memCopy(num, len, s);
   if (zj_UNLIKELY(v->N == 0)) {
@@ -2532,7 +2593,8 @@ static inline void zj_SetObj(zj_Value *v) {
 
 // 函数说明详见《API》
 static inline bool zj_SetFast(zj_Value *v, zj_Value *vv) {
-  if (zj_UNLIKELY(zj_Move(vv) == false)) return false;
+  if (zj_UNLIKELY(zj_Move(vv) == false))
+    return false;
   if (zj_UNLIKELY(v->N == 0)) {
     v->N = vv->N;
     vv->N = 0;
@@ -2556,7 +2618,8 @@ static inline bool zj_SetFast(zj_Value *v, zj_Value *vv) {
 // 函数说明详见《API》
 static inline bool zj_Set(zj_Value *v, const zj_Value *vv) {
   zj_Value *cp = zj_Copy(vv);
-  if (zj_UNLIKELY(cp == 0)) return false;
+  if (zj_UNLIKELY(cp == 0))
+    return false;
   if (zj_UNLIKELY(v->N == 0)) {
     v->N = cp->N;
     return true;
@@ -2577,11 +2640,16 @@ static inline bool zj_Set(zj_Value *v, const zj_Value *vv) {
 
 // 函数说明详见《API》
 static inline bool zj_ObjAddFast(zj_Value *v, zj_Value *vv) {
-  if (zj_UNLIKELY(v->N == 0)) return false;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject)) return false;
-  if (zj_UNLIKELY(vv->N == 0)) return false;
-  if (zj_UNLIKELY(vv->N->Key == 0)) return false;
-  if (zj_UNLIKELY(zj_Move(vv) == false)) return false;
+  if (zj_UNLIKELY(v->N == 0))
+    return false;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject))
+    return false;
+  if (zj_UNLIKELY(vv->N == 0))
+    return false;
+  if (zj_UNLIKELY(vv->N->Key == 0))
+    return false;
+  if (zj_UNLIKELY(zj_Move(vv) == false))
+    return false;
   vv->N->Father = v->N;
   if (zj_UNLIKELY(v->N->Value.Node == 0)) {
     v->N->Value.Node = vv->N;
@@ -2599,12 +2667,17 @@ static inline bool zj_ObjAddFast(zj_Value *v, zj_Value *vv) {
 
 // 函数说明详见《API》
 static inline bool zj_ObjAdd(zj_Value *v, const zj_Value *vv) {
-  if (zj_UNLIKELY(v->N == 0)) return false;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject)) return false;
-  if (zj_UNLIKELY(vv->N == 0)) return false;
-  if (zj_UNLIKELY(vv->N->Key == 0)) return false;
+  if (zj_UNLIKELY(v->N == 0))
+    return false;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeObject))
+    return false;
+  if (zj_UNLIKELY(vv->N == 0))
+    return false;
+  if (zj_UNLIKELY(vv->N->Key == 0))
+    return false;
   zj_Value *cp = zj_Copy(vv);
-  if (zj_UNLIKELY(cp == 0)) return false;
+  if (zj_UNLIKELY(cp == 0))
+    return false;
   cp->N->Father = v->N;
   if (zj_UNLIKELY(v->N->Value.Node == 0)) {
     v->N->Value.Node = cp->N;
@@ -2621,9 +2694,12 @@ static inline bool zj_ObjAdd(zj_Value *v, const zj_Value *vv) {
 
 // 函数说明详见《API》
 static inline bool zj_ArrayAddFast(zj_Value *v, zj_Value *vv) {
-  if (zj_UNLIKELY(v->N == 0)) return false;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeArray)) return false;
-  if (zj_UNLIKELY(zj_Move(vv) == false)) return false;
+  if (zj_UNLIKELY(v->N == 0))
+    return false;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeArray))
+    return false;
+  if (zj_UNLIKELY(zj_Move(vv) == false))
+    return false;
   vv->N->Key = 0;
   vv->N->Father = v->N;
   if (zj_UNLIKELY(v->N->Value.Node == 0)) {
@@ -2642,10 +2718,13 @@ static inline bool zj_ArrayAddFast(zj_Value *v, zj_Value *vv) {
 
 // 函数说明详见《API》
 static inline bool zj_ArrayAdd(zj_Value *v, const zj_Value *vv) {
-  if (zj_UNLIKELY(v->N == 0)) return false;
-  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeArray)) return false;
+  if (zj_UNLIKELY(v->N == 0))
+    return false;
+  if (zj_UNLIKELY(v->N->Type != zj_JSONTypeArray))
+    return false;
   zj_Value *cp = zj_Copy(vv);
-  if (zj_UNLIKELY(cp == 0)) return false;
+  if (zj_UNLIKELY(cp == 0))
+    return false;
   cp->N->Key = 0;
   cp->N->Father = v->N;
   if (zj_UNLIKELY(v->N->Value.Node == 0)) {
@@ -2664,14 +2743,16 @@ static inline bool zj_ArrayAdd(zj_Value *v, const zj_Value *vv) {
 // 函数说明详见《API》
 static inline bool zj_ArrayDel(zj_Value *v, zj_Size index) {
   zj_Value *dv = zj_ArrayGet(v, index);
-  if (zj_UNLIKELY(dv == 0)) return false;
+  if (zj_UNLIKELY(dv == 0))
+    return false;
   return zj_Move(dv);
 }
 
 // 函数说明详见《API》
 static inline bool zj_ObjDel(zj_Value *v, const char *key) {
   zj_Value *dv = zj_ObjGet(v, key);
-  if (zj_UNLIKELY(dv == 0)) return false;
+  if (zj_UNLIKELY(dv == 0))
+    return false;
   return zj_Move(dv);
 }
 #if zj_CPLUSPLUS == 1

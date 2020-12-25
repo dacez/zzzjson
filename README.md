@@ -221,7 +221,7 @@ void GetAndSet(Value *srcv, Value *desv)
     case JSONTYPEBOOL:
     {
         // Copy Bool 
-        const zzz_BOOL *b = GetBool(srcv);
+        const bool *b = GetBool(srcv);
         if (b == 0)
             return;
         SetBool(desv, *b);
@@ -303,13 +303,13 @@ const char *Stringify(const Value *v);
 const char *GetStrFast(const Value *v, SIZE *len);
 const char *GetUnEscapeStr(Value *v);
 const char *GetStr(Value *v);
-const char *GetNumFast(const Value *v, zzz_SIZE *len);
+const char *GetNumFast(const Value *v, zj_SIZE *len);
 const char *GetNumStr(Value *v);
 const double *GetNum(Value *v);
-const double *GetDouble(struct zzz_Value *v);
-const int *GetInt(struct zzz_Value *v);
-const long *GetLong(struct zzz_Value *v);
-const long long *GetLongLong(struct zzz_Value *v);
+const double *GetDouble(struct zj_Value *v);
+const int *GetInt(struct zj_Value *v);
+const long *GetLong(struct zj_Value *v);
+const long long *GetLongLong(struct zj_Value *v);
 const BOOL *GetBool(const Value *v);
 BOOL IsNull(const Value *v);
 const char *GetKey(Value *v);
@@ -366,84 +366,84 @@ BOOL ObjDel(Value *v, const char *key);
 
 ## Long APIs
 
-> define “zzz_SHORT_API 0” to use long APIs
+> define “zj_SHORT_API 0” to use long APIs
 >
-> \#define zzz_SHORT_API 0
+> \#define zj_SHORT_API 0
 >
 > // must be above to include
 >
 > \#include "zzzjson.h"
 
 ```c
-struct zzz_Allocator *zzz_AllocatorNew();
-void zzz_AllocatorRelease(struct zzz_Allocator *root_alloc);
+struct zj_Allocator *zj_AllocatorNew();
+void zj_ReleaseAllocator(struct zj_Allocator *root_alloc);
 
-struct zzz_Value *zzz_ValueNew(struct zzz_Allocator *alloc);
-zzz_BOOL zzz_ValueParseFast(struct zzz_Value *v, const char *s);
-zzz_BOOL zzz_ValueParseLen(struct zzz_Value *v, const char *s, zzz_SIZE len);
-zzz_BOOL zzz_ValueParse(struct zzz_Value *v, const char *s);
-const char *zzz_ValueStringify(const struct zzz_Value *v);
+struct zj_Value *zj_NewValue(struct zj_Allocator *alloc);
+bool zj_ParseFast(struct zj_Value *v, const char *s);
+bool zj_ParseLen(struct zj_Value *v, const char *s, zj_SIZE len);
+bool zj_Parse(struct zj_Value *v, const char *s);
+const char *zj_Stringify(const struct zj_Value *v);
 
-const char *zzz_ValueGetStrFast(const struct zzz_Value *v, zzz_SIZE *len);
-const char *zzz_ValueGetUnEscapeStr(struct zzz_Value *v);
-const char *zzz_ValueGetStr(struct zzz_Value *v);
-const char *zzz_ValueGetNumFast(const struct zzz_Value *v, zzz_SIZE *len);
-const char *zzz_ValueGetNumStr(struct zzz_Value *v);
-const double *zzz_ValueGetNum(struct zzz_Value *v);
-const double *zzz_ValueGetDouble(struct zzz_Value *v);
-const int *zzz_ValueGetInt(struct zzz_Value *v);
-const long *zzz_ValueGetLong(struct zzz_Value *v);
-const long long *zzz_ValueGetLongLong(struct zzz_Value *v);
-const zzz_BOOL *zzz_ValueGetBool(const struct zzz_Value *v);
-zzz_BOOL zzz_ValueIsNull(const struct zzz_Value *v);
-const char *zzz_ValueGetKey(struct zzz_Value *v);
-const char *zzz_ValueGetUnEscapeKey(struct zzz_Value *v);
-const char *zzz_ValueGetKeyFast(const struct zzz_Value *v, zzz_SIZE *len);
-struct zzz_Value *zzz_ValueObjGet(const struct zzz_Value *v, const char *key);
-struct zzz_Value *zzz_ValueObjGetLen(const struct zzz_Value *v, const char *key, zzz_SIZE len);
-const zzz_JSONType *zzz_ValueType(const struct zzz_Value *v);
-zzz_SIZE zzz_ValueSize(const struct zzz_Value *v);
-struct zzz_Value *zzz_ValueArrayGet(const struct zzz_Value *v, zzz_SIZE index);
-struct zzz_Value *zzz_ValueBegin(const struct zzz_Value *v);
-struct zzz_Value *zzz_ValueNext(const struct zzz_Value *v);
+const char *zj_GetStrFast(const struct zj_Value *v, zj_SIZE *len);
+const char *zj_GetUnEscapeStr(struct zj_Value *v);
+const char *zj_GetStr(struct zj_Value *v);
+const char *zj_GetNumFast(const struct zj_Value *v, zj_SIZE *len);
+const char *zj_GetNumStr(struct zj_Value *v);
+const double *zj_GetNum(struct zj_Value *v);
+const double *zj_GetDouble(struct zj_Value *v);
+const int *zj_GetInt(struct zj_Value *v);
+const long *zj_GetLong(struct zj_Value *v);
+const long long *zj_GetLongLong(struct zj_Value *v);
+const bool *zj_GetBool(const struct zj_Value *v);
+bool zj_IsNull(const struct zj_Value *v);
+const char *zj_GetKey(struct zj_Value *v);
+const char *zj_GetUnEscapeKey(struct zj_Value *v);
+const char *zj_GetKeyFast(const struct zj_Value *v, zj_SIZE *len);
+struct zj_Value *zj_ObjGet(const struct zj_Value *v, const char *key);
+struct zj_Value *zj_ObjGetLen(const struct zj_Value *v, const char *key, zj_SIZE len);
+const zj_JSONType *zj_Type(const struct zj_Value *v);
+zj_SIZE zj_SizeOf(const struct zj_Value *v);
+struct zj_Value *zj_ArrayGet(const struct zj_Value *v, zj_SIZE index);
+struct zj_Value *zj_Begin(const struct zj_Value *v);
+struct zj_Value *zj_Next(const struct zj_Value *v);
 
-struct zzz_Value *zzz_ValueCopy(const struct zzz_Value *v);
-zzz_BOOL zzz_ValueMove(struct zzz_Value *v);
+struct zj_Value *zj_Copy(const struct zj_Value *v);
+bool zj_Move(struct zj_Value *v);
 
-zzz_BOOL zzz_ValueSetNull(struct zzz_Value *v);
-zzz_BOOL zzz_ValueSetBool(struct zzz_Value *v, zzz_BOOL b);
-zzz_BOOL zzz_ValueSetNumStrFast(struct zzz_Value *v, const char *num);
-zzz_BOOL zzz_ValueSetNumStrLenFast(struct zzz_Value *v, const char *num, zzz_SIZE len);
-zzz_BOOL zzz_ValueSetNumStr(struct zzz_Value *v, const char *num);
-zzz_BOOL zzz_ValueSetNumStrLen(struct zzz_Value *v, const char *num, zzz_SIZE len);
-zzz_BOOL zzz_ValueSetNum(struct zzz_Value *v, const double d);
-zzz_BOOL zzz_ValueSetDouble(struct zzz_Value *v, const double d);
-zzz_BOOL zzz_ValueSetInt(struct zzz_Value *v, const int n);
-zzz_BOOL zzz_ValueSetLong(struct zzz_Value *v, const long n);
-zzz_BOOL zzz_ValueSetLongLong(struct zzz_Value *v, const long long n);
-zzz_BOOL zzz_ValueSetStrFast(struct zzz_Value *v, const char *str);
-zzz_BOOL zzz_ValueSetStrLenFast(struct zzz_Value *v, const char *str, zzz_SIZE len);
-zzz_BOOL zzz_ValueSetStr(struct zzz_Value *v, const char *str);
-zzz_BOOL zzz_ValueSetStrLen(struct zzz_Value *v, const char *str, zzz_SIZE len);
-zzz_BOOL zzz_ValueSetStrEscape(struct zzz_Value *v, const char *str);
-zzz_BOOL zzz_ValueSetStrLenEscape(struct zzz_Value *v, const char *str, zzz_SIZE len);
-zzz_BOOL zzz_ValueSetKeyFast(struct zzz_Value *v, const char *key);
-zzz_BOOL zzz_ValueSetKeyLenFast(struct zzz_Value *v, const char *key, zzz_SIZE len);
-zzz_BOOL zzz_ValueSetKey(struct zzz_Value *v, const char *key);
-zzz_BOOL zzz_ValueSetKeyLen(struct zzz_Value *v, const char *key, zzz_SIZE len);
-zzz_BOOL zzz_ValueSetKeyEscape(struct zzz_Value *v, const char *key);
-zzz_BOOL zzz_ValueSetKeyLenEscape(struct zzz_Value *v, const char *key, zzz_SIZE len);
-zzz_BOOL zzz_ValueSetArray(struct zzz_Value *v);
-zzz_BOOL zzz_ValueSetObj(struct zzz_Value *v);
-zzz_BOOL zzz_ValueSetFast(struct zzz_Value *v, struct zzz_Value *vv);
-zzz_BOOL zzz_ValueSet(struct zzz_Value *v, const struct zzz_Value *vv);
-zzz_BOOL zzz_ValueObjAddFast(struct zzz_Value *v, struct zzz_Value *vv);
-zzz_BOOL zzz_ValueObjAdd(struct zzz_Value *v, const struct zzz_Value *vv);
-zzz_BOOL zzz_ValueArrayAddFast(struct zzz_Value *v, struct zzz_Value *vv);
-zzz_BOOL zzz_ValueArrayAdd(struct zzz_Value *v, const struct zzz_Value *vv);
+bool zj_SetNull(struct zj_Value *v);
+bool zj_SetBool(struct zj_Value *v, bool b);
+bool zj_SetNumStrFast(struct zj_Value *v, const char *num);
+bool zj_SetNumStrLenFast(struct zj_Value *v, const char *num, zj_SIZE len);
+bool zj_SetNumStr(struct zj_Value *v, const char *num);
+bool zj_SetNumStrLen(struct zj_Value *v, const char *num, zj_SIZE len);
+bool zj_SetNum(struct zj_Value *v, const double d);
+bool zj_SetDouble(struct zj_Value *v, const double d);
+bool zj_SetInt(struct zj_Value *v, const int n);
+bool zj_SetLong(struct zj_Value *v, const long n);
+bool zj_SetLongLong(struct zj_Value *v, const long long n);
+bool zj_SetStrFast(struct zj_Value *v, const char *str);
+bool zj_SetStrLenFast(struct zj_Value *v, const char *str, zj_SIZE len);
+bool zj_SetStr(struct zj_Value *v, const char *str);
+bool zj_SetStrLen(struct zj_Value *v, const char *str, zj_SIZE len);
+bool zj_SetStrEscape(struct zj_Value *v, const char *str);
+bool zj_SetStrLenEscape(struct zj_Value *v, const char *str, zj_SIZE len);
+bool zj_SetKeyFast(struct zj_Value *v, const char *key);
+bool zj_SetKeyLenFast(struct zj_Value *v, const char *key, zj_SIZE len);
+bool zj_SetKey(struct zj_Value *v, const char *key);
+bool zj_SetKeyLen(struct zj_Value *v, const char *key, zj_SIZE len);
+bool zj_SetKeyEscape(struct zj_Value *v, const char *key);
+bool zj_SetKeyLenEscape(struct zj_Value *v, const char *key, zj_SIZE len);
+bool zj_SetArray(struct zj_Value *v);
+bool zj_SetObj(struct zj_Value *v);
+bool zj_SetFast(struct zj_Value *v, struct zj_Value *vv);
+bool zj_Set(struct zj_Value *v, const struct zj_Value *vv);
+bool zj_ObjAddFast(struct zj_Value *v, struct zj_Value *vv);
+bool zj_ObjAdd(struct zj_Value *v, const struct zj_Value *vv);
+bool zj_ArrayAddFast(struct zj_Value *v, struct zj_Value *vv);
+bool zj_ArrayAdd(struct zj_Value *v, const struct zj_Value *vv);
 
-zzz_BOOL zzz_ValueArrayDel(struct zzz_Value *v, zzz_SIZE index);
-zzz_BOOL zzz_ValueObjDel(struct zzz_Value *v, const char *key);
+bool zj_ArrayDel(struct zj_Value *v, zj_SIZE index);
+bool zj_ObjDel(struct zj_Value *v, const char *key);
 ```
 
 
