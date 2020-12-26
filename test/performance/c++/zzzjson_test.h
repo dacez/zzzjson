@@ -1,61 +1,60 @@
 #include "../../test.h"
 
-#define zzz_ALLOCATORINITMEMSIZE 4096 * 128
-#define zzz_STRINGINITMEMSIZE 4096 * 2
-#define zzz_DELTA 2                    
-#define zzz_SHORT_API 0
+#define zj_ALLOCATORINITMEMSIZE 4096 * 128
+#define zj_STRINGINITMEMSIZE 4096 * 2
+#define zj_DELTA 2
+#define zj_SHORT_API 0
 #include "../../../zzzjson.h"
 
-class zzzjsonTest : public Test
-{
-  public:
-    zzzjsonTest(const std::string &path) : Test("zzzjson", path){};
-    zzzjsonTest(const std::vector<std::string> &jsons) : Test("zzzjson", jsons){};
-    virtual bool Parse(const char *json, unsigned long long *ms)
-    {
-        zzz_Allocator *A = zzz_AllocatorNew();
-        zzz_Value *v = zzz_ValueNew(A);
-        uint64_t now = Now();
-        zzz_BOOL ret = zzz_ValueParseFast(v, json);
-        *ms = Now() - now;
-        zzz_AllocatorRelease(A);
-        if (ret == zzz_False) return false;
-        return true;
-    }
-    virtual bool Stringify(const char *json, unsigned long long *ms)
-    {
-        zzz_Allocator *A = zzz_AllocatorNew();
-        zzz_Value *v = zzz_ValueNew(A);
+using namespace zj;
 
-        zzz_BOOL ret = zzz_ValueParseFast(v, json);
-        if (ret == zzz_True) {
-            uint64_t now = Now();
-            const char *ret_json = zzz_ValueStringify(v);
-            *ms = Now() - now;
-            ret = (ret_json != 0);
-        }
-        zzz_AllocatorRelease(A);
-        if (ret == zzz_False) return false;
-        return true;
+class zzzjsonTest : public Test {
+public:
+  zzzjsonTest(const std::string &path) : Test("zzzjson", path){};
+  zzzjsonTest(const std::vector<std::string> &jsons) : Test("zzzjson", jsons){};
+  virtual bool Parse(const char *json, unsigned long long *ms) {
+    zj_Allocator *A = zj_NewAllocator();
+    Value *v = zj_NewValue(A);
+    uint64_t now = Now();
+    bool ret = zj_ParseFast(v, json);
+    *ms = Now() - now;
+    zj_ReleaseAllocator(A);
+    if (ret == false)
+      return false;
+    return true;
+  }
+  virtual bool Stringify(const char *json, unsigned long long *ms) {
+    zj_Allocator *A = zj_NewAllocator();
+    Value *v = zj_NewValue(A);
+
+    bool ret = zj_ParseFast(v, json);
+    if (ret == true) {
+      uint64_t now = Now();
+      const char *ret_json = zj_Stringify(v);
+      *ms = Now() - now;
+      ret = (ret_json != 0);
     }
-    virtual bool All(const char *json, unsigned long long *ms)
+    zj_ReleaseAllocator(A);
+    if (ret == false)
+      return false;
+    return true;
+  }
+  virtual bool All(const char *json, unsigned long long *ms) {
+    bool ret = true;
+    const char *ret_json = 0;
+    uint64_t now = Now();
     {
-        zzz_BOOL ret = zzz_True;
-        const char *ret_json = 0;
-        uint64_t now = Now();
-        {
-            zzz_Allocator *A = zzz_AllocatorNew();
-            zzz_Value *v = zzz_ValueNew(A);
-            ret = zzz_ValueParseFast(v, json);
-            if (ret == zzz_True)
-            {
-                ret_json = zzz_ValueStringify(v);
-            }
-            zzz_AllocatorRelease(A);
-        }
-        *ms = Now() - now;
-        if (ret == zzz_False || ret_json == 0)
-            return false;
-        return true;
+      zj_Allocator *A = zj_NewAllocator();
+      zj_Value *v = zj_NewValue(A);
+      ret = zj_ParseFast(v, json);
+      if (ret == true) {
+        ret_json = zj_Stringify(v);
+      }
+      zj_ReleaseAllocator(A);
     }
+    *ms = Now() - now;
+    if (ret == false || ret_json == 0)
+      return false;
+    return true;
+  }
 };

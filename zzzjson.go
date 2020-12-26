@@ -2,7 +2,7 @@ package zzzjson
 
 /*
 #cgo CFLAGS: -Wall -O3
-#define zzz_SHORT_API 0
+#define zj_SHORT_API 0
 #include "zzzjson.h"
 */
 import (
@@ -12,12 +12,12 @@ import (
 /*
 JSONSize Size for zzzJSON
 */
-type JSONSize C.zzz_SIZE
+type JSONSize C.zj_Size
 
 /*
 JSONType Type for JSON
 */
-type JSONType C.zzz_JSONType
+type JSONType C.zj_JSONType
 
 /*
 6 types for JSON
@@ -32,16 +32,13 @@ const (
 	JSONTypeNumber JSONType = 6
 )
 
-const (
-	zzzTrue  = C.zzz_BOOL(1)
-	zzzFalse = C.zzz_BOOL(0)
-)
+
 
 /*
 Allocator Allocate memory for zzzJSON
 */
 type Allocator struct {
-	A *C.struct_zzz_Allocator
+	A *C.struct_zj_Allocator
 }
 
 /*
@@ -49,7 +46,7 @@ NewAllocator Create an allocator
 */
 func NewAllocator() *Allocator {
 	var allocator Allocator
-	allocator.A = C.zzz_AllocatorNew()
+	allocator.A = C.zj_NewAllocator()
 	return &allocator
 }
 
@@ -57,14 +54,14 @@ func NewAllocator() *Allocator {
 ReleaseAllocator free an allocator
 */
 func (allocator *Allocator) ReleaseAllocator() {
-	C.zzz_AllocatorRelease(allocator.A)
+	C.zj_AllocatorRelease(allocator.A)
 }
 
 /*
 Value JSON Value, it can be one of 6 jsontypes
 */
 type Value struct {
-	V *C.struct_zzz_Value
+	V *C.struct_zj_Value
 }
 
 /*
@@ -72,7 +69,7 @@ NewValue Create a JSON Value using allocator
 */
 func NewValue(allocator *Allocator) *Value {
 	var v Value
-	v.V = C.zzz_ValueNew(allocator.A)
+	v.V = C.zj_NewValue(allocator.A)
 	return &v
 }
 
@@ -80,8 +77,8 @@ func NewValue(allocator *Allocator) *Value {
 Parse Parse JSON text to value
 */
 func (v *Value) Parse(s string) bool {
-	ret := C.zzz_ValueParseFast(v.V, C.CString(s))
-	if ret != zzzTrue {
+	ret := C.zj_ParseFast(v.V, C.CString(s))
+	if ret != true {
 		return false
 	}
 	return true
@@ -91,7 +88,7 @@ func (v *Value) Parse(s string) bool {
 Stringify Stringify Vaue to JSON text
 */
 func (v *Value) Stringify() *string {
-	ret := C.zzz_ValueStringify(v.V)
+	ret := C.zj_Stringify(v.V)
 	if ret == nil {
 		return nil
 	}
@@ -103,7 +100,7 @@ func (v *Value) Stringify() *string {
 GetKey Get key of value
 */
 func (v *Value) GetKey() *string {
-	ret := C.zzz_ValueGetKey(v.V)
+	ret := C.zj_GetKey(v.V)
 	if ret == nil {
 		return nil
 	}
@@ -115,7 +112,7 @@ func (v *Value) GetKey() *string {
 GetUnEscapeKey Get key of value and unescape key
 */
 func (v *Value) GetUnEscapeKey() *string {
-	ret := C.zzz_ValueGetUnEscapeKey(v.V)
+	ret := C.zj_GetUnEscapeKey(v.V)
 	if ret == nil {
 		return nil
 	}
@@ -127,7 +124,7 @@ func (v *Value) GetUnEscapeKey() *string {
 GetStr Get string of value
 */
 func (v *Value) GetStr() *string {
-	ret := C.zzz_ValueGetStr(v.V)
+	ret := C.zj_GetStr(v.V)
 	if ret == nil {
 		return nil
 	}
@@ -139,7 +136,7 @@ func (v *Value) GetStr() *string {
 GetUnEscapeStr Get string of value and unescape
 */
 func (v *Value) GetUnEscapeStr() *string {
-	ret := C.zzz_ValueGetUnEscapeStr(v.V)
+	ret := C.zj_GetUnEscapeStr(v.V)
 	if ret == nil {
 		return nil
 	}
@@ -151,7 +148,7 @@ func (v *Value) GetUnEscapeStr() *string {
 GetNum Get number of value
 */
 func (v *Value) GetNum() *string {
-	ret := C.zzz_ValueGetNumStr(v.V)
+	ret := C.zj_GetNumStr(v.V)
 	if ret == nil {
 		return nil
 	}
@@ -163,12 +160,12 @@ func (v *Value) GetNum() *string {
 GetBool Get bool of value
 */
 func (v *Value) GetBool() *bool {
-	ret := C.zzz_ValueGetBool(v.V)
+	ret := C.zj_GetBool(v.V)
 	if ret == nil {
 		return nil
 	}
 	b := false
-	if *ret == zzzTrue {
+	if *ret == true {
 		b = true
 	}
 	return &b
@@ -178,8 +175,8 @@ func (v *Value) GetBool() *bool {
 IsNull check value is null or not
 */
 func (v *Value) IsNull() bool {
-	ret := C.zzz_ValueIsNull(v.V)
-	if ret == zzzTrue {
+	ret := C.zj_IsNull(v.V)
+	if ret == true {
 		return true
 	}
 	return false
@@ -189,7 +186,7 @@ func (v *Value) IsNull() bool {
 Type get type of value
 */
 func (v *Value) Type() *JSONType {
-	t := C.zzz_ValueType(v.V)
+	t := C.zj_Type(v.V)
 	if t == nil {
 		return nil
 	}
@@ -201,7 +198,7 @@ func (v *Value) Type() *JSONType {
 ObjGet get value of object where key == key
 */
 func (v *Value) ObjGet(key string) *Value {
-	cVal := C.zzz_ValueObjGet(v.V, C.CString(key))
+	cVal := C.zj_ObjGet(v.V, C.CString(key))
 	if cVal == nil {
 		return nil
 	}
@@ -213,7 +210,7 @@ func (v *Value) ObjGet(key string) *Value {
 ArrayGet get value of array where index == index
 */
 func (v *Value) ArrayGet(index JSONSize) *Value {
-	cVal := C.zzz_ValueArrayGet(v.V, C.zzz_SIZE(index))
+	cVal := C.zj_ArrayGet(v.V, C.zj_Size(index))
 	if cVal == nil {
 		return nil
 	}
@@ -225,14 +222,14 @@ func (v *Value) ArrayGet(index JSONSize) *Value {
 Size get size of value(array/object)
 */
 func (v *Value) Size() JSONSize {
-	return JSONSize(C.zzz_ValueSize(v.V))
+	return JSONSize(C.zj_SizeOf(v.V))
 }
 
 /*
 Begin get first child of value(array/object)
 */
 func (v *Value) Begin() *Value {
-	cVal := C.zzz_ValueBegin(v.V)
+	cVal := C.zj_Begin(v.V)
 	if cVal == nil {
 		return nil
 	}
@@ -244,7 +241,7 @@ func (v *Value) Begin() *Value {
 Next get next child from current child
 */
 func (v *Value) Next() *Value {
-	cVal := C.zzz_ValueNext(v.V)
+	cVal := C.zj_Next(v.V)
 	if cVal == nil {
 		return nil
 	}
@@ -256,7 +253,7 @@ func (v *Value) Next() *Value {
 Copy copy an value
 */
 func (v *Value) Copy() *Value {
-	cVal := C.zzz_ValueCopy(v.V)
+	cVal := C.zj_Copy(v.V)
 	if cVal == nil {
 		return nil
 	}
@@ -268,8 +265,8 @@ func (v *Value) Copy() *Value {
 Move move an value
 */
 func (v *Value) Move() bool {
-	ret := C.zzz_ValueMove(v.V)
-	if ret == zzzTrue {
+	ret := C.zj_Move(v.V)
+	if ret == true {
 		return true
 	}
 	return false
@@ -279,7 +276,7 @@ func (v *Value) Move() bool {
 SetNull set value null
 */
 func (v *Value) SetNull() {
-	C.zzz_ValueSetNull(v.V)
+	C.zj_SetNull(v.V)
 }
 
 /*
@@ -287,9 +284,9 @@ SetBool set value bool
 */
 func (v *Value) SetBool(b bool) {
 	if b == true {
-		C.zzz_ValueSetBool(v.V, zzzTrue)
+		C.zj_SetBool(v.V, true)
 	} else {
-		C.zzz_ValueSetBool(v.V, zzzFalse)
+		C.zj_SetBool(v.V, false)
 	}
 }
 
@@ -297,8 +294,8 @@ func (v *Value) SetBool(b bool) {
 SetNumStr set number to value
 */
 func (v *Value) SetNumStr(num string) bool {
-	ret := C.zzz_ValueSetNumStrFast(v.V, C.CString(num))
-	if ret == zzzTrue {
+	ret := C.zj_SetNumStrFast(v.V, C.CString(num))
+	if ret == true {
 		return true
 	}
 	return false
@@ -308,8 +305,8 @@ func (v *Value) SetNumStr(num string) bool {
 SetStr set string to value
 */
 func (v *Value) SetStr(str string) bool {
-	ret := C.zzz_ValueSetStrFast(v.V, C.CString(str))
-	if ret == zzzTrue {
+	ret := C.zj_SetStrFast(v.V, C.CString(str))
+	if ret == true {
 		return true
 	}
 	return false
@@ -319,8 +316,8 @@ func (v *Value) SetStr(str string) bool {
 SetStrEscape set string to value and escape, string can contain \n\r...
 */
 func (v *Value) SetStrEscape(str string) bool {
-	ret := C.zzz_ValueSetStrEscape(v.V, C.CString(str))
-	if ret == zzzTrue {
+	ret := C.zj_SetStrEscape(v.V, C.CString(str))
+	if ret == true {
 		return true
 	}
 	return false
@@ -330,8 +327,8 @@ func (v *Value) SetStrEscape(str string) bool {
 SetKey set key to value
 */
 func (v *Value) SetKey(key string) bool {
-	ret := C.zzz_ValueSetKeyFast(v.V, C.CString(key))
-	if ret == zzzTrue {
+	ret := C.zj_SetKeyFast(v.V, C.CString(key))
+	if ret == true {
 		return true
 	}
 	return false
@@ -341,8 +338,8 @@ func (v *Value) SetKey(key string) bool {
 SetKeyEscape set key to value and escape, string can contain \n\r...
 */
 func (v *Value) SetKeyEscape(key string) bool {
-	ret := C.zzz_ValueSetKeyEscape(v.V, C.CString(key))
-	if ret == zzzTrue {
+	ret := C.zj_SetKeyEscape(v.V, C.CString(key))
+	if ret == true {
 		return true
 	}
 	return false
@@ -352,22 +349,22 @@ func (v *Value) SetKeyEscape(key string) bool {
 SetArray set value to array
 */
 func (v *Value) SetArray() {
-	C.zzz_ValueSetArray(v.V)
+	C.zj_SetArray(v.V)
 }
 
 /*
 SetObj set value to object
 */
 func (v *Value) SetObj() {
-	C.zzz_ValueSetObj(v.V)
+	C.zj_SetObj(v.V)
 }
 
 /*
 Set set an value by copy
 */
 func (v *Value) Set(vv *Value) bool {
-	ret := C.zzz_ValueSet(v.V, vv.V)
-	if ret == zzzTrue {
+	ret := C.zj_Set(v.V, vv.V)
+	if ret == true {
 		return true
 	}
 	return false
@@ -377,8 +374,8 @@ func (v *Value) Set(vv *Value) bool {
 SetFast set an value by move
 */
 func (v *Value) SetFast(vv *Value) bool {
-	ret := C.zzz_ValueSetFast(v.V, vv.V)
-	if ret == zzzTrue {
+	ret := C.zj_SetFast(v.V, vv.V)
+	if ret == true {
 		return true
 	}
 	return false
@@ -388,8 +385,8 @@ func (v *Value) SetFast(vv *Value) bool {
 ObjAdd add an value to object by copy
 */
 func (v *Value) ObjAdd(vv *Value) bool {
-	ret := C.zzz_ValueObjAdd(v.V, vv.V)
-	if ret == zzzTrue {
+	ret := C.zj_ObjAdd(v.V, vv.V)
+	if ret == true {
 		return true
 	}
 	return false
@@ -399,8 +396,8 @@ func (v *Value) ObjAdd(vv *Value) bool {
 ObjAddFast add an value to object by move
 */
 func (v *Value) ObjAddFast(vv *Value) bool {
-	ret := C.zzz_ValueObjAddFast(v.V, vv.V)
-	if ret == zzzTrue {
+	ret := C.zj_ObjAddFast(v.V, vv.V)
+	if ret == true {
 		return true
 	}
 	return false
@@ -410,8 +407,8 @@ func (v *Value) ObjAddFast(vv *Value) bool {
 ArrayAdd add an value to array by copy
 */
 func (v *Value) ArrayAdd(vv *Value) bool {
-	ret := C.zzz_ValueArrayAdd(v.V, vv.V)
-	if ret == zzzTrue {
+	ret := C.zj_ArrayAdd(v.V, vv.V)
+	if ret == true {
 		return true
 	}
 	return false
@@ -421,8 +418,8 @@ func (v *Value) ArrayAdd(vv *Value) bool {
 ArrayAddFast add an value to array by move
 */
 func (v *Value) ArrayAddFast(vv *Value) bool {
-	ret := C.zzz_ValueArrayAddFast(v.V, vv.V)
-	if ret == zzzTrue {
+	ret := C.zj_ArrayAddFast(v.V, vv.V)
+	if ret == true {
 		return true
 	}
 	return false
@@ -432,8 +429,8 @@ func (v *Value) ArrayAddFast(vv *Value) bool {
 ObjDel delete an value of object where key == key
 */
 func (v *Value) ObjDel(key string) bool {
-	ret := C.zzz_ValueObjDel(v.V, C.CString(key))
-	if ret == zzzTrue {
+	ret := C.zj_ObjDel(v.V, C.CString(key))
+	if ret == true {
 		return true
 	}
 	return false
@@ -443,8 +440,8 @@ func (v *Value) ObjDel(key string) bool {
 ArrayDel delete an value of array where index == index
 */
 func (v *Value) ArrayDel(index JSONSize) bool {
-	ret := C.zzz_ValueArrayDel(v.V, C.zzz_SIZE(index))
-	if ret == zzzTrue {
+	ret := C.zj_ArrayDel(v.V, C.zj_SIZE(index))
+	if ret == true {
 		return true
 	}
 	return false
